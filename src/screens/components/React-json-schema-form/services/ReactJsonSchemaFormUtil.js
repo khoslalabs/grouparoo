@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 // import imageCompression from "browser-image-compression";
 
 const ReactJsonSchemaUtil = {
-  numberWithCommas(x) {
+  numberWithCommas (x) {
     x = x.toString()
     let lastThree = x.substring(x.length - 3)
     const otherNumbers = x.substring(0, x.length - 3)
@@ -12,7 +12,7 @@ const ReactJsonSchemaUtil = {
     const res = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree
     return res
   },
-  generateOTP(primaryPhone) {
+  generateOTP (primaryPhone) {
     return DataService.postData(
       `${new ResourceFactoryConstants().constants.otp.generateOTP}`,
       {
@@ -20,20 +20,20 @@ const ReactJsonSchemaUtil = {
       }
     )
   },
-  getMaskedAadhar(aadhar) {
+  getMaskedAadhar (aadhar) {
     const prefix = 'XXXX XXXX '
     const suffix = aadhar.toString().substring(10)
     return prefix + suffix
   },
-  formatDateToDefaultDate(date, actualFormat, newformat = 'MM/DD/YYYY') {
+  formatDateToDefaultDate (date, actualFormat, newformat = 'MM/DD/YYYY') {
     return dayjs(date, actualFormat).format(newformat)
   },
-  getRandomUUID() {
+  getRandomUUID () {
     return (
       Math.random().toString(36).substr(1, 12) + '_' + new Date().getTime()
     )
   },
-  getFileName(files) {
+  getFileName (files) {
     const temp = []
     for (const file of files) {
       temp.push(file.name)
@@ -63,6 +63,17 @@ const ReactJsonSchemaUtil = {
       })
     })
     return uploadedFileIdsWithName
+  },
+  async getBase64ImageData (url) {
+    const res = await DataService.getDataV1(url, { responseType: 'blob' })
+    const base64DataPromis = new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(res.data)
+      reader.onloadend = () => resolve(reader.result)
+    })
+    const base64Data = await base64DataPromis
+    console.log('--->', base64Data)
+    return base64Data
   }
 }
 

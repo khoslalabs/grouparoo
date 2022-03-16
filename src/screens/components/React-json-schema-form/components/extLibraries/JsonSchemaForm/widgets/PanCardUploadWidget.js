@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Toast from 'react-native-toast-message'
 import isEmpty from 'lodash.isempty'
 import isUndefined from 'lodash.isundefined'
@@ -9,13 +9,14 @@ import DocumentUploadService from '../../../../services/DocumentUploadService'
 import ResourceFactoryConstants from '../../../../services/ResourceFactoryConstants'
 import ImageUploadComponent from '../common/ImageUploadComponent'
 import DataService from '../../../../services/DataService'
+import ReactJsonSchemaUtil from '../../../../services/ReactJsonSchemaFormUtil'
 const uploadedFileName = 'pancard.jpg'
 
+const resourceFactoryConstants = new ResourceFactoryConstants()
 const uploadFileToServer = async (dispatch, file) => {
   if (isEmpty(file)) {
     return
   }
-  const resourceFactoryConstants = new ResourceFactoryConstants()
   const formData = new FormData()
   formData.append('file', file)
   try {
@@ -73,6 +74,7 @@ const uploadToAppWrite = async (file) => {
 }
 
 const PanCardUploadWidget = (props) => {
+  const [imageBase64Data, setImageBase64Data] = useState()
   const dispatch = useDispatch()
   const panFile = useSelector(state => state.formDetails.panFile)
   const hasError = isUndefined(props.rawErrors) ? 0 : props.rawErrors.length > 0
@@ -80,6 +82,23 @@ const PanCardUploadWidget = (props) => {
   const useRemoveFile = useRequest(() => dispatch.formDetails.setPanFile(undefined), {
     manual: true
   })
+
+  const useRenderImageFromDb = useRequest(async (value) => {
+    const temp = value.split('::')
+    const base64Data = await ReactJsonSchemaUtil.getBase64ImageData(`${resourceFactoryConstants.constants.lending.downloadFile}${temp[0]}`)
+    return base64Data
+  }, {
+    manual: true,
+    onSuccess: (base64Data) => {
+      setImageBase64Data(base64Data)
+      setIsUploadDone(true) // setting as data is already saved
+    }
+  })
+  useEffect(async () => {
+    if (!isEmpty(props.value)) {
+      useRenderImageFromDb.run(props.value)
+    }
+  }, [props.value])
   const uploadFile = useRequest(uploadFileToServer, {
     manual: true,
     onSuccess: (results, params) => {
@@ -125,6 +144,7 @@ const PanCardUploadWidget = (props) => {
       // remove from props
       props.onChange(undefined)
       setIsUploadDone(false)
+      setImageBase64Data(undefined)
     }
   }
   const onFileChange = async (data) => {
@@ -151,8 +171,8 @@ const PanCardUploadWidget = (props) => {
         hasError={hasError}
         isUploadDone={isUploadDone}
         onFileChange={onFileChange}
-        uris={panFile ? [panFile.uri] : []}
-        loading={uploadFile.loading}
+        uris={panFile ? [panFile.uri] : (imageBase64Data ? [imageBase64Data] : [])}
+        loading={uploadFile.loading || useRenderImageFromDb.loading}
         selectText={translations['pan.uploadText']}
         removeFile={removeFile}
       />

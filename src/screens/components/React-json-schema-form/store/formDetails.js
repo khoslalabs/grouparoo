@@ -174,7 +174,28 @@ const formDetails = {
       state.kycData = kycData
       state.kycMatchData = kycMatchData
       return state
+    },
+    // Once I am reloading the form from saved data, need to reload the redux store too
+    setAllAdditionalData: (state, { panData, gstnData, udyamData, kycData }) => {
+      state.panData = panData
+      state.gstnData = gstnData
+      state.udyamData = udyamData
+      state.kycData = kycData
+      state.kycMatchData = kycData?.kycMatchData
+      return state
     }
-  }
+  },
+  effects: (dispatch) => ({
+    updateAllAdditionalData (_, rootState) {
+      try {
+        const currentLoanApplicationId = rootState.loanApplications.currentLoanApplicationId
+        const currentLoanApplication = rootState.loanApplications.applications[currentLoanApplicationId]
+        const { panData, gstnData, udyamData, kycData } = currentLoanApplication
+        dispatch.formDetails.setAllAdditionalData({ panData, gstnData, udyamData, kycData })
+      } catch (error) {
+        throw new Error(error.message)
+      }
+    }
+  })
 }
 export default formDetails

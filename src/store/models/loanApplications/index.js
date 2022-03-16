@@ -2,6 +2,7 @@ import dayjs from 'dayjs'
 import isEmpty from 'lodash.isempty'
 import isUndefined from 'lodash.isundefined'
 import apiService from '../../../apiService'
+import maxBy from 'lodash.maxby'
 
 const addLoanAplication = (state, loanApplication) => {
   if (loanApplication.data.status === 'ACTIVE') {
@@ -28,9 +29,10 @@ const addLoanApplications = (state, { loanApplications }) => {
           activeLoanApplicationIds.push(la.data.loanApplicationId)
         }
       })
-      if (loanApplications.length === 1) {
-        // set the latest as active
-        state.currentLoanApplicationId = loanApplications[0].data.loanApplicationId
+      if (loanApplications.length > 0) {
+        // set the latest createdOn object as latest Loan Application
+        const latestLoanApplication = maxBy(loanApplications, 'createdOn')
+        state.currentLoanApplicationId = latestLoanApplication.data.loanApplicationId
       }
       state.activeLoanApplicationIds = activeLoanApplicationIds
       return state

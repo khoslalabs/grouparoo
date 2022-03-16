@@ -113,7 +113,7 @@ const SignIn = ({ navigation, route }) => {
           placeholder={translations['form.email']}
           value={email}
           status={(showError || !isEmailValid) && 'danger'}
-          onChangeText={setEmail}
+          onChangeText={(text) => setEmail(text.trim())}
           accessoryRight={FormIcons.FormEmailIcon}
           caption={!isEmailValid ? renderError : <></>}
         />

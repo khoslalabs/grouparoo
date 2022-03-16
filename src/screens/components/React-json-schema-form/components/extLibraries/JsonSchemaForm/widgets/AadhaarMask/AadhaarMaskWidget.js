@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Toast from 'react-native-toast-message'
 import { useDispatch, useSelector } from 'react-redux'
 import isUndefined from 'lodash.isundefined'
@@ -9,7 +9,8 @@ import { LocalizationContext } from '../../../../../translation/Translation'
 import ImageUploadComponent from '../../common/ImageUploadComponent'
 import ResourceFactoryConstants from '../../../../../services/ResourceFactoryConstants'
 import DataService from '../../../../../services/DataService'
-
+import ReactJsonSchemaUtil from '../../../../../services/ReactJsonSchemaFormUtil'
+const resourceFactoryConstants = new ResourceFactoryConstants()
 const uploadFileUsingRNFetchBlob = async (base64, fileName) => {
   const resourceFactoryConstants = new ResourceFactoryConstants()
   try {
@@ -27,7 +28,7 @@ const uploadFileUsingRNFetchBlob = async (base64, fileName) => {
       throw new Error('CANNOT_UPLOAD_FILE_TO_DOC_SERVER')
     }
   } catch (e) {
-    console.log("Inside uploadFileUsingRNFetchBlob() method, exception caught",e);
+    console.log('Inside uploadFileUsingRNFetchBlob() method, exception caught', e)
     if (e.message === 'CANNOT_UPLOAD_FILE_TO_DOC_SERVER') {
       throw e
     } else {
@@ -57,7 +58,7 @@ const maskAadhaar = async (dispatch, file, isBack) => {
       throw new Error('CANNOT_MASK_AADHAAR_INCORRECT_FILE')
     }
   } catch (err) {
-    console.log("Inside maskAadhaar() method, exception caught",err);
+    console.log('Inside maskAadhaar() method, exception caught', err)
     if (err.message === 'CANNOT_MASK_AADHAAR_INCORRECT_FILE') {
       throw err
     } else {
@@ -67,6 +68,7 @@ const maskAadhaar = async (dispatch, file, isBack) => {
 }
 
 const AadhaarMaskWidget = (props) => {
+  const [imageBase64Data, setImageBase64Data] = useState()
   const {
     aadharBackFile, aadharFrontFile
   } = useSelector(state => ({
@@ -83,6 +85,22 @@ const AadhaarMaskWidget = (props) => {
   }, {
     manual: true
   })
+  const useRenderImageFromDb = useRequest(async (value) => {
+    const temp = value.split('::')
+    const base64Data = await ReactJsonSchemaUtil.getBase64ImageData(`${resourceFactoryConstants.constants.lending.downloadFile}${temp[0]}`)
+    return base64Data
+  }, {
+    manual: true,
+    onSuccess: (base64Data) => {
+      setImageBase64Data(base64Data)
+      setIsUploadDone(true) // setting as data is already saved
+    }
+  })
+  useEffect(async () => {
+    if (!isEmpty(props.value)) {
+      useRenderImageFromDb.run(props.value)
+    }
+  }, [props.value])
   const useMaskAadharCard = useRequest(maskAadhaar, {
     manual: true,
     onBefore: () => {
@@ -123,6 +141,7 @@ const AadhaarMaskWidget = (props) => {
       // remove from props
       props.onChange(undefined)
       setIsUploadDone(false)
+      setImageBase64Data(undefined)
     }
   }
   const onFileChange = async (file) => {
@@ -143,7 +162,7 @@ const AadhaarMaskWidget = (props) => {
         onFileChange={onFileChange}
         loading={useMaskAadharCard.loading}
         selectText={props.selectText}
-        uris={fileToUse ? [fileToUse.uri] : []}
+        uris={fileToUse ? [fileToUse.uri] : (imageBase64Data ? [imageBase64Data] : [])}
         removeFile={removeFile}
       />
     </>
