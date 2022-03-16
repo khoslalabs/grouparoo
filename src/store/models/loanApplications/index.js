@@ -4,14 +4,14 @@ import isUndefined from 'lodash.isundefined'
 import apiService from '../../../apiService'
 
 const addLoanAplication = (state, loanApplication) => {
-  if (loanApplication.status === 'active') {
-    state.activeLoanApplicationIds = [loanApplication.loanApplicationId, ...state.activeLoanApplicationIds]
+  if (loanApplication.data.status === 'ACTIVE') {
+    state.activeLoanApplicationIds = [loanApplication.data.loanApplicationId, ...state.activeLoanApplicationIds]
     if (isEmpty(state.applications)) {
       // This is the first application
-      state.currentLoanApplicationId = loanApplication.loanApplicationId
+      state.currentLoanApplicationId = loanApplication.data.loanApplicationId
     }
   }
-  state.applications[loanApplication.loanApplicationId] = loanApplication
+  state.applications[loanApplication.data.loanApplicationId] = loanApplication.data
   return state
 }
 const addLoanApplications = (state, { loanApplications }) => {
@@ -152,7 +152,7 @@ const loanApplications = {
           currentStep: 0,
           progress: 'INCOMPLETE'
         }
-        dispatch.loanApplications.addLoanApplication({ loanApplication })
+        await dispatch.loanApplications.addLoanApplication({ loanApplication })
       } catch (e) {
         console.log(e)
         throw new Error('CANNOT_CREATE_LOAN_APPLICATION')
@@ -173,6 +173,14 @@ const loanApplications = {
       } catch (e) {
         console.log(e)
         throw new Error('CANNOT_GET_LOAN_AGREEMENT_ID')
+      }
+    },
+    async setCurrentLoanApplicationId ({ loanApplicationId }, rootState) {
+      try {
+        await dispatch.loanApplications.setCurrentLoanApplication(loanApplicationId)
+      } catch (error) {
+        console.log(error)
+        throw new Error('CANNOT_SET_CURRENT_LOAN_APPLICATION_ID')
       }
     }
   })

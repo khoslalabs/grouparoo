@@ -164,6 +164,9 @@ const commonAuthenticateSteps = async (dispatch, customer, isFirstTime, customer
     // Create a new loan application for this user and set it
     const loanApplicationId = await createLoanApplication()
     return dispatch.loanApplications.createLoanApplication({ loanApplicationId })
+  } else { // Assuming only one loan application would be there, it would do update the same loanApplicationId
+    const loanApplicationId = loanApplications[0].data.loanApplicationId
+    return dispatch.loanApplications.setCurrentLoanApplicationId({ loanApplicationId })
   }
 }
 const getAllLoanApplications = async (customerId) => {
