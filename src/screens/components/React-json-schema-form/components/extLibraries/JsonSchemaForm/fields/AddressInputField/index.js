@@ -231,7 +231,7 @@ const AddressInputField = (props) => {
     setSelectedStateIndex(new IndexPath(data.row))
     updateAddress({
       stateCode: states[data.row].element_code,
-      state: states[data].element_name
+      state: states[data.row].element_name
     })
   }
   const onCityChangeHandler = (data) => {
