@@ -326,7 +326,7 @@ export const appApi = {
   loanApplication: {
     getAllLoanApplications: {
       execute: async (customerId) => {
-        const payload = JSON.stringify({}) // JSON.stringify({ customerId })
+        const payload = JSON.stringify({ customerId })
         try {
           const executionDetails = await sdk.functions.createExecution(config.appWrite.retrieveLoanApplicationFunctionId, payload)
           return executionDetails.$id
@@ -340,9 +340,12 @@ export const appApi = {
         try {
           const responseWithStatus = await getCompletionStatus(config.appWrite.retrieveLoanApplicationFunctionId, executionId)
           if (responseWithStatus.status === 'completed') {
-            const allLoanApplications = unpackData(responseWithStatus.stdout)
-            if (allLoanApplications.length > 0) {
-              return allLoanApplications.map(la => JSON.parse(la))
+            // For new user, next time login, it will not have any loan application, so can't unpackData
+            if (!isEmpty(responseWithStatus.stdout)) {
+              const allLoanApplications = unpackData(responseWithStatus.stdout)
+              if (allLoanApplications.length > 0) {
+                return allLoanApplications.map(la => JSON.parse(la))
+              }
             } else {
               return []
             }
