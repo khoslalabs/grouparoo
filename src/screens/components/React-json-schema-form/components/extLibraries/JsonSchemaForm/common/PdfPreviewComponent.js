@@ -48,7 +48,7 @@ const PdfPreviewComponent = ({ agreementUrl = DEFAULT_URL }) => {
   return (
     <>
       <Pdf
-        source={{ uri: pdfBase64, cache: true }}
+        source={{ uri: pdfBase64 }}
         style={styles.pdf}
       />
     </>

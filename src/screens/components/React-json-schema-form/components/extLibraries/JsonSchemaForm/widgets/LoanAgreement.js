@@ -28,9 +28,7 @@ const LoanAgreementWidget = (props) => {
         {loading && <Spinner />}
         <PdfPreviewComponent agreementUrl={loanAgreementUrl} />
       </View>
-      <Button appearance='outline' style={{ marginTop: 6 }}>
-        <DownloadComponent fileUrl={loanAgreementUrl} headers={headers} />
-      </Button>
+      <DownloadComponent fileUrl={loanAgreementUrl} headers={headers} />
       <CheckBox
         checked={props.value && props.value === 'Yes' ? true : false}
         style={{ marginTop: 5 }}

@@ -1,7 +1,6 @@
 import React, { useContext, Fragment } from 'react'
-import { Text } from '@ui-kitten/components'
-import { Platform, PermissionsAndroid, StyleSheet } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { Button } from '@ui-kitten/components'
+import { Platform, PermissionsAndroid, StyleSheet, View } from 'react-native'
 import RNFetchBlob from 'rn-fetch-blob'
 import ResourceFactoryConstants from '../../../../services/ResourceFactoryConstants'
 import { LocalizationContext } from '../../../../translation/Translation'
@@ -94,20 +93,21 @@ const DownloadComponent = ({ fileUrl, uploadedDocId, fileName, headers = {} }) =
   }
   return (
     <>
-      <TouchableOpacity onPress={checkPermission}>
-        <Text status='primary' style={styles.downloadText}>
-          {/* Download {fileName ? fileName : ""} */}
+      <View style={styles.container}>
+        <Button style={styles.button} appearance='outline' onPress={checkPermission}>
           {translations['download.downloadText']}
-        </Text>
-      </TouchableOpacity>
+        </Button>
+      </View>
     </>
   )
 }
 
 const styles = StyleSheet.create({
-  downloadText: {
-    fontWeight: 'bold',
-    marginLeft: 4
+  container: {
+    flex: 1
+  },
+  button: {
+    marginVertical: 5
   }
 })
 
