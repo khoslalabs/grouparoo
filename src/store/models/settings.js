@@ -23,7 +23,7 @@ const settings = {
     getIsMobileValid: () => (rootState) => rootState.settings.isMobileValid,
     getValidMobileNumber: () => (rootState) => rootState.settings.validatedMobileNumber,
     getIsApplicationHelpShown: () => (rootState) => rootState.settings.loanAppHelpShown,
-    getIsAgreementHelpShown: () => (rootState) => rootState.settings.loanAppHelpShown
+    getIsAgreementHelpShown: () => (rootState) => rootState.settings.loanAgreementHelpShown
   },
   reducers: {
     setLanguage: (state, language) => {
@@ -58,6 +58,7 @@ const settings = {
       dispatch.settings.setAgreementnHelp(loanAppHelpShown)
     },
     async setAgreementHelpShown (agreementHelpShown, rootState) {
+      debugger
       await AppStorage.setLoanAgreementnHelpShown(agreementHelpShown)
       dispatch.settings.setAgreementnHelp(agreementHelpShown)
     }

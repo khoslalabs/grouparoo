@@ -345,6 +345,8 @@ export const appApi = {
               const allLoanApplications = unpackData(responseWithStatus.stdout)
               if (allLoanApplications.length > 0) {
                 return allLoanApplications.map(la => JSON.parse(la))
+              } else {
+                return []
               }
             } else {
               return []
