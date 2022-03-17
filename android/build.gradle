@@ -1,5 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
+Properties properties = new Properties()
+properties.load(new FileInputStream(project.rootProject.file('local.properties')))
 buildscript {
     ext {
         buildToolsVersion = "29.0.3"
@@ -36,8 +37,8 @@ allprojects {
         maven {
             url "s3://risk-manager-android-sdk/artifacts"
             credentials(AwsCredentials) {
-                accessKey = "AKIAZUHCZC3Y56ERFIAQ"
-                secretKey = "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"
+                accessKey = properties.getProperty('ACCESS_KEY').toString()
+                secretKey = properties.getProperty('SECRET_KEY').toString()
             }
             content {
                 includeGroup("in.finbox")
