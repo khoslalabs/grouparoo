@@ -8,6 +8,7 @@ export const config = {
   appWrite: {
     url: 'https://dev-appwrite.novopay.in/v1',
     projectId: '61fc67b0347f85b8f5b1',
+    key: '062e06ef6ff99f959f172fb6e5620697c41d379d87bfbd163ed023beedfe9ce5ec9e9f5b537c8d198fadc1316a8d314c477a86490aa4534c600e36339427a22a696cf47c5503a8cca3532f7aa493a9960d4c3f9a1e1b02a7b09de3695981eb3c6fdc12c2e66ae29112686937d8abd67c4121e7256b39f49642bb801e20bc6de5',
     customersCollectionId: '61fc6872e7eab316406d',
     loanApplicationCollectionId: '61fc9d1ab041f556aa0c',
     loanApplicationIdGenerationFunctionId: '6201dd75d89e37c8bcf5', // - Create a loan Application Id

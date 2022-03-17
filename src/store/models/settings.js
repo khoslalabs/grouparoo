@@ -58,7 +58,6 @@ const settings = {
       dispatch.settings.setAgreementnHelp(loanAppHelpShown)
     },
     async setAgreementHelpShown (agreementHelpShown, rootState) {
-      debugger
       await AppStorage.setLoanAgreementnHelpShown(agreementHelpShown)
       dispatch.settings.setAgreementnHelp(agreementHelpShown)
     }

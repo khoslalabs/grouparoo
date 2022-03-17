@@ -375,17 +375,17 @@ export const appApi = {
         try {
           const responseWithStatus = await getCompletionStatus(config.appWrite.loanAgreementFunctionId, executionId)
           if (responseWithStatus.status === 'completed') {
-            const { status, fileId } = JSON.parse(responseWithStatus.stdout)
+            const { status, loanAgreementUrl } = JSON.parse(responseWithStatus.stdout)
             if (status === 'FAILED') {
-              throw new Error('CANNOT_GENERATE_LOAN_DOCUMENT_ID')
+              throw new Error('CANNOT_GET_LOANAGREEMET_URL')
             }
-            return fileId
+            return loanAgreementUrl
           } else {
-            throw new Error('CANNOT_CALL_LOAN_DOCUMENT_ID')
+            throw new Error('CANNOT_CALL_TO_GET_LOANAGREEMET_URL')
           }
         } catch (e) {
           crashlytics().log(e)
-          throw new Error('CANNOT_GET_LOAN_AGREEMENT_ID')
+          throw new Error(e.message)
         }
       }
     },

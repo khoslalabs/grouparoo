@@ -1,6 +1,5 @@
 import React, { useContext, Fragment } from 'react'
 import { Text } from '@ui-kitten/components'
-
 import { Platform, PermissionsAndroid, StyleSheet } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import RNFetchBlob from 'rn-fetch-blob'
@@ -10,8 +9,7 @@ import crashlytics from '@react-native-firebase/crashlytics'
 import Toast from 'react-native-toast-message'
 import ErrorUtil from '../../../../../../Errors/ErrorUtil'
 
-const DownloadComponent = ({ fileUrl, uploadedDocId, fileName }) => {
-  console.log(fileUrl)
+const DownloadComponent = ({ fileUrl, uploadedDocId, fileName, headers = {} }) => {
   const { translations } = useContext(LocalizationContext)
   const resourceFactoryConstants = new ResourceFactoryConstants()
   const url = uploadedDocId
@@ -51,8 +49,12 @@ const DownloadComponent = ({ fileUrl, uploadedDocId, fileName }) => {
   const downloadFile = () => {
     const date = new Date()
     const FILE_URL = fileUrl
-    let file_ext = getFileExtention(FILE_URL)
-    file_ext = '.' + file_ext[0]
+    let fileExt = getFileExtention(FILE_URL)
+    if (!fileExt) {
+      fileExt = '.' + fileExt[0]
+    } else {
+      fileExt = '.pdf'
+    }
     const { config, fs } = RNFetchBlob
     const RootDir = fs.dirs.DownloadDir
     const options = {
@@ -62,14 +64,14 @@ const DownloadComponent = ({ fileUrl, uploadedDocId, fileName }) => {
           RootDir +
           '/file_' +
           Math.floor(date.getTime() + date.getSeconds() / 2) +
-          file_ext,
+          fileExt,
         description: translations['download.downloading'],
         notification: true,
         useDownloadManager: true
       }
     }
     config(options)
-      .fetch('GET', url)
+      .fetch('GET', url, headers)
       .then((res) => {
         Toast.show({
           type: 'success',
