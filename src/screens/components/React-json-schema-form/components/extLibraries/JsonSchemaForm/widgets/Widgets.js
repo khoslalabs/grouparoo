@@ -28,6 +28,7 @@ import CIBILOtpWidget from './CIBILOtpWidget'
 import TermsAndConditionsWidget from './TermsAndConditionWidget'
 import EsignInputWidget from './EsignInputWidget'
 import EnachWidget from './EnachWidget'
+import BankAccountConfirmationWidget from './BankAccountConfirmationWidget'
 export const Widgets = {
   TextWidget,
   EmailWidget,
@@ -61,4 +62,5 @@ export const Widgets = {
   'np-terms-and-condition-widget': TermsAndConditionsWidget,
   'np-esign-input-widget': EsignInputWidget,
   'np-enach-widget': EnachWidget,
+  'np-bank-account-details-widget': BankAccountConfirmationWidget
 }
