@@ -1,10 +1,9 @@
-import { Button, CheckBox, Spinner } from '@ui-kitten/components'
-import React, { useContext } from 'react'
+import { CheckBox, Spinner } from '@ui-kitten/components'
+import React, { useContext, useState } from 'react'
 import { StyleSheet, Dimensions, View } from 'react-native'
 import DownloadComponent from '../common/DownloadComponent'
 import { LocalizationContext } from '../../../../translation/Translation'
-import { useDispatch, useSelector } from 'react-redux'
-import { useRequest } from 'ahooks'
+import { useSelector } from 'react-redux'
 import PdfPreviewComponent from '../common/PdfPreviewComponent'
 import { config } from '../../../../../../../config'
 const headers = {
@@ -13,20 +12,16 @@ const headers = {
   'Content-Type': 'application/pdf'
 }
 
-const getLoanAgreementUrl = async (dispatch) => {
-  await dispatch.loans.getAllLoans()
-}
-
 const LoanAgreementWidget = (props) => {
-  const dispatch = useDispatch()
-  const { loading } = useRequest(() => getLoanAgreementUrl(dispatch))
   const { translations } = useContext(LocalizationContext)
+  const [show, setShow] = useState(true)
   const loanAgreementUrl = useSelector(state => state.loanApplications.applications[state.loanApplications.currentLoanApplicationId].loanAgreementUrl)
+  console.log(loanAgreementUrl)
   return (
     <>
       <View style={styles.container}>
-        {loading && <Spinner />}
-        <PdfPreviewComponent agreementUrl={loanAgreementUrl} />
+        {show && <Spinner />}
+        <PdfPreviewComponent agreementUrl={loanAgreementUrl} onLoadComplete={setShow} />
       </View>
       <DownloadComponent fileUrl={loanAgreementUrl} headers={headers} />
       <CheckBox

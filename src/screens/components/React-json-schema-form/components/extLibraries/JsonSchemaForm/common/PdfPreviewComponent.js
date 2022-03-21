@@ -13,7 +13,7 @@ const headers = {
   'Content-Type': 'application/pdf'
 }
 
-const PdfPreviewComponent = ({ agreementUrl = DEFAULT_URL }) => {
+const PdfPreviewComponent = ({ agreementUrl = DEFAULT_URL, onLoadComplete }) => {
   const [pdfBase64, setPdfBase64] = useState()
   const useGetBase64Pdf = useRequest(async (agreementUrl) => {
     try {
@@ -50,6 +50,7 @@ const PdfPreviewComponent = ({ agreementUrl = DEFAULT_URL }) => {
       <Pdf
         source={{ uri: pdfBase64 }}
         style={styles.pdf}
+        onLoadComplete={() => onLoadComplete(false)}
       />
     </>
   )
