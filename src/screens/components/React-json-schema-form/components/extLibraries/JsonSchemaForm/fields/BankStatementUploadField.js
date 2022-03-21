@@ -10,6 +10,7 @@ import ResourceFactoryConstants from '../../../../services/ResourceFactoryConsta
 import DocumentPicker from 'react-native-document-picker'
 import DataService from '../../../../services/DataService'
 import DocumentUploadComponent from '../common/DocumentUploadComponent'
+import ReactJsonSchemaUtil from '../../../../services/ReactJsonSchemaFormUtil'
 
 const getNewFileAdded = (newFiles, oldFiles = []) => {
   if (newFiles.length === 0) {
@@ -49,6 +50,7 @@ const uploadBankStatement = async (dispatch, files) => {
         file.uploading = false
       })
       await dispatch.formDetails.setBankStatementFiles(files)
+      await dispatch.formDetails.setBankStatementData(responseData.data)
       return { uploadedDocIds }
     } else {
       throw new Error('INVALID_BANK_STATEMENT')
@@ -89,6 +91,7 @@ const uploadToAppWrite = async (file) => {
   }
 }
 const BankStatementUploadField = (props) => {
+  let uploadedFileIdsWithName
   const dispatch = useDispatch()
   const store = useStore()
   const state = useSelector(state => state)
@@ -100,6 +103,10 @@ const BankStatementUploadField = (props) => {
   const useRemoveFile = useRequest((file) => dispatch.formDetails.removeFromBankStatementFiles(file), {
     manual: true
   })
+
+  if (!isEmpty(props?.formData)) {
+    uploadedFileIdsWithName = ReactJsonSchemaUtil.getUploadedFileIdsWithNameArray(props.formData)
+  }
   const uploadFiles = useRequest(uploadBankStatement, {
     manual: true,
     onSuccess: (result, params) => {
@@ -160,7 +167,7 @@ const BankStatementUploadField = (props) => {
         isUploadDone={isUploadDone}
         onFileChange={onFileChange}
         multiple
-        files={bankStaementFilesCopy}
+        files={!isEmpty(bankStaementFilesCopy) ? bankStaementFilesCopy : uploadedFileIdsWithName}
         type={[DocumentPicker.types.pdf]}
         loading={uploadFiles.loading}
         selectText={translations['statement.uploadText']}

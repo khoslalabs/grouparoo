@@ -326,7 +326,7 @@ export const appApi = {
   loanApplication: {
     getAllLoanApplications: {
       execute: async (customerId) => {
-        const payload = JSON.stringify({}) // JSON.stringify({ customerId })
+        const payload = JSON.stringify({ customerId })
         try {
           const executionDetails = await sdk.functions.createExecution(config.appWrite.retrieveLoanApplicationFunctionId, payload)
           return executionDetails.$id
@@ -340,9 +340,14 @@ export const appApi = {
         try {
           const responseWithStatus = await getCompletionStatus(config.appWrite.retrieveLoanApplicationFunctionId, executionId)
           if (responseWithStatus.status === 'completed') {
-            const allLoanApplications = unpackData(responseWithStatus.stdout)
-            if (allLoanApplications.length > 0) {
-              return allLoanApplications.map(la => JSON.parse(la))
+            // For new user, next time login, it will not have any loan application, so can't unpackData
+            if (!isEmpty(responseWithStatus.stdout)) {
+              const allLoanApplications = unpackData(responseWithStatus.stdout)
+              if (allLoanApplications.length > 0) {
+                return allLoanApplications.map(la => JSON.parse(la))
+              } else {
+                return []
+              }
             } else {
               return []
             }
@@ -370,17 +375,17 @@ export const appApi = {
         try {
           const responseWithStatus = await getCompletionStatus(config.appWrite.loanAgreementFunctionId, executionId)
           if (responseWithStatus.status === 'completed') {
-            const { status, fileId } = JSON.parse(responseWithStatus.stdout)
+            const { status, loanAgreementUrl } = JSON.parse(responseWithStatus.stdout)
             if (status === 'FAILED') {
-              throw new Error('CANNOT_GENERATE_LOAN_DOCUMENT_ID')
+              throw new Error('CANNOT_GET_LOANAGREEMET_URL')
             }
-            return fileId
+            return loanAgreementUrl
           } else {
-            throw new Error('CANNOT_CALL_LOAN_DOCUMENT_ID')
+            throw new Error('CANNOT_CALL_TO_GET_LOANAGREEMET_URL')
           }
         } catch (e) {
           crashlytics().log(e)
-          throw new Error('CANNOT_GET_LOAN_AGREEMENT_ID')
+          throw new Error(e.message)
         }
       }
     },

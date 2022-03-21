@@ -1,44 +1,28 @@
-import { Button, CheckBox, Spinner } from '@ui-kitten/components'
-import React, { useContext, useEffect, useState } from 'react'
+import { CheckBox, Spinner } from '@ui-kitten/components'
+import React, { useContext, useState } from 'react'
 import { StyleSheet, Dimensions, View } from 'react-native'
-import isEmpty from 'lodash.isempty'
-import { WebView } from 'react-native-webview'
 import DownloadComponent from '../common/DownloadComponent'
 import { LocalizationContext } from '../../../../translation/Translation'
+import { useSelector } from 'react-redux'
+import PdfPreviewComponent from '../common/PdfPreviewComponent'
+import { config } from '../../../../../../../config'
+const headers = {
+  'X-Appwrite-Project': config.appWrite.projectId,
+  'X-Appwrite-Key': config.appWrite.key,
+  'Content-Type': 'application/pdf'
+}
 
 const LoanAgreementWidget = (props) => {
   const { translations } = useContext(LocalizationContext)
-  const { value, rawErrors, required } = props
-  const [isValid, setIsValid] = useState()
-  useEffect(() => {
-    if (!isEmpty(rawErrors)) {
-      setIsValid(false)
-    } else {
-      setIsValid(true)
-    }
-  }, [rawErrors, value, required])
-  const url =
-    props?.schema?.url ||
-    'https://www.agstartups.org.br/uploads/2020/07/sample.pdf'
   const [show, setShow] = useState(true)
+  const loanAgreementUrl = useSelector(state => state.loanApplications.applications[state.loanApplications.currentLoanApplicationId].loanAgreementUrl)
   return (
     <>
       <View style={styles.container}>
         {show && <Spinner />}
-        <WebView
-          style={{
-            height: Dimensions.get('window').height - 360,
-            width: Dimensions.get('window').width
-          }}
-          source={{
-            uri: `https://docs.google.com/gview?embedded=true&url=${url}`
-          }}
-          onLoad={() => setShow(false)}
-        />
+        <PdfPreviewComponent agreementUrl={loanAgreementUrl} onLoadComplete={setShow} />
       </View>
-      <Button appearance='outline' style={{ marginTop: 6 }}>
-        <DownloadComponent fileUrl={url} />
-      </Button>
+      <DownloadComponent fileUrl={loanAgreementUrl} headers={headers} />
       <CheckBox
         checked={props.value && props.value === 'Yes' ? true : false}
         style={{ marginTop: 5 }}

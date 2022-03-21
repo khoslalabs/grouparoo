@@ -5,15 +5,15 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 const slides = [
   {
     key: 1,
-    imageSource: require('../../assets/images/intro/1.jpg')
+    imageSource: require('../../assets/images/intro/3.jpg')
   },
   {
     key: 2,
-    imageSource: require('../../assets/images/intro/2.jpg')
+    imageSource: require('../../assets/images/intro/1.jpg')
   },
   {
     key: 3,
-    imageSource: require('../../assets/images/intro/3.jpg')
+    imageSource: require('../../assets/images/intro/2.jpg')
   },
   {
     key: 4,

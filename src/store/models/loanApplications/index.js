@@ -2,16 +2,17 @@ import dayjs from 'dayjs'
 import isEmpty from 'lodash.isempty'
 import isUndefined from 'lodash.isundefined'
 import apiService from '../../../apiService'
+import maxBy from 'lodash.maxby'
 
 const addLoanAplication = (state, loanApplication) => {
-  if (loanApplication.status === 'active') {
-    state.activeLoanApplicationIds = [loanApplication.loanApplicationId, ...state.activeLoanApplicationIds]
+  if (loanApplication.data.status === 'ACTIVE') {
+    state.activeLoanApplicationIds = [loanApplication.data.loanApplicationId, ...state.activeLoanApplicationIds]
     if (isEmpty(state.applications)) {
       // This is the first application
-      state.currentLoanApplicationId = loanApplication.loanApplicationId
+      state.currentLoanApplicationId = loanApplication.data.loanApplicationId
     }
   }
-  state.applications[loanApplication.loanApplicationId] = loanApplication
+  state.applications[loanApplication.data.loanApplicationId] = loanApplication.data
   return state
 }
 const addLoanApplications = (state, { loanApplications }) => {
@@ -28,9 +29,10 @@ const addLoanApplications = (state, { loanApplications }) => {
           activeLoanApplicationIds.push(la.data.loanApplicationId)
         }
       })
-      if (loanApplications.length === 1) {
-        // set the latest as active
-        state.currentLoanApplicationId = loanApplications[0].data.loanApplicationId
+      if (loanApplications.length > 0) {
+        // set the latest createdOn object as latest Loan Application
+        const latestLoanApplication = maxBy(loanApplications, 'createdOn')
+        state.currentLoanApplicationId = latestLoanApplication.data.loanApplicationId
       }
       state.activeLoanApplicationIds = activeLoanApplicationIds
       return state
@@ -126,9 +128,9 @@ const loanApplications = {
       state.applicationStage[data.loanApplicationId].status = status
       return state
     },
-    setLoanAgreementId: (state, { loanApplicationId, loanAgreementId }) => {
+    setLoanAgreementId: (state, { loanApplicationId, loanAgreementUrl }) => {
       const loanApplication = state.applications[loanApplicationId]
-      loanApplication.loanAgreementUrl = loanAgreementId
+      loanApplication.loanAgreementUrl = loanAgreementUrl
       state.applications[loanApplicationId] = Object.assign({}, loanApplication)
       return state
     }
@@ -152,7 +154,7 @@ const loanApplications = {
           currentStep: 0,
           progress: 'INCOMPLETE'
         }
-        dispatch.loanApplications.addLoanApplication({ loanApplication })
+        await dispatch.loanApplications.addLoanApplication({ loanApplication })
       } catch (e) {
         console.log(e)
         throw new Error('CANNOT_CREATE_LOAN_APPLICATION')
@@ -168,11 +170,19 @@ const loanApplications = {
     async generateLoanAgreement ({ loanApplicationId }, rootState) {
       try {
         const executionId = await apiService.appApi.loanApplication.loanAgreement.execute(loanApplicationId)
-        const loanAgreementId = await apiService.appApi.loanApplication.loanAgreement.execute(executionId)
-        dispatch.loanApplications.setLoanAgreementId({ loanAgreementId, loanApplicationId })
+        const loanAgreementUrl = await apiService.appApi.loanApplication.loanAgreement.get(executionId)
+        dispatch.loanApplications.setLoanAgreementId({ loanAgreementUrl, loanApplicationId })
       } catch (e) {
         console.log(e)
         throw new Error('CANNOT_GET_LOAN_AGREEMENT_ID')
+      }
+    },
+    async setCurrentLoanApplicationId ({ loanApplicationId }, rootState) {
+      try {
+        await dispatch.loanApplications.setCurrentLoanApplication(loanApplicationId)
+      } catch (error) {
+        console.log(error)
+        throw new Error('CANNOT_SET_CURRENT_LOAN_APPLICATION_ID')
       }
     }
   })

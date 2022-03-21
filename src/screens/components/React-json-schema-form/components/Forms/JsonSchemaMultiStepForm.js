@@ -74,6 +74,7 @@ const JsonSchemaMultiStepForm = ({
   const panData = useSelector((state) => state?.formDetails?.panData)
 
   const udyamData = useSelector((state) => state?.formDetails?.udyamData)
+  const bankStatementData = useSelector((state) => state?.formDetails?.bankStatementData)
   let thisFormRef
   const { translations } = useContext(LocalizationContext)
   const thisStep = findStepForFormData(steps, formData)
@@ -122,6 +123,7 @@ const JsonSchemaMultiStepForm = ({
       } else if (field === appConstants.bankStatementUploadFieldName) {
         requestBody[appConstants.isBankStatementVerified] =
           isBankStatementVerified === 'Yes' ? 'Yes' : 'No'
+        requestBody.bankStatementData = bankStatementData
       } else if (
         field === appConstants.isCommunicationAddSameAsPermanentAddress
       ) {

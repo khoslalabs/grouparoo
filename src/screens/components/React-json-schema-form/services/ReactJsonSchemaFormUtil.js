@@ -52,6 +52,28 @@ const ReactJsonSchemaUtil = {
       }
     }
     return queryParamObject
+  },
+  getUploadedFileIdsWithNameArray (data) {
+    const uploadedFileIdsWithName = []
+    data.forEach(data => {
+      const temp = data.split('::')
+      uploadedFileIdsWithName.push({
+        fileId: temp[0],
+        name: temp[1]
+      })
+    })
+    return uploadedFileIdsWithName
+  },
+  async getBase64ImageData (url) {
+    const res = await DataService.getDataV1(url, { responseType: 'blob' })
+    const base64DataPromis = new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(res.data)
+      reader.onloadend = () => resolve(reader.result)
+    })
+    const base64Data = await base64DataPromis
+    console.log('--->', base64Data)
+    return base64Data
   }
 }
 

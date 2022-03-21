@@ -163,8 +163,10 @@ const commonAuthenticateSteps = async (dispatch, customer, isFirstTime, customer
   if (isUndefined(loanApplications) || loanApplications.length === 0) {
     // Create a new loan application for this user and set it
     const loanApplicationId = await createLoanApplication()
-    return dispatch.loanApplications.createLoanApplication({ loanApplicationId })
+    await dispatch.loanApplications.createLoanApplication({ loanApplicationId })
   }
+  // Need to set all these Data like gstn,pan,kyc,udyam etc
+  await dispatch.formDetails.updateAllAdditionalData()
 }
 const getAllLoanApplications = async (customerId) => {
   try {

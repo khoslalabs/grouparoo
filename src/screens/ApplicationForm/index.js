@@ -32,8 +32,8 @@ const ApplicationForm = ({ navigation, route }) => {
     loanApplicationId = currentLoanApplication.loanApplicationId
   }
   const loanApplicationStage = store.select.loanApplications.getLoanApplicationStage(state, { loanApplicationId })
-  const isCpv = loanApplicationStage.progress === config.LOAN_APP_PROGRESS_COMPLETE && loanApplicationStage.processState === config.APP_STAGE_CPV_INITIATED
-  const isAgreement = loanApplicationStage.progress === config.LOAN_APP_PROGRESS_COMPLETE && loanApplicationStage.processState === config.APP_STAGE_CPV_COMPLETE
+  const isCpv = loanApplicationStage?.progress === config.LOAN_APP_PROGRESS_COMPLETE && loanApplicationStage?.processState === config.APP_STAGE_CPV_INITIATED
+  const isAgreement = loanApplicationStage?.progress === config.LOAN_APP_PROGRESS_COMPLETE && loanApplicationStage?.processState === config.APP_STAGE_CPV_COMPLETE
   const isHelpShown = store.select.settings.getIsApplicationHelpShown(state)
   const isAgreementHelpShown = store.select.settings.getIsAgreementHelpShown(state)
   const showApplicationForm = (isHelpShown && !isAgreement) || (isAgreement && isAgreementHelpShown)
@@ -73,7 +73,8 @@ const ApplicationForm = ({ navigation, route }) => {
           alignment='center'
           accessoryLeft={BackAction}
         />
-        {!isHelpShown && (<LoanApplicationHelp onPress={onPress} />)}
+        {/* If Agreement is enabled, no need to show loan Application Help */}
+        {!isHelpShown && !isAgreement && (<LoanApplicationHelp onPress={onPress} />)}
         {showApplicationForm && (
           <ApplicationFormNative
             currentLoanApplication={currentLoanApplication}

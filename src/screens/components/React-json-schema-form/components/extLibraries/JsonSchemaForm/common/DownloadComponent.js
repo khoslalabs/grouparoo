@@ -1,8 +1,6 @@
 import React, { useContext, Fragment } from 'react'
-import { Text } from '@ui-kitten/components'
-
-import { Platform, PermissionsAndroid, StyleSheet } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { Button } from '@ui-kitten/components'
+import { Platform, PermissionsAndroid, StyleSheet, View } from 'react-native'
 import RNFetchBlob from 'rn-fetch-blob'
 import ResourceFactoryConstants from '../../../../services/ResourceFactoryConstants'
 import { LocalizationContext } from '../../../../translation/Translation'
@@ -10,8 +8,7 @@ import crashlytics from '@react-native-firebase/crashlytics'
 import Toast from 'react-native-toast-message'
 import ErrorUtil from '../../../../../../Errors/ErrorUtil'
 
-const DownloadComponent = ({ fileUrl, uploadedDocId, fileName }) => {
-  console.log(fileUrl)
+const DownloadComponent = ({ fileUrl, uploadedDocId, fileName, headers = {} }) => {
   const { translations } = useContext(LocalizationContext)
   const resourceFactoryConstants = new ResourceFactoryConstants()
   const url = uploadedDocId
@@ -51,8 +48,12 @@ const DownloadComponent = ({ fileUrl, uploadedDocId, fileName }) => {
   const downloadFile = () => {
     const date = new Date()
     const FILE_URL = fileUrl
-    let file_ext = getFileExtention(FILE_URL)
-    file_ext = '.' + file_ext[0]
+    let fileExt = getFileExtention(FILE_URL)
+    if (!fileExt) {
+      fileExt = '.' + fileExt[0]
+    } else {
+      fileExt = '.pdf'
+    }
     const { config, fs } = RNFetchBlob
     const RootDir = fs.dirs.DownloadDir
     const options = {
@@ -62,14 +63,14 @@ const DownloadComponent = ({ fileUrl, uploadedDocId, fileName }) => {
           RootDir +
           '/file_' +
           Math.floor(date.getTime() + date.getSeconds() / 2) +
-          file_ext,
+          fileExt,
         description: translations['download.downloading'],
         notification: true,
         useDownloadManager: true
       }
     }
     config(options)
-      .fetch('GET', url)
+      .fetch('GET', url, headers)
       .then((res) => {
         Toast.show({
           type: 'success',
@@ -92,20 +93,21 @@ const DownloadComponent = ({ fileUrl, uploadedDocId, fileName }) => {
   }
   return (
     <>
-      <TouchableOpacity onPress={checkPermission}>
-        <Text status='primary' style={styles.downloadText}>
-          {/* Download {fileName ? fileName : ""} */}
+      <View style={styles.container}>
+        <Button style={styles.button} appearance='outline' onPress={checkPermission}>
           {translations['download.downloadText']}
-        </Text>
-      </TouchableOpacity>
+        </Button>
+      </View>
     </>
   )
 }
 
 const styles = StyleSheet.create({
-  downloadText: {
-    fontWeight: 'bold',
-    marginLeft: 4
+  container: {
+    flex: 1
+  },
+  button: {
+    marginVertical: 5
   }
 })
 
