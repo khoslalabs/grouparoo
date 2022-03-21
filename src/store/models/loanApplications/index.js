@@ -128,9 +128,9 @@ const loanApplications = {
       state.applicationStage[data.loanApplicationId].status = status
       return state
     },
-    setLoanAgreementId: (state, { loanApplicationId, loanAgreementUrl }) => {
+    setLoanAgreementId: (state, { loanApplicationId, loanAgreementId }) => {
       const loanApplication = state.applications[loanApplicationId]
-      loanApplication.loanAgreementUrl = loanAgreementUrl
+      loanApplication.loanAgreementId = loanAgreementId
       state.applications[loanApplicationId] = Object.assign({}, loanApplication)
       return state
     }
@@ -170,8 +170,8 @@ const loanApplications = {
     async generateLoanAgreement ({ loanApplicationId }, rootState) {
       try {
         const executionId = await apiService.appApi.loanApplication.loanAgreement.execute(loanApplicationId)
-        const loanAgreementUrl = await apiService.appApi.loanApplication.loanAgreement.get(executionId)
-        dispatch.loanApplications.setLoanAgreementId({ loanAgreementUrl, loanApplicationId })
+        const loanAgreementId = await apiService.appApi.loanApplication.loanAgreement.get(executionId)
+        dispatch.loanApplications.setLoanAgreementId({ loanAgreementId, loanApplicationId })
       } catch (e) {
         console.log(e)
         throw new Error('CANNOT_GET_LOAN_AGREEMENT_ID')
