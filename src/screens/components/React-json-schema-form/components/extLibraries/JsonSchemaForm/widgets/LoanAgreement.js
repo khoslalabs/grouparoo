@@ -5,24 +5,20 @@ import DownloadComponent from '../common/DownloadComponent'
 import { LocalizationContext } from '../../../../translation/Translation'
 import { useSelector } from 'react-redux'
 import PdfPreviewComponent from '../common/PdfPreviewComponent'
-import { config } from '../../../../../../../config'
-const headers = {
-  'X-Appwrite-Project': config.appWrite.projectId,
-  'X-Appwrite-Key': config.appWrite.key,
-  'Content-Type': 'application/pdf'
-}
-
+import ResourceFactoryConstants from '../../../../services/ResourceFactoryConstants'
+const resourceFactoryConstants = new ResourceFactoryConstants()
 const LoanAgreementWidget = (props) => {
   const { translations } = useContext(LocalizationContext)
   const [show, setShow] = useState(true)
-  const loanAgreementUrl = useSelector(state => state.loanApplications.applications[state.loanApplications.currentLoanApplicationId].loanAgreementUrl)
+  const loanAgreementId = useSelector(state => state.loanApplications.applications[state.loanApplications.currentLoanApplicationId].loanAgreementId)
+  const loanAgreentUrl = `${resourceFactoryConstants.constants.lending.downloadFile}${loanAgreementId}`
   return (
     <>
       <View style={styles.container}>
         {show && <Spinner />}
-        <PdfPreviewComponent agreementUrl={loanAgreementUrl} onLoadComplete={setShow} />
+        <PdfPreviewComponent agreementUrl={loanAgreentUrl} onLoadComplete={setShow} />
       </View>
-      <DownloadComponent fileUrl={loanAgreementUrl} headers={headers} />
+      <DownloadComponent uploadedDocId={loanAgreementId} />
       <CheckBox
         checked={props.value && props.value === 'Yes' ? true : false}
         style={{ marginTop: 5 }}

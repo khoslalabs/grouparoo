@@ -10,6 +10,7 @@ import { View, Image } from 'react-native'
 import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen'
 import { LocalizationContext } from '../../../../translation/Translation'
 import isEmpty from 'lodash.isempty'
+import { useSelector } from 'react-redux'
 
 const accountTypes = ['Savings', 'Current']
 const BankAccountConfirmationWidget = (props) => {
@@ -19,9 +20,15 @@ const BankAccountConfirmationWidget = (props) => {
   const styles = useStyleSheet(themedStyles)
   const [selectedIndex, setSelectedIndex] = useState()
   const bankAccountTypeDisplayValue = selectedIndex ? accountTypes[selectedIndex.row] : props.value
+  const bankStatementData = useSelector(state => state.formDetails.bankStatementData)
+  const bankName = bankStatementData?.statement?.bank_name || 'HDFC Bank'
+  const accountHolderName = bankStatementData?.statement?.identity?.name || 'Saurabh Kumar'
+  const accountNo = bankStatementData?.statement?.identity?.account_number || '8766863443'
+  const accounts = bankStatementData?.transaction_details?.accounts
+  const ifsc = accounts && accounts.length > 0 ? accounts[0].ifsc : 'HDFC002497'
 
-  const renderOption = (title) => (
-    <SelectItem title={title} />
+  const renderOption = (title, index) => (
+    <SelectItem title={title} key={index} />
   )
   useEffect(() => {
     if (!isEmpty(value)) {
@@ -44,7 +51,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.holder.name']}</Text>
             </View>
             <View>
-              <Text category='h6' status='primary'>Saurabh Kumar</Text>
+              <Text category='h6' status='primary'>{accountHolderName}</Text>
             </View>
           </View>
           <View style={styles.line} />
@@ -53,7 +60,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.bank.name']}</Text>
             </View>
             <View>
-              <Text category='h6' status='primary'>HDFC Bank</Text>
+              <Text category='h6' status='primary'>{bankName}</Text>
             </View>
           </View>
           <View style={styles.line} />
@@ -62,7 +69,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.account.number']}</Text>
             </View>
             <View>
-              <Text category='h6' status='primary'>55445454545454</Text>
+              <Text category='h6' status='primary'>{accountNo}</Text>
             </View>
           </View>
           <View style={styles.line} />
@@ -71,7 +78,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.ifsc']}</Text>
             </View>
             <View>
-              <Text category='h6' status='primary'>HDFC00002497</Text>
+              <Text category='h6' status='primary'>{ifsc}</Text>
             </View>
           </View>
           <View style={styles.line} />

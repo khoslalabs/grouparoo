@@ -8,7 +8,7 @@ import crashlytics from '@react-native-firebase/crashlytics'
 import Toast from 'react-native-toast-message'
 import ErrorUtil from '../../../../../../Errors/ErrorUtil'
 
-const DownloadComponent = ({ fileUrl, uploadedDocId, fileName, headers = {} }) => {
+const DownloadComponent = ({ fileUrl, uploadedDocId, fileName }) => {
   const { translations } = useContext(LocalizationContext)
   const resourceFactoryConstants = new ResourceFactoryConstants()
   const url = uploadedDocId
@@ -47,9 +47,8 @@ const DownloadComponent = ({ fileUrl, uploadedDocId, fileName, headers = {} }) =
 
   const downloadFile = () => {
     const date = new Date()
-    const FILE_URL = fileUrl
-    let fileExt = getFileExtention(FILE_URL)
-    if (!fileExt) {
+    let fileExt = getFileExtention(fileName)
+    if (fileExt) {
       fileExt = '.' + fileExt[0]
     } else {
       fileExt = '.pdf'
@@ -61,7 +60,7 @@ const DownloadComponent = ({ fileUrl, uploadedDocId, fileName, headers = {} }) =
       addAndroidDownloads: {
         path:
           RootDir +
-          '/file_' +
+          '/Loan_Agreement_' +
           Math.floor(date.getTime() + date.getSeconds() / 2) +
           fileExt,
         description: translations['download.downloading'],
@@ -70,7 +69,7 @@ const DownloadComponent = ({ fileUrl, uploadedDocId, fileName, headers = {} }) =
       }
     }
     config(options)
-      .fetch('GET', url, headers)
+      .fetch('GET', url)
       .then((res) => {
         Toast.show({
           type: 'success',
