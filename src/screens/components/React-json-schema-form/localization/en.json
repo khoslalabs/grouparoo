@@ -119,5 +119,13 @@
   "download.downloadText": "Download",
   "text.okay":"OKAY",
   "loan.agreement.consent.message":"I agree to the terms and conditions",
-  "mobile.otp.validate":"Mobile has been validated successfully" 
+  "mobile.otp.validate":"Mobile has been validated successfully",
+  "bank.details.title": "Bank A/c details",
+  "bank.details.decription": "Your loan amount will be credited in the following Bank a/c.",
+  "bank.details.holder.name": "A/c Holder’s Name",
+  "bank.details.bank.name": "Bank Name",
+  "bank.details.account.number": "A/c Number",
+  "bank.details.ifsc": "IFSC",
+  "bank.details.account.type": "A/c Type",
+  "bank.details.hint": "If the above details are correct, please click on the below button" 
 }

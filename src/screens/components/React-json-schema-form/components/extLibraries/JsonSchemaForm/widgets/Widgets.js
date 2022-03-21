@@ -28,6 +28,7 @@ import CIBILOtpWidget from './CIBILOtpWidget'
 import TermsAndConditionsWidget from './TermsAndConditionWidget'
 import EsignInputWidget from './EsignInputWidget'
 import EnachWidget from './EnachWidget'
+import BankAccountConfirmationWidget from './BankAccountConfirmationWidget'
 export const Widgets = {
   TextWidget,
   EmailWidget,
@@ -53,7 +54,7 @@ export const Widgets = {
   'np-udyam-aadhar-input-widget': UdyamAadharInputWidget,
   'np-selfie-input-widget': SelfieWidget,
   'np-loan-offer-widget': LoanOffersWidget,
-  'np-download-loan-agreement-widget': LoanAgreementWidget,
+  'np-download-loan-agreement-widget': BankAccountConfirmationWidget,
   'np-aadhar-mask-upload-front-widget': AadhaarMaskWidgetFront,
   'np-aadhar-mask-upload-back-widget': AadhaarMaskWidgetBack,
   'np-kyc-widget': OKYCWidget,
@@ -61,4 +62,5 @@ export const Widgets = {
   'np-terms-and-condition-widget': TermsAndConditionsWidget,
   'np-esign-input-widget': EsignInputWidget,
   'np-enach-widget': EnachWidget,
+  'np-bank-account-details-widget': BankAccountConfirmationWidget
 }
