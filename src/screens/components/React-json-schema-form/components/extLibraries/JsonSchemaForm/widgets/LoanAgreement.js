@@ -16,7 +16,6 @@ const LoanAgreementWidget = (props) => {
   const { translations } = useContext(LocalizationContext)
   const [show, setShow] = useState(true)
   const loanAgreementUrl = useSelector(state => state.loanApplications.applications[state.loanApplications.currentLoanApplicationId].loanAgreementUrl)
-  console.log(loanAgreementUrl)
   return (
     <>
       <View style={styles.container}>
