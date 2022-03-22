@@ -46,7 +46,7 @@ const LoanOfferCard = ({
   const styles = useStyleSheet(themedStyles)
   return (
     <View style={styles.absoluteViewContainer}>
-      <Card style={styles.cardContainer} onPress={() => onSelect(loanOffer.offerId)}>
+      <Card style={styles.cardContainer} onPress={() => onSelect(loanOffer.offerId, loanEMI)}>
         <View style={styles.contentContainer}>
           <View style={styles.cardTitleContainer}>
             {selected && (<LoanOfferIcons.IconSelected />)}

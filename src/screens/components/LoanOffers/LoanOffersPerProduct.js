@@ -15,7 +15,7 @@ const LoanOffersPerProduct = ({
   const { translations } = useContext(LocalizationContext)
   const { offerId, productId } = selectedLoanOffer
   const isThisProduct = productId === loanOption.productId
-  const onOfferSelect = (offerId) => {
+  const onOfferSelect = (offerId, emi) => {
     const tempselctedLoanOffer = loanOption?.offers?.find(
       (item) => offerId === item.offerId
     )
@@ -25,6 +25,7 @@ const LoanOffersPerProduct = ({
       finalLoanTenure: tempselctedLoanOffer?.tenure,
       finalInstallmentFrequency: tempselctedLoanOffer?.defaultRepayment,
       finalLoanAmount: loanAmount,
+      finalEmiAmount: emi,
       unit: tempselctedLoanOffer?.unit
     })
   }

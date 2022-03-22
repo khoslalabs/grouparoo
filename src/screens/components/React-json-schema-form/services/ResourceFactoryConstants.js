@@ -29,6 +29,11 @@ class ResourceFactoryConstants {
         "payment/createSubscription",
         ""
       ),
+      createSeamlessSubscription: this.getCustomUrl(
+        this.adapterServiceUrl,
+        "payment/createSeamlessSubscription",
+        ""
+      )
     },
     forms: {
       getSchemaAndStepsByName: this.getApiUrl("getSchemaAndStepsByName"),

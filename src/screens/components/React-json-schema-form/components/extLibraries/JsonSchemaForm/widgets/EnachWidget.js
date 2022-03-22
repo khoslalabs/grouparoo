@@ -14,8 +14,15 @@ import crashlytics from '@react-native-firebase/crashlytics'
 import ErrorUtil from '../../../../../../Errors/ErrorUtil'
 import dayjs from 'dayjs'
 import FormSuccess from '../../../Forms/FormSuccess'
+import { config } from '../../../../../../../config'
 const resourceFactoryConstants = new ResourceFactoryConstants()
-
+const dayjsMapper = {
+  [config.FREQ_MONTHLY]: 'month',
+  [config.FREQ_DAILY]: 'day',
+  [config.FREQ_WEEKLY]: 'week',
+  [config.FREQ_YEARLY]: 'year',
+  [config.FREQ_HALFYEARLY]: 'year'
+}
 const getRandomId = () => String(Math.floor(100000 + Math.random() * 900000))
 
 const createPlan = async (planObject) => {
@@ -31,24 +38,10 @@ const createPlan = async (planObject) => {
   }
 }
 
-const createSubscription = async (
-  formName,
-  planId,
-  applicationId,
-  primaryPhone,
-  expiresOn,
-  appUrl
-) => {
+const createSubscription = async (subscriptionObj) => {
   const res = await DataService.postData(
-    resourceFactoryConstants.constants.enach.createSubscription,
-    {
-      subscriptionId: `${formName}_${getRandomId()}`,
-      planId: planId,
-      customerEmail: 'nplending@gmail.com',
-      customerPhone: primaryPhone || '93465577484',
-      expiresOn: expiresOn,
-      returnUrl: appUrl
-    }
+    resourceFactoryConstants.constants.enach.createSeamlessSubscription,
+    subscriptionObj
   )
   const data = res.data
   if (data.status === 'SUCCESS') {
@@ -57,11 +50,7 @@ const createSubscription = async (
     throw new Error('SUBSCRIPTION_CREATION_FAILED')
   }
 }
-
 const EnachWidget = (props) => {
-  const applicationId = useSelector(
-    (state) => state?.formDetails?.formData?.loanApplicationId
-  )
   const jsonSchema = useSelector((state) => state?.formDetails?.schema)
   const formName = jsonSchema?.formName
   const [isRetryEnabled, setIsRetryEnabled] = useState(false)
@@ -73,26 +62,46 @@ const EnachWidget = (props) => {
   )
   const [appUrl, setAppUrl] = useState(null)
   const [planId, setPlanId] = useState(getRandomId())
-  const primaryPhone = useSelector(
-    (state) => state.formDetails.formData.primaryPhone
-  )
+  const bankStatementData = useSelector(state => state.formDetails.bankStatementData)
+  const accountType = useSelector(state => state.formDetails.formData.bankAccountType)
+  const { loanOffer, email, primaryPhone } = useSelector(state => state.formDetails.formData)
+  const bankName = bankStatementData?.statement?.bank_name || 'kotak'
+  // using bank name, need to get Bank Id
+  const accountHolderName = bankStatementData?.statement?.identity?.name || 'VISHAL SHAW'
+  const accountNo = bankStatementData?.statement?.identity?.account_number || '3512392038'
 
   const planObject = {
     planId: planId,
     planName: `${formName}_${getRandomId()}`,
     type: 'PERIODIC',
-    amount: 100,
-    intervalType: 'month',
-    intervals: 12
+    amount: loanOffer.finalEmiAmount || 100, // Need to set it from its loan Offer Data, emi amount
+    intervalType: dayjsMapper[loanOffer.finalInstallmentFrequency],
+    intervals: loanOffer.finalLoanTenure
   }
 
   const expiresOn = `${dayjs()
     .add(30 * planObject.intervals, 'day')
-    .format('YYYY-MM-DD')} 23:59:59`
+    .format('YYYY-MM-DD')}`
 
   const expiresOnForUi = `${dayjs()
     .add(30 * planObject.intervals, 'day')
     .format('DD-MMM-YYYY')}`
+
+  const subscriptionObject = {
+    subscriptionId: `${formName}_${getRandomId()}`,
+    planId: planId,
+    customerEmail: email,
+    customerPhone: primaryPhone,
+    expiresOn: expiresOn,
+    returnUrl: appUrl,
+    paymentOption: 'emandate',
+    emandate_accountHolder: accountHolderName,
+    emandate_accountNumber: accountNo,
+    emandate_bankId: 'KKBK', // Need to fetch from DB (Mapping is pending)
+    emandate_authMode: 'netbanking',
+    emandate_accountType: accountType?.toUpperCase()
+  }
+
   // Automatically Starts creating Plan
   useEffect(() => {
     if (!props.value) {
@@ -144,14 +153,7 @@ const EnachWidget = (props) => {
     onSuccess: () => {
       setIsRetryEnabled(false)
       setIsPlanCreated(true)
-      useCreateSubscription.run(
-        formName,
-        planId,
-        applicationId,
-        primaryPhone,
-        expiresOn,
-        appUrl
-      )
+      useCreateSubscription.run(subscriptionObject)
     },
     onError: (error) => {
       setIsRetryEnabled(true)

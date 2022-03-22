@@ -106,7 +106,6 @@ const EsignInputWidget = (props) => {
         reader.onloadend = function () {
           const base64data = reader.result
           setFile(base64data.split(',')[1])
-          debugger
         }
       } else {
         throw new Error('ERROR_WHILE_DOWNLOADING_BLOB')
