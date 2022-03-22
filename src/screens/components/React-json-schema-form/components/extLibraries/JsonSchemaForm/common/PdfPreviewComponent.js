@@ -6,6 +6,15 @@ import DataService from '../../../../services/DataService'
 import Pdf from 'react-native-pdf'
 import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen'
 const META_DATA_PDF = 'data:application/pdf;base64'
+const getBase64Data = async (blobData) => {
+  const reader = new FileReader()
+  await new Promise((resolve, reject) => {
+    reader.onload = resolve
+    reader.onerror = reject
+    reader.readAsDataURL(blobData)
+  })
+  return reader.result
+}
 const PdfPreviewComponent = ({ agreementUrl, onLoadComplete }) => {
   const [pdfBase64, setPdfBase64] = useState()
   const useGetBase64Pdf = useRequest(async (agreementUrl) => {
@@ -13,12 +22,7 @@ const PdfPreviewComponent = ({ agreementUrl, onLoadComplete }) => {
       const res = await DataService.getDataV1(agreementUrl, {
         responseType: 'blob'
       })
-      const base64DataPromis = new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.readAsDataURL(res.data)
-        reader.onloadend = () => resolve(reader.result)
-      })
-      const base64Data = await base64DataPromis
+      const base64Data = await getBase64Data(res.data)
       return base64Data
     } catch (error) {
       console.log('Error while laoding blob for agreement', error)

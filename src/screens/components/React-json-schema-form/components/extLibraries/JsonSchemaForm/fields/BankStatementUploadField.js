@@ -50,7 +50,7 @@ const uploadBankStatement = async (dispatch, files) => {
         file.uploading = false
       })
       await dispatch.formDetails.setBankStatementFiles(files)
-      await dispatch.formDetails.setBankStatementData(responseData.data)
+      await dispatch.formDetails.setBankStatementData({ statement: responseData?.data?.statement, transaction_details: responseData?.data?.transaction_details })
       return { uploadedDocIds }
     } else {
       throw new Error('INVALID_BANK_STATEMENT')
