@@ -77,7 +77,6 @@ const ApplicationForm = (props) => {
       } else if (event.errors.length === 0) {
         setLiveValidate(false)
       }
-      dispatch.formDetails.setFormData(formData)
     }
   }
 
