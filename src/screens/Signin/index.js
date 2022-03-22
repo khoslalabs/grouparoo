@@ -85,7 +85,7 @@ const SignIn = ({ navigation, route }) => {
     }
   }
   const renderError = () => {
-    return (<Text status='danger' category='p1'>{translations['auth.invalid.email']}</Text>)
+    return (<Text category='p2' status='danger'>{translations['auth.invalid.email']}</Text>)
   }
   const onSignUpButtonPress = () => {
     navigation.navigate('SignUp', {})
@@ -125,7 +125,7 @@ const SignIn = ({ navigation, route }) => {
           value={password}
           status={(showError || !isPasswordValid) && 'danger'}
           onChangeText={setPassword}
-          caption={() => (<Text appearance='hint' status={!isPasswordValid ? 'danger' : 'basic'} style={styles.captionText}>{translations['auth.password.criteria']}</Text>)}
+          caption={() => (<Text appearance='hint' category='p2' status={!isPasswordValid ? 'danger' : 'basic'} style={styles.captionText}>{translations['auth.password.criteria']}</Text>)}
         />
       </View>
       {
