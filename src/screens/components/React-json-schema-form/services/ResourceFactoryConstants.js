@@ -130,7 +130,7 @@ class ResourceFactoryConstants {
     },
     bankStatement: {
       uploadBankStatement: this.getCustomUrl(
-        "https://novo-adapter-qa.novopay.in/",
+        this.adapterServiceUrl,
         "",
         "v1/api/bankstatement"
       ),

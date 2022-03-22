@@ -23,6 +23,7 @@ const LoanOffers = ({
     offerId,
     finalLoanTenure,
     finalInstallmentFrequency,
+    finalEmiAmount,
     unit
   }) => {
     onOfferSelected({
@@ -31,6 +32,7 @@ const LoanOffers = ({
       finalLoanAmount: loanAmount,
       finalLoanTenure,
       finalInstallmentFrequency,
+      finalEmiAmount,
       unit
     })
   }

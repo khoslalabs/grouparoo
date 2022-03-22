@@ -72,7 +72,6 @@ const ReactJsonSchemaUtil = {
       reader.onloadend = () => resolve(reader.result)
     })
     const base64Data = await base64DataPromis
-    console.log('--->', base64Data)
     return base64Data
   }
 }
