@@ -13,6 +13,7 @@ import ErrorUtil from '../../../../../../Errors/ErrorUtil'
 import { useRequest } from 'ahooks'
 import isEmpty from 'lodash.isempty'
 import FormSuccess from '../../../Forms/FormSuccess'
+import { useSelector } from 'react-redux'
 
 const uploadToAppWrite = async (file, url) => {
   try {
@@ -50,10 +51,10 @@ const EsignInputWidget = (props) => {
   const [isEsignDone, setIsEsignDone] = useState(!!props.value)
   const [file, setFile] = useState('')
   const [appUrl, setAppUrl] = useState(null)
+  const loanAgreementId = useSelector(state => state.loanApplications.applications[state.loanApplications.currentLoanApplicationId].loanAgreementId)
+  const loanAgreentUrl = `${resourceFactoryConstants.constants.lending.downloadFile}${loanAgreementId}`
 
-  const fileUrl =
-    props?.schema?.url ||
-    'https://www.agstartups.org.br/uploads/2020/07/sample.pdf'
+  const fileUrl = loanAgreentUrl
 
   useEffect(async () => {
     const initialUrl = await Linking.getInitialURL()
@@ -105,6 +106,7 @@ const EsignInputWidget = (props) => {
         reader.onloadend = function () {
           const base64data = reader.result
           setFile(base64data.split(',')[1])
+          debugger
         }
       } else {
         throw new Error('ERROR_WHILE_DOWNLOADING_BLOB')
