@@ -51,7 +51,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.holder.name']}</Text>
             </View>
             <View>
-              <Text category='h6' status='primary'>{accountHolderName}</Text>
+              <Text category='h6' appearance='default' >{accountHolderName}</Text>
             </View>
           </View>
           <View style={styles.line} />
@@ -60,7 +60,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.bank.name']}</Text>
             </View>
             <View>
-              <Text category='h6' status='primary'>{bankName}</Text>
+              <Text category='h6' appearance='default'>{bankName}</Text>
             </View>
           </View>
           <View style={styles.line} />
@@ -69,7 +69,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.account.number']}</Text>
             </View>
             <View>
-              <Text category='h6' status='primary'>{accountNo}</Text>
+              <Text category='h6' appearance='default'>{accountNo}</Text>
             </View>
           </View>
           <View style={styles.line} />
@@ -78,7 +78,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.ifsc']}</Text>
             </View>
             <View>
-              <Text category='h6' status='primary'>{ifsc}</Text>
+              <Text category='h6' appearance='default'>{ifsc}</Text>
             </View>
           </View>
           <View style={styles.line} />

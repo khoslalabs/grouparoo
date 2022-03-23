@@ -74,7 +74,7 @@ const EnachWidget = (props) => {
     planId: planId,
     planName: `${formName}_${getRandomId()}`,
     type: 'PERIODIC',
-    amount: loanOffer.finalEmiAmount || 100, // Need to set it from its loan Offer Data, emi amount
+    amount: loanOffer.finalEmiAmount, // Need to set it from its loan Offer Data, emi amount
     intervalType: dayjsMapper[loanOffer.finalInstallmentFrequency],
     intervals: loanOffer.finalLoanTenure
   }
@@ -199,6 +199,11 @@ const EnachWidget = (props) => {
       }
     ])
   }
+  const retryHandler = () => {
+    const id = getRandomId()
+    setPlanId(id)
+    useCreatePlan.run({ ...planObject, planId: id })
+  }
   return (
     <>
       <LoadingSpinner
@@ -207,12 +212,7 @@ const EnachWidget = (props) => {
       {isRetryEnabled && (
         <Button
           appearance='outline'
-          onPress={() => {
-            setPlanId((prev) =>
-              String(Math.floor(100000 + Math.random() * 900000))
-            )
-            useCreatePlan.run(planObject)
-          }}
+          onPress={retryHandler}
         >
           Retry
         </Button>

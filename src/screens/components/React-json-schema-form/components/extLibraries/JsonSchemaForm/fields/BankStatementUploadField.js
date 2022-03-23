@@ -28,7 +28,7 @@ const getNewFileAdded = (newFiles, oldFiles = []) => {
   return addedFiles
 }
 
-const uploadBankStatement = async (dispatch, files) => {
+const uploadBankStatement = async (dispatch, files, currentLoanApplicationId) => {
   // Code to upload bank Statement
   const resourceFactoryConstants = new ResourceFactoryConstants()
   const url = resourceFactoryConstants.constants.bankStatement.uploadBankStatement
@@ -36,6 +36,7 @@ const uploadBankStatement = async (dispatch, files) => {
   for (const file of files) {
     formData.append('file', file)
   }
+  formData.append('currentLoanApplicationId', currentLoanApplicationId)
   try {
     const res = await DataService.postData(url, formData)
     const responseData = res.data
@@ -50,7 +51,7 @@ const uploadBankStatement = async (dispatch, files) => {
         file.uploading = false
       })
       await dispatch.formDetails.setBankStatementFiles(files)
-      await dispatch.formDetails.setBankStatementData({ statement: responseData?.data?.statement, transaction_details: responseData?.data?.transaction_details })
+      await dispatch.formDetails.setBankStatementData({ statement: responseData?.data?.statement, transaction_details: { accounts: responseData?.data?.transaction_details?.accounts } })
       return { uploadedDocIds }
     } else {
       throw new Error('INVALID_BANK_STATEMENT')
@@ -96,6 +97,7 @@ const BankStatementUploadField = (props) => {
   const store = useStore()
   const state = useSelector(state => state)
   // need a copy of bank statement files and not direct reference to state
+  const currentLoanApplicationId = state.loanApplications.currentLoanApplicationId
   const bankStatementFiles = store.select.formDetails.getBankStatementFiles(state)
   const bankStaementFilesCopy = JSON.parse(JSON.stringify(bankStatementFiles))
   const [isUploadDone, setIsUploadDone] = useState(false)
@@ -155,7 +157,7 @@ const BankStatementUploadField = (props) => {
     setIsUploadDone(false)
     const newFilesAdded = getNewFileAdded(allFiles, bankStatementFiles)
     if (newFilesAdded.length > 0) {
-      uploadFiles.run(dispatch, newFilesAdded)
+      uploadFiles.run(dispatch, newFilesAdded, currentLoanApplicationId)
     }
   }
   return (
