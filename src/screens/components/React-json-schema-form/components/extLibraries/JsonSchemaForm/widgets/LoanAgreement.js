@@ -1,4 +1,4 @@
-import { CheckBox, Spinner } from '@ui-kitten/components'
+import { CheckBox } from '@ui-kitten/components'
 import React, { useContext, useState } from 'react'
 import { StyleSheet, Dimensions, View } from 'react-native'
 import DownloadComponent from '../common/DownloadComponent'
@@ -6,6 +6,7 @@ import { LocalizationContext } from '../../../../translation/Translation'
 import { useSelector } from 'react-redux'
 import PdfPreviewComponent from '../common/PdfPreviewComponent'
 import ResourceFactoryConstants from '../../../../services/ResourceFactoryConstants'
+import LoadingSpinner from '../../../../../LoadingSpinner'
 const resourceFactoryConstants = new ResourceFactoryConstants()
 const LoanAgreementWidget = (props) => {
   const { translations } = useContext(LocalizationContext)
@@ -14,8 +15,8 @@ const LoanAgreementWidget = (props) => {
   const loanAgreentUrl = `${resourceFactoryConstants.constants.lending.downloadFile}${loanAgreementId}`
   return (
     <>
+      <LoadingSpinner visible={show} />
       <View style={styles.container}>
-        {show && <Spinner />}
         <PdfPreviewComponent agreementUrl={loanAgreentUrl} onLoadComplete={setShow} />
       </View>
       <DownloadComponent uploadedDocId={loanAgreementId} />

@@ -1,6 +1,6 @@
-import { Button } from '@ui-kitten/components'
+import { Button, Text } from '@ui-kitten/components'
 import React, { useContext, useEffect, useState } from 'react'
-import { Alert, Linking } from 'react-native'
+import { Alert, Linking, StyleSheet, Image, View } from 'react-native'
 import Toast from 'react-native-toast-message'
 import DataService from '../../../../services/DataService'
 import ResourceFactoryConstants from '../../../../services/ResourceFactoryConstants'
@@ -14,6 +14,7 @@ import { useRequest } from 'ahooks'
 import isEmpty from 'lodash.isempty'
 import FormSuccess from '../../../Forms/FormSuccess'
 import { useSelector } from 'react-redux'
+import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen'
 
 const uploadToAppWrite = async (file, url) => {
   try {
@@ -186,7 +187,9 @@ const EsignInputWidget = (props) => {
   })
 
   useEffect(() => {
-    useTodownFileBlob.run(fileUrl)
+    if (!props.value) {
+      useTodownFileBlob.run(fileUrl)
+    }
   }, [])
 
   useEffect(async () => {
@@ -223,14 +226,22 @@ const EsignInputWidget = (props) => {
     <>
       <LoadingSpinner visible={useEsignProcessHandler.loading || useTodownFileBlob.loading} />
       {!isEsignDone && (
-        <Button
-          appearance='outline'
-          status='primary'
-          onPress={esignProcessHandler}
-          style={{ marginTop: 5 }}
-        >
-          {translations['esign.start.esign']}
-        </Button>
+        <View style={styles.container}>
+          <View style={styles.iconContainer}>
+            <Image source={require('../../../../../../../assets/images/esign-icon.png')} style={styles.image} resizeMode='center' />
+          </View>
+          <View style={styles.card}>
+            <Button
+              appearance='outline'
+              status='primary'
+              onPress={esignProcessHandler}
+              style={{ marginTop: 5 }}
+            >
+              {translations['esign.start.esign']}
+            </Button>
+            <Text appearance='hint' category='label'>{translations['esign.details.hint']}</Text>
+          </View>
+        </View>
       )}
       {isEsignDone && (
         <FormSuccess description={translations['esign.successfull']} isButtonVisible={false} />
@@ -239,4 +250,37 @@ const EsignInputWidget = (props) => {
   )
 }
 
+const styles = StyleSheet.create({
+  iconContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: heightPercentageToDP('70%')
+  },
+  card: {
+    width: widthPercentageToDP('85%'),
+    marginBottom: 30
+  },
+  image: {
+    width: widthPercentageToDP('45%'),
+    height: widthPercentageToDP('45%')
+  },
+  line: {
+    marginTop: 10,
+    borderBottomColor: '#F0F0FF',
+    borderBottomWidth: 1
+  },
+  rowDesign: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10
+  }
+})
 export default EsignInputWidget

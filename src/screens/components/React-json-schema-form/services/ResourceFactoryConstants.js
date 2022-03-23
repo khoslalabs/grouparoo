@@ -19,17 +19,17 @@ class ResourceFactoryConstants {
     },
     enach: {
       createPlan: this.getCustomUrl(
-        this.adapterServiceUrl,
+        'https://novo-adapter-dev.novopay.in/',
         "payment/createPlan",
         ""
       ),
       createSubscription: this.getCustomUrl(
-        this.adapterServiceUrl,
+        'https://novo-adapter-dev.novopay.in/',
         "payment/createSubscription",
         ""
       ),
       createSeamlessSubscription: this.getCustomUrl(
-        this.adapterServiceUrl,
+        'https://novo-adapter-dev.novopay.in/',
         "payment/createSeamlessSubscription",
         ""
       )

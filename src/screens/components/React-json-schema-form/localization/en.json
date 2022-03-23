@@ -95,13 +95,13 @@
   "okyc.facematch.success": "Your Aadhaar KYC has been successfully completed",
   "okyc.selfie.uploadText": "Click to take your Selfie",
   "esign.unexpected.error":"Unexpected error occurred. Please try again",
-  "esign.title":"E-Sign",
-  "esign.start.esign":"Start Esign Process",
+  "esign.title":"Esign",
+  "esign.start.esign":"Esign",
   "esign.redirect":"Redirecting to e-sign website to complete esign process",
   "esign.successfull":" eSign has been done successfully.",
-  "enach.title":"eNach",
+  "enach.title":"Emandate",
   "enach.unexpected.error":"Unexpected error occurred. Please try again",
-  "enach.start":"eMandate",
+  "enach.start":"Emandate",
   "enach.redirect":"Redirecting to eMandate website to complete eMandate process",
   "enach.successfull":" eMandate has been done successfully.",
   "enach.subscription.done": "Subscription has been created successfully",
@@ -127,5 +127,7 @@
   "bank.details.account.number": "A/c Number",
   "bank.details.ifsc": "IFSC",
   "bank.details.account.type": "A/c Type",
-  "bank.details.hint": "If the above details are correct, please click on the below button" 
+  "bank.details.hint": "If the above details are correct, please click on the below button",
+  "enach.details.hint": "If the above details are correct, please click on the eMandate",
+  "esign.details.hint": "Please click on above button to esign the loan agreement" 
 }

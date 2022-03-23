@@ -2,7 +2,7 @@ import { Button, Text } from '@ui-kitten/components'
 import React, { useContext, useEffect, useState } from 'react'
 import DataService from '../../../../services/DataService'
 import ResourceFactoryConstants from '../../../../services/ResourceFactoryConstants'
-import { Linking, View, StyleSheet, Alert } from 'react-native'
+import { Linking, View, StyleSheet, Alert, Image } from 'react-native'
 import isEmpty from 'lodash.isempty'
 import { useSelector } from 'react-redux'
 import LoadingSpinner from '../../../../../LoadingSpinner'
@@ -15,6 +15,7 @@ import ErrorUtil from '../../../../../../Errors/ErrorUtil'
 import dayjs from 'dayjs'
 import FormSuccess from '../../../Forms/FormSuccess'
 import { config } from '../../../../../../../config'
+import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen'
 const resourceFactoryConstants = new ResourceFactoryConstants()
 const dayjsMapper = {
   [config.FREQ_MONTHLY]: 'month',
@@ -217,48 +218,64 @@ const EnachWidget = (props) => {
           Retry
         </Button>
       )}
-      {isPlanCreated && !isSubscriptionCreated && !isRetryEnabled && (
-        <>
-          <View style={styles.row}>
-            <Text category='h6' style={styles.label}>
-              {translations['enach.planType']}
-            </Text>
-            <Text appearance='hint'>
-              {planObject.type === 'PERIODIC' ? 'Periodic' : 'No Data'}
-            </Text>
+      {!isSubscriptionCreated && isPlanCreated && !isRetryEnabled && (
+        <View style={styles.container}>
+          <View style={styles.iconContainer}>
+            <Image source={require('../../../../../../../assets/images/enach-icon.png')} style={styles.image} resizeMode='center' />
           </View>
-          <View style={styles.row}>
-            <Text category='h6' style={styles.label}>
-              {translations['enach.intervalType']}
-            </Text>
-            <Text appearance='hint'>
-              {planObject.intervalType === 'month' ? 'Monthly' : 'No Data'}
-            </Text>
+          <View style={styles.card}>
+            <View style={styles.rowDesign}>
+              <View>
+                <Text category='p1' appearance='hint'> {translations['enach.planType']}</Text>
+              </View>
+              <View>
+                <Text category='h6' appearance='default'>{planObject.type === 'PERIODIC' ? 'Periodic' : 'No Data'}</Text>
+              </View>
+            </View>
+            <View style={styles.line} />
+            <View style={styles.rowDesign}>
+              <View>
+                <Text category='p1' appearance='hint'>{translations['enach.intervalType']}</Text>
+              </View>
+              <View>
+                <Text category='h6' appearance='default'>{planObject.intervalType === 'month' ? 'Monthly' : 'No Data'}</Text>
+              </View>
+            </View>
+            <View style={styles.line} />
+            <View style={styles.rowDesign}>
+              <View>
+                <Text category='p1' appearance='hint'>{translations['enach.amount']}</Text>
+              </View>
+              <View>
+                <Text category='h6' appearance='default'>₹ {planObject.amount}</Text>
+              </View>
+            </View>
+            <View style={styles.line} />
+            <View style={styles.rowDesign}>
+              <View>
+                <Text category='p1' appearance='hint'>{translations['enach.noOfIntervals']}</Text>
+              </View>
+              <View>
+                <Text category='h6' appearance='default'>{planObject.intervals}</Text>
+              </View>
+            </View>
+            <View style={styles.line} />
+            <View style={styles.rowDesign}>
+              <View>
+                <Text category='p1' appearance='hint'>{translations['enach.expiresOn']}</Text>
+              </View>
+              <View>
+                <Text category='h6' appearance='default'>{expiresOnForUi}</Text>
+              </View>
+            </View>
+            <View style={styles.rowDesignBtn}>
+              <Button appearance='outline' onPress={eMandateHandler}>
+                {translations['enach.start']}
+              </Button>
+            </View>
+            <Text appearance='hint' category='label'>{translations['enach.details.hint']}</Text>
           </View>
-          <View style={styles.row}>
-            <Text category='h6' style={styles.label}>
-              {translations['enach.amount']}
-            </Text>
-            <Text appearance='hint'>₹ {planObject.amount}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text category='h6' style={styles.label}>
-              {translations['enach.noOfIntervals']}
-            </Text>
-            <Text appearance='hint'>{planObject.intervals}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text category='h6' style={styles.label}>
-              {translations['enach.expiresOn']}
-            </Text>
-            <Text appearance='hint'>{expiresOnForUi}</Text>
-          </View>
-          <View style={styles.row}>
-            <Button appearance='outline' onPress={eMandateHandler}>
-              {translations['enach.start']}
-            </Button>
-          </View>
-        </>
+        </View>
       )}
       {isSubscriptionCreated && (
         <FormSuccess description={translations['enach.subscription.done']} isButtonVisible={false} />
@@ -267,11 +284,39 @@ const EnachWidget = (props) => {
   )
 }
 const styles = StyleSheet.create({
-  row: {
-    marginVertical: 5
+  iconContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-  label: {
-    marginTop: 2
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: heightPercentageToDP('75%')
+  },
+  card: {
+    width: widthPercentageToDP('85%'),
+    marginBottom: 30
+  },
+  image: {
+    width: widthPercentageToDP('45%'),
+    height: widthPercentageToDP('45%')
+  },
+  line: {
+    marginTop: 10,
+    borderBottomColor: '#F0F0FF',
+    borderBottomWidth: 1
+  },
+  rowDesign: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10
+  },
+  rowDesignBtn: {
+    marginTop: 10
   }
 })
 export default EnachWidget
