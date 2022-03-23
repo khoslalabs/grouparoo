@@ -38,7 +38,6 @@ const uploadITR = async (dispatch, files) => {
     files.forEach((file) => {
       file.uploading = false
     })
-    await dispatch.formDetails.setIsBankStatementVerified('Yes')
     await dispatch.formDetails.setItrFiles(files)
     return { uploadedDocIds }
   } catch (e) {
