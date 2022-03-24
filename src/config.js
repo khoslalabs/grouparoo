@@ -23,7 +23,8 @@ export const config = {
     appStateEventsCollectionId: '6223228537efd99c9714',
     cashfreeSignatureFunctionId: '6225db949e947cf7e996',
     loanAgreementFunctionId: '622748ba485820ecd386',
-    bankStatementValidationFunctionId: '623b002f3c9d6860434b'
+    bankStatementValidationFunctionId: '623b002f3c9d6860434b',
+    bankCodesCollectionId: '6233596db7c5e0e6e8b7'
   },
   DEFAULT_PASSWORD: 'welcome',
   otp: {

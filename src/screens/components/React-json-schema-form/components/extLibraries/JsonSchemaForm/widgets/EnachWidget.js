@@ -16,6 +16,7 @@ import dayjs from 'dayjs'
 import FormSuccess from '../../../Forms/FormSuccess'
 import { config } from '../../../../../../../config'
 import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen'
+import apiService from '../../../../../../../apiService'
 const resourceFactoryConstants = new ResourceFactoryConstants()
 const dayjsMapper = {
   [config.FREQ_MONTHLY]: 'month',
@@ -51,6 +52,11 @@ const createSubscription = async (subscriptionObj) => {
     throw new Error('SUBSCRIPTION_CREATION_FAILED')
   }
 }
+const getBankCodeFromBankName = async (bankCode) => {
+  const code = await apiService.appApi.bankStatement.code.get(bankCode.toUpperCase())
+  return code
+}
+
 const EnachWidget = (props) => {
   const jsonSchema = useSelector((state) => state?.formDetails?.schema)
   const formName = jsonSchema?.formName
@@ -58,6 +64,7 @@ const EnachWidget = (props) => {
   const [authLink, setAuthLink] = useState()
   const { translations } = useContext(LocalizationContext)
   const [isPlanCreated, setIsPlanCreated] = useState(false)
+  const [bankCode, setBankCode] = useState()
   const [isSubscriptionCreated, setIsSubscriptionCreated] = useState(
     !!props.value
   )
@@ -66,10 +73,16 @@ const EnachWidget = (props) => {
   const bankStatementData = useSelector(state => state.formDetails.bankStatementData)
   const accountType = useSelector(state => state.formDetails.formData.bankAccountType)
   const { loanOffer, email, primaryPhone } = useSelector(state => state.formDetails.formData)
-  const bankName = bankStatementData?.statement?.bank_name || 'kotak'
-  // using bank name, need to get Bank Id
+  const bankName = bankStatementData?.statement?.bank_name
   const accountHolderName = bankStatementData?.statement?.identity?.name || 'VISHAL SHAW'
   const accountNo = bankStatementData?.statement?.identity?.account_number || '3512392038'
+
+  useEffect(async () => {
+    if (!isEmpty(bankName) && isEmpty(props.value)) {
+      const tempBankCode = await getBankCodeFromBankName(bankName.toUpperCase())
+      setBankCode(tempBankCode)
+    }
+  }, [bankName])
 
   const planObject = {
     planId: planId,
@@ -98,7 +111,7 @@ const EnachWidget = (props) => {
     paymentOption: 'emandate',
     emandate_accountHolder: accountHolderName,
     emandate_accountNumber: accountNo,
-    emandate_bankId: 'KKBK', // Need to fetch from DB (Mapping is pending)
+    emandate_bankId: bankCode,
     emandate_authMode: 'netbanking',
     emandate_accountType: accountType?.toUpperCase()
   }

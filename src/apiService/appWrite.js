@@ -532,6 +532,18 @@ export const appApi = {
           throw new Error('CANNOT_GET_BANK_VALIDATION_SERVER')
         }
       }
+    },
+    code: {
+      get: async (bankCode) => {
+        try {
+          const { documents } = await sdk.database.listDocuments(config.appWrite.bankCodesCollectionId, [Query.equal('bankCode', bankCode)])
+          const bankCodeDetails = documents[0]
+          return bankCodeDetails?.bankId
+        } catch (err) {
+          crashlytics().log(err)
+          return undefined
+        }
+      }
     }
   }
 }
