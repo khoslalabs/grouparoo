@@ -504,5 +504,33 @@ export const appApi = {
         }
       }
     }
+  },
+  bankStatement: {
+    validation: {
+      execute: async ({ panData, bankStatementData }) => {
+        try {
+          const payload = JSON.stringify({ panData, bankStatementData })
+          const executionDetails = await sdk.functions.createExecution(config.appWrite.bankStatementValidationFunctionId, payload)
+          return executionDetails.$id
+        } catch (err) {
+          crashlytics().log(err)
+          throw new Error('CANNOT_EXECUTE_BANK_STATEMENT_VALIDATION')
+        }
+      },
+      get: async (executionId) => {
+        try {
+          const responseWithStatus = await getCompletionStatus(config.appWrite.bankStatementValidationFunctionId, executionId)
+          if (responseWithStatus.status === 'completed') {
+            const validationResult = JSON.parse(responseWithStatus.stdout)
+            return validationResult
+          } else {
+            throw new Error('CANNOT_GET_BANK_VALIDATION')
+          }
+        } catch (err) {
+          crashlytics().log(err)
+          throw new Error('CANNOT_GET_BANK_VALIDATION_SERVER')
+        }
+      }
+    }
   }
 }

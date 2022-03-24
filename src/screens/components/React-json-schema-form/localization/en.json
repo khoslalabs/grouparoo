@@ -53,6 +53,7 @@
   "statement.title": "Bank Statement",
   "statement.success": "Bank Statement uploaded successfully",
   "statement.failed": "Invalid bank statement document uploaded. Please check your files",
+  "statement.bankstatement.failed": "Sorry! Your bank details do not match with pan",
   "statement.uploadText": "Click to upload Bank Statements",
   "selfie.title": "Selfie Image",
   "selfie.success": "Selfie uploaded successfully",

@@ -11,6 +11,7 @@ import DocumentPicker from 'react-native-document-picker'
 import DataService from '../../../../services/DataService'
 import DocumentUploadComponent from '../common/DocumentUploadComponent'
 import ReactJsonSchemaUtil from '../../../../services/ReactJsonSchemaFormUtil'
+import apiService from '../../../../../../../apiService'
 
 const getNewFileAdded = (newFiles, oldFiles = []) => {
   if (newFiles.length === 0) {
@@ -28,7 +29,7 @@ const getNewFileAdded = (newFiles, oldFiles = []) => {
   return addedFiles
 }
 
-const uploadBankStatement = async (dispatch, files, currentLoanApplicationId) => {
+const uploadBankStatement = async (dispatch, files, currentLoanApplicationId, panData) => {
   // Code to upload bank Statement
   const resourceFactoryConstants = new ResourceFactoryConstants()
   const url = resourceFactoryConstants.constants.bankStatement.uploadBankStatement
@@ -42,6 +43,12 @@ const uploadBankStatement = async (dispatch, files, currentLoanApplicationId) =>
     const responseData = res.data
     const uploadedDocIds = []
     if (responseData.status === 'SUCCESS') {
+      const bankStatementData = { statement: responseData?.data?.statement, transaction_details: { accounts: responseData?.data?.transaction_details?.accounts } }
+      // Validate BankStatement Data with PanData
+      const isBankStatementValidationPass = await validateBankStatement(panData, bankStatementData)
+      if (!isBankStatementValidationPass) {
+        throw new Error('BANK_STATEMENT_VALIDATION_FAILED')
+      }
       for (let r = 0; r < files.length; r++) {
         const docDetails = await uploadToAppWrite(files[r])
         uploadedDocIds.push(`${docDetails.uploadedDocId}'::'${docDetails.uploadedFileName}`)
@@ -51,14 +58,14 @@ const uploadBankStatement = async (dispatch, files, currentLoanApplicationId) =>
         file.uploading = false
       })
       await dispatch.formDetails.setBankStatementFiles(files)
-      await dispatch.formDetails.setBankStatementData({ statement: responseData?.data?.statement, transaction_details: { accounts: responseData?.data?.transaction_details?.accounts } })
+      await dispatch.formDetails.setBankStatementData(bankStatementData)
       return { uploadedDocIds }
     } else {
       throw new Error('INVALID_BANK_STATEMENT')
     }
   } catch (e) {
     console.log(e)
-    if (e.message === 'INVALID_BANK_STATEMENT') {
+    if (e.message === 'INVALID_BANK_STATEMENT' || e.message === 'BANK_STATEMENT_VALIDATION_FAILED') {
       throw e
     } else {
       throw new Error('CANNOT_REACH_STATEMENT_VALIDATION_SERVICE')
@@ -91,6 +98,21 @@ const uploadToAppWrite = async (file) => {
     }
   }
 }
+
+const validateBankStatement = async (panData, bankStatementData) => {
+  try {
+    const executionId = await apiService.appApi.bankStatement.validation.execute({ panData, bankStatementData })
+    const validationResult = await apiService.appApi.bankStatement.validation.get(executionId)
+    if (validationResult.status === 'success') {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    throw new Error('CANNOT_REACH_BANK_VALIDATION_SERVER')
+  }
+}
+
 const BankStatementUploadField = (props) => {
   let uploadedFileIdsWithName
   const dispatch = useDispatch()
@@ -102,6 +124,7 @@ const BankStatementUploadField = (props) => {
   const bankStaementFilesCopy = JSON.parse(JSON.stringify(bankStatementFiles))
   const [isUploadDone, setIsUploadDone] = useState(false)
   const { translations } = useContext(LocalizationContext)
+  const panData = state?.formDetails?.panData
   const useRemoveFile = useRequest((file) => dispatch.formDetails.removeFromBankStatementFiles(file), {
     manual: true
   })
@@ -127,12 +150,19 @@ const BankStatementUploadField = (props) => {
       })
     },
     onError: (error, params) => {
-      console.log(error)
-      setIsUploadDone(true)
       if (error.message === 'CANNOT_REACH_STATEMENT_VALIDATION_SERVICE' ||
         error.message === 'CANNOT_REACH_STATEMENT_UPLOAD_SERVER'
       ) {
         throw error
+      } else if (error.message === 'BANK_STATEMENT_VALIDATION_FAILED') {
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          props: {
+            title: translations['statement.title'],
+            description: translations['statement.bankstatement.failed']
+          }
+        })
       } else {
         Toast.show({
           type: 'error',
@@ -157,7 +187,7 @@ const BankStatementUploadField = (props) => {
     setIsUploadDone(false)
     const newFilesAdded = getNewFileAdded(allFiles, bankStatementFiles)
     if (newFilesAdded.length > 0) {
-      uploadFiles.run(dispatch, newFilesAdded, currentLoanApplicationId)
+      uploadFiles.run(dispatch, newFilesAdded, currentLoanApplicationId, panData)
     }
   }
   return (
