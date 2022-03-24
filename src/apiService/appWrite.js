@@ -363,6 +363,7 @@ export const appApi = {
     loanAgreement: {
       execute: async (loanApplicationId) => {
         try {
+          loanApplicationId = '29561a-06' // TODO: Need to fix it later
           const payload = JSON.stringify({ loanApplicationId })
           const executionDetails = await sdk.functions.createExecution(config.appWrite.loanAgreementFunctionId, payload)
           return executionDetails.$id
@@ -375,13 +376,13 @@ export const appApi = {
         try {
           const responseWithStatus = await getCompletionStatus(config.appWrite.loanAgreementFunctionId, executionId)
           if (responseWithStatus.status === 'completed') {
-            const { status, loanAgreementUrl } = JSON.parse(responseWithStatus.stdout)
+            const { status, loanAgreementId } = JSON.parse(responseWithStatus.stdout)
             if (status === 'FAILED') {
-              throw new Error('CANNOT_GET_LOANAGREEMET_URL')
+              throw new Error('CANNOT_GET_LOANAGREEMET_ID')
             }
-            return loanAgreementUrl
+            return loanAgreementId
           } else {
-            throw new Error('CANNOT_CALL_TO_GET_LOANAGREEMET_URL')
+            throw new Error('CANNOT_CALL_TO_GET_LOANAGREEMET_ID')
           }
         } catch (e) {
           crashlytics().log(e)
@@ -478,11 +479,11 @@ export const appApi = {
       })
       return loanApplication
     },
-    // FIXME: Change this
     getAllOffers: {
       execute: async (loanApplicationId) => {
         try {
-          const executionDetails = await sdk.functions.createExecution(config.appWrite.retrieveLoanOffersFunctionId, loanApplicationId)
+          const payload = JSON.stringify({ loanApplicationId })
+          const executionDetails = await sdk.functions.createExecution(config.appWrite.retrieveLoanOffersFunctionId, payload)
           return executionDetails.$id
         } catch (err) {
           crashlytics().log(err)
@@ -492,7 +493,7 @@ export const appApi = {
       get: async (executionId) => {
         try {
           const responseWithStatus = await getCompletionStatus(config.appWrite.retrieveLoanOffersFunctionId, executionId)
-          if (responseWithStatus === 'completed') {
+          if (responseWithStatus.status === 'completed') {
             const loanDeatails = JSON.parse(responseWithStatus.stdout)
             return loanDeatails
           } else {

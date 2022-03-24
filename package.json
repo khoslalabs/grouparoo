@@ -53,6 +53,7 @@
     "json-schema-merge-allof": "^0.8.1",
     "jsonpointer": "^4.1.0",
     "jwt-decode": "^3.1.2",
+    "loanjs": "^1.0.7",
     "lodash.get": "^4.4.2",
     "lodash.isarray": "^4.0.0",
     "lodash.isempty": "^4.4.0",

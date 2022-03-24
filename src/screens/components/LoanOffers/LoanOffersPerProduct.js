@@ -35,8 +35,9 @@ const LoanOffersPerProduct = ({
         loanOffer={item}
         selected={isThisProduct && item.offerId === offerId}
         onSelect={onOfferSelect}
-        loading
+        loading={loading}
         loanAmount={loanAmount}
+        interestRate={loanOption.estimatedInterestRate}
       />
     )
   }

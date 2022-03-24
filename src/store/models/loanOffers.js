@@ -12,17 +12,18 @@ const loanOffers = {
   reducers: {
     setLoanOffers: (state, { loanOffers, loanApplicationId }) => {
       state[loanApplicationId] = loanOffers
+      return state
     }
   },
   effects: (dispatch) => ({
     async getOffersForApplication ({ loanApplicationId }, rootState) {
       try {
         const executionId = await apiService.appApi.loanApplication.getAllOffers.execute(loanApplicationId)
-        const products = await apiService.appApi.loanApplication.getAllOffers.get(executionId)
-        dispatch.loanOffers.setLoanOffers({ products })
+        const loanOffers = await apiService.appApi.loanApplication.getAllOffers.get(executionId)
+        dispatch.loanOffers.setLoanOffers({ loanOffers, loanApplicationId })
       } catch (err) {
         throw new Error(err.message)
-      } 
+      }
     }
   })
 }

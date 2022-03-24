@@ -27,11 +27,12 @@ const LoanOfferCard = ({
   onSelect,
   loading,
   loanOffer,
-  loanAmount
+  loanAmount,
+  interestRate
 }) => {
-  // if (loading) {
-  //   return <Loading />
-  // }
+  if (loading) {
+    return <Loading />
+  }
   const { translations } = useContext(LocalizationContext)
   const repaymentDisplay = loanOffer.repayments.map(rp => translations[`period.${rp}ly`])
   const [selectedRepayment, setSelectedRepayment] = useState(loanOffer.defaultRepayment)
@@ -40,7 +41,8 @@ const LoanOfferCard = ({
     loanAmount,
     loanOffer.tenure,
     selectedRepayment,
-    loanOffer.unit
+    loanOffer.unit,
+    interestRate
   )
 
   const styles = useStyleSheet(themedStyles)
