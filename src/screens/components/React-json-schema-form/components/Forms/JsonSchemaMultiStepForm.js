@@ -133,9 +133,10 @@ const JsonSchemaMultiStepForm = ({
           requestBody[appConstants.communicationAddressField] =
           kycData?.data?.address
         }
-      } else if (field === appConstants.okycField && !isEmpty(kycData)) {
-        requestBody.kycData = kycData
       }
+      //  else if (field === appConstants.okycField && !isEmpty(kycData)) {
+      //   // requestBody.kycData = kycData
+      // }
     }
   }
 
@@ -149,6 +150,7 @@ const JsonSchemaMultiStepForm = ({
       requestDataToUpdate.progress = 'COMPLETE'
     }
     // requestDataToUpdate.loanApplicationId = tempId
+    // console.log(requestDataToUpdate)
     crashlytics().log(ErrorUtil.createLog('Request body at this step', requestDataToUpdate, 'saveOrUpdateFormData', 'JsonSchemaMultiStepForm.js'))
     DataService.postData(`${url}`, requestDataToUpdate)
       .then((res) => {
