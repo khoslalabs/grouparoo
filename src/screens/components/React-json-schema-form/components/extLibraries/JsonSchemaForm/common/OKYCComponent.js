@@ -20,11 +20,11 @@ let finalAadharCard
 const WAIT_RESEND_MS = 2 * 60 * 1000
 const OTP_VALID_MS = 5 * 60 * 1000
 
-const generateOtp = async (appId, aadharNumber) => {
+const generateOtp = async (aadharNumber, panNumber) => {
   const resource = new ResourceFactoryConstants()
   try {
     const res = await DataService.postData(resource.constants.kyc.getUrlToGenerateOTP, {
-      appId: appId,
+      panId: panNumber,
       aadhaar_no: aadharNumber.split(' ').join('')
 
     })
@@ -44,7 +44,7 @@ const generateOtp = async (appId, aadharNumber) => {
   }
 }
 
-const verifyOtp = async (appId, otp, shareCode, panData) => {
+const verifyOtp = async (otp, shareCode, panData) => {
   const resource = new ResourceFactoryConstants()
   if (otp.length !== 6) {
     return
@@ -53,7 +53,7 @@ const verifyOtp = async (appId, otp, shareCode, panData) => {
     const res = await DataService.postData(resource.constants.kyc.getUrlToFetchKyc, {
       aadhaar_otp: otp,
       share_code: shareCode,
-      appId: appId
+      panId: panData?.panNumber
     })
     const data = res.data
     if (data.status === 'SUCCESS') {
@@ -112,7 +112,6 @@ const OKYCComponent = (props) => {
   const { onOtpSuccess } = props
   const { theme } = useFormContext()
   const { translations } = useContext(LocalizationContext)
-  const appId = useSelector((state) => state?.formDetails?.tempId)
   const panData = useSelector((state) => state.formDetails.panData)
   const [isAadharValid, setIsAadharValid] = useState(true)
   const [shareCode, setShareCode] = useState()
@@ -207,7 +206,7 @@ const OKYCComponent = (props) => {
       hasError = true
     }
     if (!hasError) {
-      useGenerateOtp.run(appId, finalAadharCard)
+      useGenerateOtp.run(finalAadharCard, panData?.panNumber)
     }
   }
 
@@ -220,7 +219,7 @@ const OKYCComponent = (props) => {
   }
 
   const otpVerificationHandler = () => {
-    useOtpVerfy.run(appId, otp, shareCode, panData)
+    useOtpVerfy.run(otp, shareCode, panData)
   }
   const validateShareCode = () => {
     if (shareCode.toString().length !== 4) {
