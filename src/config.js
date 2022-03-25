@@ -3,8 +3,8 @@ import { PERMISSIONS, RESULTS } from 'react-native-permissions'
 export const config = {
   appName: 'Novo Loans',
   entityType: 'retail',
-  termsUrl: 'https://www.novopay.in/terms',
-  ppUrl: 'https://www.novopay.in/pp',
+  termsUrl: 'hhttps://www.novopay.in/business-loan/terms-and-conditions',
+  ppUrl: 'https://www.novopay.in/business-loan/privacy-policy',
   appWrite: {
     url: 'https://dev-appwrite.novopay.in/v1',
     projectId: '61fc67b0347f85b8f5b1',
@@ -45,7 +45,7 @@ export const config = {
   },
   permissions: {
     permissionTypes: [
-      PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION,
+      // PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION, Policy Issue so commented out
       PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
       PERMISSIONS.ANDROID.CAMERA,
       PERMISSIONS.ANDROID.READ_SMS
