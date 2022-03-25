@@ -43,20 +43,21 @@ const LoanOffersPerProduct = ({
   }
   return (
     <View style={styles.optionContainer}>
-      <View style={styles.titleContainer}>
-        <View>
-          <Text category='h6' appearance='hint'>
-            {loanOption.heading}
-          </Text>
-        </View>
-        <View style={{ marginLeft: 50 }}>
-          <InterestDisplay
-            label={translations['loan.interestRate']}
-            interestRate={loanOption.estimatedInterestRate}
-            horizontal
-          />
-        </View>
-      </View>
+      {loanOption.heading &&
+        <View style={styles.titleContainer}>
+          <View>
+            <Text category='h6' appearance='hint'>
+              {loanOption.heading}
+            </Text>
+          </View>
+          <View style={{ marginLeft: 50 }}>
+            <InterestDisplay
+              label={translations['loan.interestRate']}
+              interestRate={loanOption.estimatedInterestRate}
+              horizontal
+            />
+          </View>
+        </View>}
       <List
         style={styles.listStyle}
         contentContainerStyle={styles.horizontalList}
