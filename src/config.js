@@ -3,7 +3,7 @@ import { PERMISSIONS, RESULTS } from 'react-native-permissions'
 export const config = {
   appName: 'Novo Loans',
   entityType: 'retail',
-  termsUrl: 'hhttps://www.novopay.in/business-loan/terms-and-conditions',
+  termsUrl: 'https://www.novopay.in/business-loan/terms-and-conditions',
   ppUrl: 'https://www.novopay.in/business-loan/privacy-policy',
   appWrite: {
     url: 'https://dev-appwrite.novopay.in/v1',
