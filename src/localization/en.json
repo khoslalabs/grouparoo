@@ -165,7 +165,7 @@
   "otp.otpTimeout": "Otp Timed out",
   "otp.numberOfRetries": "{counter} attempts remaining",
   "otp.sentOtp": "Otp resent to mobile {primaryPhone}",
-  "otp.waitingFor": "Reset in {waitSecondsStr}s",
+  "otp.waitingFor": "Resend in {waitSecondsStr}s",
   "otp.sendingOtp": "Sending OTP ...",
   "otp.invalidOtp": "Incorrect OTP entered",
   "form.applicationForm": "Loan Application Form",
