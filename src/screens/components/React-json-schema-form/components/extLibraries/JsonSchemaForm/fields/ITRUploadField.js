@@ -132,7 +132,6 @@ const ITRUploadField = (props) => {
       useRemoveFile.run(file)
       // remove from props
       const newProps = props.formData.filter((v) => v.indexOf(file.name) === -1)
-      debugger
       props.onChange(isEmpty(newProps) ? undefined : [...newProps])
     }
   }
