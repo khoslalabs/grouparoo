@@ -32,7 +32,7 @@ const uploadITR = async (dispatch, files) => {
     for (let r = 0; r < files.length; r++) {
       const docDetails = await uploadToAppWrite(files[r])
       uploadedDocIds.push(
-        `${docDetails.uploadedDocId}'::'${docDetails.uploadedFileName}`
+        `${docDetails.uploadedDocId}::${docDetails.uploadedFileName}`
       )
     }
     files.forEach((file) => {
@@ -131,8 +131,9 @@ const ITRUploadField = (props) => {
     if (!isEmpty(file) > 0) {
       useRemoveFile.run(file)
       // remove from props
-      const newProps = props.formData.filter((v) => v.indexOf(file.name) > -1)
-      props.onChange([...newProps])
+      const newProps = props.formData.filter((v) => v.indexOf(file.name) === -1)
+      debugger
+      props.onChange(isEmpty(newProps) ? undefined : [...newProps])
     }
   }
 

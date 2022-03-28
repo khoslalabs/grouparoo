@@ -51,7 +51,7 @@ const uploadBankStatement = async (dispatch, files, currentLoanApplicationId, pa
       }
       for (let r = 0; r < files.length; r++) {
         const docDetails = await uploadToAppWrite(files[r])
-        uploadedDocIds.push(`${docDetails.uploadedDocId}'::'${docDetails.uploadedFileName}`)
+        uploadedDocIds.push(`${docDetails.uploadedDocId}::${docDetails.uploadedFileName}`)
       }
       await dispatch.formDetails.setIsBankStatementVerified('Yes')
       files.forEach(file => {
@@ -179,8 +179,8 @@ const BankStatementUploadField = (props) => {
     if (!isEmpty(file) > 0) {
       useRemoveFile.run(file)
       // remove from props
-      const newProps = props.formData.filter(v => v.indexOf(file.name) > -1)
-      props.onChange([...newProps])
+      const newProps = props.formData.filter(v => v.indexOf(file.name) === -1)
+      props.onChange(isEmpty(newProps) ? undefined : [...newProps])
     }
   }
   const onFileChange = (allFiles) => {

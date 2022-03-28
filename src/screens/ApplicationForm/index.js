@@ -29,7 +29,7 @@ const ApplicationForm = ({ navigation, route }) => {
     currentLoanApplication = store.select.loanApplications.getApplicationById(state, loanApplicationId)
   } else {
     currentLoanApplication = store.select.loanApplications.getCurrentLoanApplication(state)
-    loanApplicationId = currentLoanApplication.loanApplicationId
+    loanApplicationId = currentLoanApplication?.loanApplicationId
   }
   const loanApplicationStage = store.select.loanApplications.getLoanApplicationStage(state, { loanApplicationId })
   const isCpv = loanApplicationStage?.progress === config.LOAN_APP_PROGRESS_COMPLETE && loanApplicationStage?.processState === config.APP_STAGE_CPV_INITIATED
