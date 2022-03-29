@@ -76,7 +76,7 @@
   "aadhar.otpVerify.title": "Get Aadhaar Data",
   "aadhar.pan.match.fail": "Aadhaar and Pan data is not matching",
   "aadhar.captcha.refresh": "Click to load",
-  "aadhar.otpVerify.failed": "Cannot fetch Aadhaar Data. Verify OTP and . Retry again",
+  "aadhar.otpVerify.failed": "Cannot fetch Aadhaar Data. Verify OTP and retry again",
   "aadhar.otpVerify.success": "Aadhaar Offline KYC completed",
   "address.addressLine1": "Address Line 1",
   "address.addressLine2": "Address Line 2",
