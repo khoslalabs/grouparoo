@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react'
 import { useRequest } from 'ahooks'
 import { useDispatch, useSelector, useStore } from 'react-redux'
-import { Text } from '@ui-kitten/components'
+import { Card, Modal, Spinner, StyleService, Text } from '@ui-kitten/components'
+import { Dimensions } from 'react-native'
 import isEmpty from 'lodash.isempty'
 import Toast from 'react-native-toast-message'
 import { LocalizationContext } from '../../../../translation/Translation'
@@ -12,6 +13,9 @@ import DataService from '../../../../services/DataService'
 import DocumentUploadComponent from '../common/DocumentUploadComponent'
 import ReactJsonSchemaUtil from '../../../../services/ReactJsonSchemaFormUtil'
 import apiService from '../../../../../../../apiService'
+import { WebView } from 'react-native-webview'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import appConstants from '../../../../constants/appConstants'
 
 const getNewFileAdded = (newFiles, oldFiles = []) => {
   if (newFiles.length === 0) {
@@ -113,11 +117,34 @@ const validateBankStatement = async (panData, bankStatementData) => {
   }
 }
 
+const netBankingHandle = async () => {
+  try {
+    const resourceFactoryConstants = new ResourceFactoryConstants()
+    const res = await DataService.postData(resourceFactoryConstants.constants.finbox.getSessionAPI, {
+      link_id: ReactJsonSchemaUtil.getRandomUUID(),
+      api_key: appConstants.finboxApiKey
+    })
+    if (res.status === 200) {
+      return res.data.redirect_url
+    } else {
+      throw new Error('FINBOX_CONNECTION_FAILED')
+    }
+  } catch (err) {
+    if (err.message === 'FINBOX_CONNECTION_FAILED') {
+      throw err
+    } else {
+      throw new Error('UNABLE_TO_CONNECT_FINBOX')
+    }
+  }
+}
+
 const BankStatementUploadField = (props) => {
   let uploadedFileIdsWithName
   const dispatch = useDispatch()
   const store = useStore()
   const state = useSelector(state => state)
+  const [show, setShow] = useState(false)
+  const [redirectUrl, setRedirectUrl] = useState()
   // need a copy of bank statement files and not direct reference to state
   const currentLoanApplicationId = state.loanApplications.currentLoanApplicationId
   const bankStatementFiles = store.select.formDetails.getBankStatementFiles(state)
@@ -190,6 +217,46 @@ const BankStatementUploadField = (props) => {
       uploadFiles.run(dispatch, newFilesAdded, currentLoanApplicationId, panData)
     }
   }
+  const finboxEventHandler = (event) => {
+    const data = JSON.parse(event.nativeEvent.data)
+    if (data?.entityId) {
+      props.onChange(data.entityId)
+      setTimeout(() => {
+        setShow(false)
+      }, 5000)
+    } else if (data?.reason && data?.error_type) {
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        props: {
+          title: translations['statement.title'],
+          description: data.reason
+        }
+      })
+    } else if (data?.message) {
+      setShow(false)
+    }
+  }
+  const useNetBankingHandler = useRequest(netBankingHandle, {
+    manual: true,
+    onSuccess: (redirectUrl) => {
+      setRedirectUrl(redirectUrl)
+      setShow(true)
+    },
+    onError: () => {
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        props: {
+          title: translations['statement.title'],
+          description: translations['esign.unexpected.error']
+        }
+      })
+    }
+  })
+  const openNetBankingModalHandler = () => {
+    useNetBankingHandler.run()
+  }
   return (
     <>
       <Text appearance='hint' category='label'>
@@ -205,10 +272,43 @@ const BankStatementUploadField = (props) => {
         selectText={translations['statement.uploadText']}
         removeFile={removeFile}
       />
+      {/* Will Uncomment, once statement Data Api is ready */}
+      {/* <TouchableOpacity
+        onPress={openNetBankingModalHandler}
+        style={{ marginVertical: 3 }}
+      >
+        <Text category='label' status='primary'>
+          {translations['statement.upload.netbanking']}
+        </Text>
+      </TouchableOpacity> */}
       <Text appearance='hint' category='label' status='info'>
         {props.schema.description}
       </Text>
+      {/* Model */}
+      <Modal visible={show} backdropStyle={styles.backdrop}>
+        <Card style={styles.card}>
+          {useNetBankingHandler.loading && <Spinner />}
+          <WebView
+            source={{ uri: redirectUrl }}
+            height={Dimensions.get('window').height - 200}
+            width={Dimensions.get('window').width - 70}
+            onMessage={finboxEventHandler}
+            nestedScrollEnabled
+          />
+        </Card>
+      </Modal>
     </>
   )
 }
+const styles = StyleService.create({
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  card: {
+    flex: 1,
+    padding: 0,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+})
 export default BankStatementUploadField

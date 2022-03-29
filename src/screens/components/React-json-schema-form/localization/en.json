@@ -55,6 +55,7 @@
   "statement.failed": "Invalid bank statement document uploaded. Please check your files",
   "statement.bankstatement.failed": "Sorry! Your bank details do not match with pan",
   "statement.uploadText": "Click to upload Bank Statements",
+  "statement.upload.netbanking": "Don't have your bank statements with you? Upload using NetBanking.",
   "selfie.title": "Selfie Image",
   "selfie.success": "Selfie uploaded successfully",
   "selfie.failed": "Invalid Selfie Image, please take your selfie again. Ensure that your face is correctly visible.",
