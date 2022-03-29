@@ -1,3 +1,8 @@
+import DataService from '../services/DataService'
+import ResourceFactoryConstants from '../services/ResourceFactoryConstants'
+import crashlytics from '@react-native-firebase/crashlytics'
+import ErrorUtil from '../../../Errors/ErrorUtil'
+
 const formDetails = {
   name: 'formDetails',
   state: {
@@ -194,15 +199,26 @@ const formDetails = {
     }
   },
   effects: (dispatch) => ({
-    updateAllAdditionalData (_, rootState) {
+    async updateAllAdditionalData (_, rootState) {
+      const currentLoanApplicationId = rootState.loanApplications.currentLoanApplicationId
+      const currentLoanApplication = rootState.loanApplications.applications[currentLoanApplicationId]
+      const { panData } = currentLoanApplication
+      let kycData
       try {
-        const currentLoanApplicationId = rootState.loanApplications.currentLoanApplicationId
-        const currentLoanApplication = rootState.loanApplications.applications[currentLoanApplicationId]
-        const { panData, gstnData, udyamData, kycData, bankStatementData } = currentLoanApplication
-        dispatch.formDetails.setAllAdditionalData({ panData, gstnData, udyamData, kycData, bankStatementData })
+        // Call to get kycData through API, APP Write does not Support bigger Length (> 8192 Chanrs)
+        if (panData && panData?.panNumber) {
+          const resourceFactoryConstants = new ResourceFactoryConstants()
+          const res = await DataService.getData(`${resourceFactoryConstants.constants.kyc.getKycData}${panData?.panNumber}`)
+          if (res.data && res.data.status === 'SUCCESS') {
+            kycData = res?.data?.data?.data
+          }
+        }
       } catch (error) {
-        throw new Error(error.message)
+        console.error(error)
+        crashlytics().log(ErrorUtil.createLog('Unable to fetch kyc data', panData?.panNumber, 'updateAllAdditionalData', 'formDetails.js'))
       }
+      const { gstnData, udyamData, bankStatementData } = currentLoanApplication
+      dispatch.formDetails.setAllAdditionalData({ panData, gstnData, udyamData, kycData, bankStatementData })
     }
   })
 }

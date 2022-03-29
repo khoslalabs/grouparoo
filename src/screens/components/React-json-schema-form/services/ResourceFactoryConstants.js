@@ -67,7 +67,7 @@ class ResourceFactoryConstants {
     },
     gstin: {
       verifyGstin: this.getCustomUrl(
-        this.adapterServiceUrl,
+        'https://novo-adapter-dev.novopay.in/',
         "verify/gst?gstin=",
         ""
       ),
@@ -114,6 +114,7 @@ class ResourceFactoryConstants {
         "faceMatch",
         "/okyc/"
       ),
+      getKycData : this.getCustomUrl(this.apiGateWay,"getAadhaarData?pan=","/okyc/")
     },
     cibil: {
       sendOTPForCibil: this.getCustomUrl(
