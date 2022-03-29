@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useContext } from 'react'
 import { useCountDown } from 'ahooks'
 import { Text } from '@ui-kitten/components'
 import { LocalizationContext } from '../../components/Translation'
@@ -8,11 +8,11 @@ const TimeoutComponent = ({
   startTime
 }) => {
   const { translations } = useContext(LocalizationContext)
-  const [isTimeout, setTimeout] = useState(false)
-  const [_, formattedRes] = useCountDown({
-    targetDate: startTime + validWindow,
-    onEnd: () => setTimeout(true)
+  const [countdown, formattedRes] = useCountDown({
+    targetDate: startTime + validWindow
   })
+  console.log(countdown)
+  const isTimeout = (countdown === 0)
   return (
     <Text category='c1' status='primary'>
       {isTimeout === false &&

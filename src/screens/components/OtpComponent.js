@@ -22,6 +22,7 @@ const OtpComponent = ({
   const { translations } = useContext(LocalizationContext)
   const styles = useStyleSheet(themedStyles)
   const [isValidating, setIsValidating] = useState(false)
+  const [startTime, setStartTime] = useState(Date.now())
   // Run the fetch OTP on mount
   // Manage number of retries
   // Managing countdown of otp validity - 5 mons validity
@@ -58,14 +59,17 @@ const OtpComponent = ({
         <View style={size === 'small' ? styles.actionRowSmall : styles.actionRow}>
           <TimeoutComponent
             validWindow={otpValidWindow}
-            startTime={Date.now()}
+            startTime={startTime}
           />
           <View>
             <ResetButton
-              startTime={Date.now()}
+              startTime={startTime}
               sleepTime={numSecondsWaitForResend}
               loading={loading}
-              resendOtp={resendOtp}
+              resendOtp={() => {
+                setStartTime(Date.now())
+                resendOtp()
+              }}
             />
           </View>
         </View>

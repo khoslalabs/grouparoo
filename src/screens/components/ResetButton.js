@@ -7,11 +7,10 @@ import { LocalizationContext } from '../../components/Translation'
 const ResetButton = ({ startTime, sleepTime, loading, resendOtp }) => {
   const { translations } = useContext(LocalizationContext)
   const styles = useStyleSheet(themedStyles)
-  const [disabled, setDisabled] = useState(true)
-  const [_, formattedRes] = useCountDown({
-    targetDate: startTime + sleepTime,
-    onEnd: () => setDisabled(false)
+  const [countdown, formattedRes] = useCountDown({
+    targetDate: startTime + sleepTime
   })
+  const disabled = (countdown !== 0)
   return (
     <SpinnerButton
       style={styles.actionButton}
