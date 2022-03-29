@@ -25,7 +25,7 @@ const uploadFileForFaceMatch = async (dispatch, file, docface) => {
     if (res.data.status === 'SUCCESS') {
       await dispatch.formDetails.setOkycSelfieFile(file)
       const { uploadedDocId, uploadedFileName } = await uploadToAppWrite([file])
-      return { uploadedDocId, uploadedFileName }
+      return { uploadedDocId, uploadedFileName, selfieScore: res?.data?.matchScore }
     } else {
       console.log(res.data.message)
       throw new Error('FACE_MATCH_FAILED')
@@ -112,7 +112,8 @@ const SelfieWidget = (props) => {
     manual: true,
     onSuccess: (res) => {
       setIsUploadDone(true)
-      props.onChange(res.uploadedDocId + '::' + res.uploadedFileName)
+      // Added second param as selfie Score
+      props.onChange(res.uploadedDocId + '::' + res.selfieScore + '::' + res.uploadedFileName)
       Toast.show({
         type: 'success',
         position: 'bottom',
