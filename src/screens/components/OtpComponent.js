@@ -30,6 +30,7 @@ const OtpComponent = ({
   // Manage enable resend otp after NUM_SEC_WAIT timeout
 
   const resendOtp = () => {
+    setStartTime(Date.now())
     onResendOtp()
   }
   const verifyCode = async code => {
@@ -66,10 +67,7 @@ const OtpComponent = ({
               startTime={startTime}
               sleepTime={numSecondsWaitForResend}
               loading={loading}
-              resendOtp={() => {
-                setStartTime(Date.now())
-                resendOtp()
-              }}
+              resendOtp={resendOtp}
             />
           </View>
         </View>

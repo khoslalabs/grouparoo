@@ -11,7 +11,6 @@ const TimeoutComponent = ({
   const [countdown, formattedRes] = useCountDown({
     targetDate: startTime + validWindow
   })
-  console.log(countdown)
   const isTimeout = (countdown === 0)
   return (
     <Text category='c1' status='primary'>

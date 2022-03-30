@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useContext } from 'react'
 import { useCountDown } from 'ahooks'
 import { StyleService, useStyleSheet } from '@ui-kitten/components'
 import SpinnerButton from '../components/SpinnerButton'
@@ -21,8 +21,13 @@ const ResetButton = ({ startTime, sleepTime, loading, resendOtp }) => {
       size='tiny'
       onPress={resendOtp}
     >
-      {disabled === true &&
+      {disabled === true && formattedRes.minutes === 0 &&
         translations.formatString(translations['otp.waitingFor'], {
+          waitSecondsStr: formattedRes.seconds
+        })}
+      {disabled === true && formattedRes.minutes === 1 &&
+        translations.formatString(translations['otp.waitingForMinute'], {
+          minutes: formattedRes.minutes,
           waitSecondsStr: formattedRes.seconds
         })}
       {disabled === false && translations['otp.resend']}

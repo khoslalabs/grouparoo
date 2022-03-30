@@ -279,7 +279,7 @@ const OKYCComponent = (props) => {
             <OtpComponent
               primaryPhone={translations['adhhar.registeredPhone']}
               onResendOtp={onSendOtpHandler}
-              loading={useOtpVerfy.loading}
+              loading={useOtpVerfy.loading || useGenerateOtp.loading}
               onValidateOtp={setOtp}
               otpValid={otpVerified}
               numSecondsWaitForResend={WAIT_RESEND_MS}

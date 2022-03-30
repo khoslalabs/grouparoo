@@ -166,6 +166,7 @@
   "otp.numberOfRetries": "{counter} attempts remaining",
   "otp.sentOtp": "OTP resent to mobile {primaryPhone}",
   "otp.waitingFor": "Resend in {waitSecondsStr}s",
+  "otp.waitingForMinute": "Resend in {minutes}m:{waitSecondsStr}s",
   "otp.sendingOtp": "Sending OTP ...",
   "otp.invalidOtp": "Incorrect OTP entered",
   "form.applicationForm": "Loan Application Form",
