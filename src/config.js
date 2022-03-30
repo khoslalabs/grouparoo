@@ -45,7 +45,6 @@ export const config = {
   },
   permissions: {
     permissionTypes: [
-      // PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION, Policy Issue so commented out
       PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
       PERMISSIONS.ANDROID.CAMERA,
       PERMISSIONS.ANDROID.READ_SMS
