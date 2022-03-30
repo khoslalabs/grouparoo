@@ -21,11 +21,11 @@ const BankAccountConfirmationWidget = (props) => {
   const [selectedIndex, setSelectedIndex] = useState()
   const bankAccountTypeDisplayValue = selectedIndex ? accountTypes[selectedIndex.row] : props.value
   const bankStatementData = useSelector(state => state.formDetails.bankStatementData)
-  const bankName = bankStatementData?.statement?.bank_name || 'HDFC Bank'
-  const accountHolderName = bankStatementData?.statement?.identity?.name || 'Saurabh Kumar'
-  const accountNo = bankStatementData?.statement?.identity?.account_number || '8766863443'
+  const bankName = bankStatementData?.statement?.bank_name
+  const accountHolderName = bankStatementData?.statement?.identity?.name
+  const accountNo = bankStatementData?.statement?.identity?.account_number
   const accounts = bankStatementData?.transaction_details?.accounts
-  const ifsc = accounts && accounts.length > 0 ? accounts[0].ifsc : 'HDFC002497'
+  const ifsc = accounts && accounts.length > 0 ? accounts[0].ifsc : ''
 
   const renderOption = (title, index) => (
     <SelectItem title={title} key={index} />
