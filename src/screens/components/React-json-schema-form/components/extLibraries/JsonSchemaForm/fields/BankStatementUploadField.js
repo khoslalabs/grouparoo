@@ -26,14 +26,14 @@ const getNewFileAdded = (newFiles, oldFiles = []) => {
   }
   const addedFiles = []
   newFiles.forEach(file => {
-    if (!oldFiles.some((of) => of.uri === file.uri)) {
+    if (!oldFiles.some((of) => of.name === file.name)) {
       addedFiles.push(file)
     }
   })
   return addedFiles
 }
 
-const uploadBankStatement = async (dispatch, files, currentLoanApplicationId, panData) => {
+const uploadBankStatement = async (dispatch, files, currentLoanApplicationId, panData, uploadedFileIdsWithName) => {
   // Code to upload bank Statement
   const resourceFactoryConstants = new ResourceFactoryConstants()
   const url = resourceFactoryConstants.constants.bankStatement.uploadBankStatement
@@ -61,7 +61,7 @@ const uploadBankStatement = async (dispatch, files, currentLoanApplicationId, pa
       files.forEach(file => {
         file.uploading = false
       })
-      await dispatch.formDetails.setBankStatementFiles(files)
+      await dispatch.formDetails.setBankStatementFiles(uploadedFileIdsWithName ? [...uploadedFileIdsWithName, ...files] : files)
       await dispatch.formDetails.setBankStatementData(bankStatementData)
       return { uploadedDocIds }
     } else {
@@ -212,9 +212,9 @@ const BankStatementUploadField = (props) => {
   }
   const onFileChange = (allFiles) => {
     setIsUploadDone(false)
-    const newFilesAdded = getNewFileAdded(allFiles, bankStatementFiles)
+    const newFilesAdded = getNewFileAdded(allFiles, uploadedFileIdsWithName)
     if (newFilesAdded.length > 0) {
-      uploadFiles.run(dispatch, newFilesAdded, currentLoanApplicationId, panData)
+      uploadFiles.run(dispatch, newFilesAdded, currentLoanApplicationId, panData, uploadedFileIdsWithName)
     }
   }
   const finboxEventHandler = (event) => {
@@ -271,6 +271,7 @@ const BankStatementUploadField = (props) => {
         loading={uploadFiles.loading}
         selectText={translations['statement.uploadText']}
         removeFile={removeFile}
+        isAddMore={false}
       />
       {/* Will Uncomment, once statement Data Api is ready */}
       {/* <TouchableOpacity

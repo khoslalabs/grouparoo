@@ -19,14 +19,14 @@ const getNewFileAdded = (newFiles, oldFiles = []) => {
   }
   const addedFiles = []
   newFiles.forEach((file) => {
-    if (!oldFiles.some((of) => of.uri === file.uri)) {
+    if (!oldFiles.some((of) => of.name === file.name)) {
       addedFiles.push(file)
     }
   })
   return addedFiles
 }
 
-const uploadITR = async (dispatch, files) => {
+const uploadITR = async (dispatch, files, uploadedFileIdsWithName) => {
   try {
     const uploadedDocIds = []
     for (let r = 0; r < files.length; r++) {
@@ -38,7 +38,7 @@ const uploadITR = async (dispatch, files) => {
     files.forEach((file) => {
       file.uploading = false
     })
-    await dispatch.formDetails.setItrFiles(files)
+    await dispatch.formDetails.setItrFiles(uploadedFileIdsWithName ? [...uploadedFileIdsWithName, ...files] : files)
     return { uploadedDocIds }
   } catch (e) {
     console.log('Inside uploadITR() exception occured', e)
@@ -138,9 +138,9 @@ const ITRUploadField = (props) => {
 
   const onFileChange = (allFiles) => {
     setIsUploadDone(false)
-    const newFilesAdded = getNewFileAdded(allFiles, itrFiles)
+    const newFilesAdded = getNewFileAdded(allFiles, uploadedFileIdsWithName)
     if (newFilesAdded.length > 0) {
-      uploadFiles.run(dispatch, newFilesAdded)
+      uploadFiles.run(dispatch, newFilesAdded, uploadedFileIdsWithName)
     }
   }
   return (
