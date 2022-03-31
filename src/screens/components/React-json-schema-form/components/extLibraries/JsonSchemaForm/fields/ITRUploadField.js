@@ -91,8 +91,8 @@ const ITRUploadField = (props) => {
     manual: true,
     onSuccess: (result, params) => {
       const { uploadedDocIds } = result
-      const allUploadedDocIds = props.value
-        ? [...props.value, ...uploadedDocIds]
+      const allUploadedDocIds = props.formData
+        ? [...props.formData, ...uploadedDocIds]
         : uploadedDocIds
       props.onChange(allUploadedDocIds)
       setIsUploadDone(true)

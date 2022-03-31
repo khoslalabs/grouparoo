@@ -163,7 +163,7 @@ const BankStatementUploadField = (props) => {
     manual: true,
     onSuccess: (result, params) => {
       const { uploadedDocIds } = result
-      const allUploadedDocIds = props.formData ? [...props.value, ...uploadedDocIds] : uploadedDocIds
+      const allUploadedDocIds = props.formData ? [...props.formData, ...uploadedDocIds] : uploadedDocIds
       props.onChange(allUploadedDocIds)
       setIsUploadDone(true)
       Toast.show({
