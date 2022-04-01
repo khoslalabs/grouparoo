@@ -59,7 +59,7 @@ const formDetails = {
       return state
     },
     removeItrFiles: (state, removeFile) => {
-      const newStatements = state.itrFiles.filter(f => f.uri !== removeFile.uri)
+      const newStatements = state.itrFiles.filter(f => f.name !== removeFile.name)
       state.itrFiles = [...newStatements]
       return state
     },
@@ -122,7 +122,7 @@ const formDetails = {
       return state
     },
     removeFromBankStatementFiles: (state, removeFile) => {
-      const newStatements = state.bankStatementFiles.filter(f => f.uri !== removeFile.uri)
+      const newStatements = state.bankStatementFiles.filter(f => f.name !== removeFile.name)
       state.bankStatementFiles = [...newStatements]
       return state
     },
