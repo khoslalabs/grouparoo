@@ -95,6 +95,7 @@ const ApplicationForm = (props) => {
         formId={formId}
         stepSchemaName={stepSchemaName}
         token={token}
+        navigation={props.navigation}
       />
     </View>
   )

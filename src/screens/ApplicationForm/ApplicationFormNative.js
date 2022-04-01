@@ -27,7 +27,7 @@ class ApplicationFormNative extends React.PureComponent {
   }
 
   render () {
-    const { currentLoanApplication, borrowingEntity, jwt, isAgreement } = this.props
+    const { currentLoanApplication, borrowingEntity, jwt, isAgreement, navigation } = this.props
     const { eva: { style } } = this.props
     const formId = isAgreement ? borrowingEntity.loanAggrementFormId : borrowingEntity.loanAssessmentFormId
     const stepSchemaName = isAgreement ? borrowingEntity.stepsAgreementMobile : borrowingEntity.stepsAssessmentMobile
@@ -38,6 +38,7 @@ class ApplicationFormNative extends React.PureComponent {
           formId={formId}
           stepSchemaName={stepSchemaName}
           token={jwt}
+          navigation={navigation}
         />
       </View>
     )

@@ -15,7 +15,7 @@ import SpinnerButton from '../../../SpinnerButton'
 import styleConstants from '../../styleConstants'
 import { LocalizationContext } from '../../translation/Translation'
 import appConstants from '../../constants/appConstants'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import ResourceFactoryConstants from '../../services/ResourceFactoryConstants'
 import DataService from '../../services/DataService'
 import merge from 'lodash/merge'
@@ -36,7 +36,8 @@ const JsonSchemaMultiStepForm = ({
   setLiveValidate,
   formId,
   stepSchemaName,
-  token
+  token,
+  navigation
 }) => {
   useAppState({
     onBackground: () => apiService.appApi.stateEvents.send({
@@ -84,6 +85,7 @@ const JsonSchemaMultiStepForm = ({
   const [loaderVisibility, setLoaderVisibility] = useState(false)
   const totalSteps = Object.keys(steps).length
   const step = steps[currentStep.toString()]
+  const dispatch = useDispatch()
   step.liveValidate = isSubmit
   const onSubmit = (form, stepIndex) => {
     setLiveValidate(false)
@@ -269,7 +271,11 @@ const JsonSchemaMultiStepForm = ({
         </View>
       )}
       {finalSaveMessageVisibility && (
-        <FormSuccess />
+        <FormSuccess onOkay={async () => {
+          await dispatch.authentication.checkAndAuthenticateUser() // it will load the ApplicationForm with latest data
+          navigation.push('Onboarding')
+        }}
+        />
       )}
     </>
   )

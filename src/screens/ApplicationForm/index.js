@@ -79,6 +79,7 @@ const ApplicationForm = ({ navigation, route }) => {
           <ApplicationFormNative
             currentLoanApplication={currentLoanApplication}
             isAgreement={isAgreement}
+            navigation={navigation}
           />
         )}
         <SimpleModal
