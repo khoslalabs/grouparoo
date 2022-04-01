@@ -23,6 +23,7 @@ import IconUtil from '../common/IconUtil'
 import crashlytics from '@react-native-firebase/crashlytics'
 import ErrorUtil from '../../../../Errors/ErrorUtil'
 import FormSuccess from './FormSuccess'
+import { useRequest } from 'ahooks'
 const FIRST_STEP_INDEX = 1
 const finalformObject = {}
 const JsonSchemaMultiStepForm = ({
@@ -219,7 +220,10 @@ const JsonSchemaMultiStepForm = ({
     uiSchema,
     step
   })
-
+  const useOkayHandler = useRequest(async () => {
+    await dispatch.authentication.checkAndAuthenticateUser() // it will load the ApplicationForm with latest data
+    navigation.push('Onboarding')
+  }, { manual: true })
   return (
     <>
       {/* <HorizontalProgressBar progressNum={(currentStep * 100) / totalSteps} /> */}
@@ -271,10 +275,9 @@ const JsonSchemaMultiStepForm = ({
         </View>
       )}
       {finalSaveMessageVisibility && (
-        <FormSuccess onOkay={async () => {
-          await dispatch.authentication.checkAndAuthenticateUser() // it will load the ApplicationForm with latest data
-          navigation.push('Onboarding')
-        }}
+        <FormSuccess
+          onOkay={() => useOkayHandler.run()}
+          loading={useOkayHandler.loading}
         />
       )}
     </>

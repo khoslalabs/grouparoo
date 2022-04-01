@@ -1,5 +1,4 @@
 import {
-  Button,
   StyleService,
   Text,
   useStyleSheet
@@ -9,7 +8,8 @@ import React, { useContext } from 'react'
 import { PaymentSuccessIcon } from '../../../ThemedIcons'
 import { View } from 'react-native'
 import { LocalizationContext } from '../../translation/Translation'
-const FormSuccess = ({ isButtonVisible = true, description, onOkay }) => {
+import SpinnerButton from '../../../SpinnerButton'
+const FormSuccess = ({ isButtonVisible = true, description, onOkay, loading }) => {
   const styles = useStyleSheet(themedStyles)
   const { translations } = useContext(LocalizationContext)
   return (
@@ -25,7 +25,7 @@ const FormSuccess = ({ isButtonVisible = true, description, onOkay }) => {
       </View>
       {isButtonVisible &&
         <View style={styles.buttonContainer}>
-          <Button status='primary' onPress={onOkay}>{translations['text.okay']}</Button>
+          <SpinnerButton loading={loading} onPress={onOkay}>{translations['text.okay']}</SpinnerButton>
         </View>}
     </View>
   )
