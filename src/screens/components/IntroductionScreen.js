@@ -9,6 +9,7 @@ import {
 } from '@ui-kitten/components'
 import ScreenTitle from './ScreenTitle'
 import styleConstants from '../styleConstants'
+import { heightPercentageToDP } from 'react-native-responsive-screen'
 const IntroductionScreenComponent = ({
   title,
   description,
@@ -107,8 +108,8 @@ const themedStyles = StyleService.create({
     width: '95%'
   },
   contentContainer: {
-    backgroundColor: 'background-basic-color-1'
-    // flex: 1
+    backgroundColor: 'background-basic-color-1',
+    minHeight: heightPercentageToDP('93%')
   },
   itemContainer: {
     display: 'flex',

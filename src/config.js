@@ -15,7 +15,7 @@ export const config = {
     loanProductCollectionId: '6200fbbf2bd8d3306064', // Use this later
     loanProductMetadataFunctionId: '6201da9175a47a240fc1', // Loan products metadata
     loanTypesCollectionId: '62009a62478bcc3611a5',
-    retrieveLoanOffersFunctionId: '61ff837314b01addd96a',
+    retrieveLoanOffersFunctionId: '624aee82597da830b063',
     borrowingEntitiesCollectionId: '620274f11aaf04f08370',
     retrieveLoanApplicationFunctionId: '61ff77ef81669037d64a',
     addressCollectionId: '61fc93bfae7d80de1ae2',
