@@ -122,6 +122,7 @@
   "download.downloadText": "Download",
   "text.okay":"OKAY",
   "loan.agreement.consent.message":"I agree to the terms and conditions",
+  "loan.offer.error.required": "Please select one of the loan offer below.",
   "mobile.otp.validate":"Mobile has been validated successfully",
   "bank.details.title": "Bank A/c details",
   "bank.details.decription": "Your loan amount will be credited in the following Bank a/c.",

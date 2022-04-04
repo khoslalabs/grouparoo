@@ -1,13 +1,17 @@
 import { useRequest } from 'ahooks'
-import React from 'react'
+import React, { useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import LoanOffers from '../../../../../LoanOffers'
+import isEmpty from 'lodash.isempty'
+import { StyleSheet } from 'react-native'
 import {
   Placeholder,
   PlaceholderMedia,
   PlaceholderLine,
   Fade
 } from 'rn-placeholder'
+import { Text } from '@ui-kitten/components'
+import { LocalizationContext } from '../../../../translation/Translation'
 const Loading = () => (
   <>
     <Placeholder Animation={Fade} Left={PlaceholderMedia}>
@@ -27,6 +31,7 @@ const getAllLoanOffers = async (dispatch, loanApplicationId) => {
   await dispatch.loanOffers.getOffersForApplication({ loanApplicationId })
 }
 const LoanOffersWidget = (props) => {
+  const { translations } = useContext(LocalizationContext)
   const dispatch = useDispatch()
   const loanApplicationId = useSelector(state => state.loanApplications.currentLoanApplicationId)
   const { loading } = useRequest(() => getAllLoanOffers(dispatch, loanApplicationId))
@@ -38,6 +43,13 @@ const LoanOffersWidget = (props) => {
   }
   return (
     <>
+      {
+        !isEmpty(props.errorSchema) && (
+          <Text style={styles.error} category='p2' status='danger'>
+            {translations['loan.offer.error.required']}
+          </Text>
+        )
+      }
       {loading && <Loading />}
       {!loading &&
         <LoanOffers
@@ -50,4 +62,9 @@ const LoanOffersWidget = (props) => {
   )
 }
 
+const styles = StyleSheet.create({
+  error: {
+    marginVertical: 10
+  }
+})
 export default LoanOffersWidget
