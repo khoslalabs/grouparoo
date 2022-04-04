@@ -107,8 +107,8 @@ const themedStyles = StyleService.create({
     width: '95%'
   },
   contentContainer: {
-    backgroundColor: 'background-basic-color-1',
-    flex: 1
+    backgroundColor: 'background-basic-color-1'
+    // flex: 1
   },
   itemContainer: {
     display: 'flex',
