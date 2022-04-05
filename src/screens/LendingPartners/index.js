@@ -22,7 +22,7 @@ const LendingPartners = ({ navigation, route }) => {
           </View>
         </View>
         <View style={styles.row}>
-          <Text category='c2' appearance='hint'>{translations['lending.partner.email']}: </Text>
+          <Text category='c1' appearance='hint'>{translations['lending.partner.email']}: </Text>
           <TouchableOpacity onPress={() => Linking.openURL('mailto:statutory.compliance@arthmate.com')}><Text category='c2' status='success'>statutory.compliance@arthmate.com </Text></TouchableOpacity>
         </View>
         <View style={styles.row}>

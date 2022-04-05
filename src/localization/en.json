@@ -150,7 +150,7 @@
   "auth.forgotPassword.enterEmail": "Let's help you out! Start with entering your email",
   "auth.forgotPassword.reset": "Reset Password",
   "auth.forgotPassword.forgotButton": "Forgot Password? Click to reset password",
-  "auth.lending.partners": "Click to see our lending partners",
+  "auth.lending.partners": "Our Lending Partners",
   "auth.password": "Password",
   "auth.password.criteria": "Minimum 8 characters",
   "auth.otp": "OTP",
