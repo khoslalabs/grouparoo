@@ -58,7 +58,7 @@ export const config = {
   loanApplicationWebView: 'https://dev-codeapp.novopay.in/?formName=onboarding_test&stepSchemaName=onboarding_test_mob&isHeaderRequired=false',
   // loanApplicationWebView: 'https://92da-111-125-218-187.ngrok.io/?formName=onboarding_test&stepSchemaName=onboarding_test_mob&isHeaderRequired=false'
   LOAN_APPLICATION_TYPE: 'loanapp',
-  FINBOX_CLIENT_API_KEY: 'AKIAZUHCZC3Y56ERFIAQ',
+  FINBOX_CLIENT_API_KEY: 'HKKK42YfZh5tCkD0tZ0LH631mT0lYkj799StDtfK',
   LOAN_DISBURSED_STATUS: 'DISBURSED',
   LOAN_CLOSED_STATUS: 'CLOSED',
   REPAYMENT_PENDIND_STATUS: 'PEN',

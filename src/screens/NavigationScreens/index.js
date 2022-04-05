@@ -29,6 +29,7 @@ import AuthWrapper from './AuthWrapper'
 import FormWrapper from './FormWrapper'
 import IntroWrapper from './IntroWrapper'
 import ModalWrapper from './ModalWrapper'
+import LendingPartners from '../LendingPartners'
 const WrapScreen = (Component, props) => {
   return (
     <ScreenWrapper {...props}>
@@ -180,6 +181,13 @@ export const NavigationScreens = options => {
       icon: ManageLoanApplicationsIcon,
       options,
       tabOrder: 102
+    },
+    {
+      name: 'LendingPartners',
+      Component: (props) => WrapAuthScreen(LendingPartners, props),
+      title: 'form.lending.partners.title',
+      navigations: ['auth'],
+      options
     }
   ]
   return navigations

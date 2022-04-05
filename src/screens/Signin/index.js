@@ -105,60 +105,73 @@ const SignIn = ({ navigation, route }) => {
   }
   const showError = (loginUserRequest.loading === false) && (showLoginError === true && isLoggedIn === false)
   return (
-    <KeyboardAwareScrollView style={styles.container}>
-      <ScreenTitle title={title} description={translations['auth.signInWithEmail']} />
-      <View style={styles.formContainer}>
-        <Input
-          label={translations['form.email']}
-          placeholder={translations['form.email']}
-          value={email}
-          status={(showError || !isEmailValid) && 'danger'}
-          onChangeText={(text) => setEmail(text.trim())}
-          accessoryRight={FormIcons.FormEmailIcon}
-          caption={!isEmailValid ? renderError : <></>}
-        />
-        <Input
-          style={styles.passwordInput}
-          secureTextEntry
-          placeholder={translations['form.password']}
-          label={translations['form.password']}
-          value={password}
-          status={(showError || !isPasswordValid) && 'danger'}
-          onChangeText={setPassword}
-          caption={() => (<Text appearance='hint' category='p2' status={!isPasswordValid ? 'danger' : 'basic'} style={styles.captionText}>{translations['auth.password.criteria']}</Text>)}
-        />
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
+      <View>
+        <ScreenTitle title={title} description={translations['auth.signInWithEmail']} />
+        <View style={styles.formContainer}>
+          <Input
+            label={translations['form.email']}
+            placeholder={translations['form.email']}
+            value={email}
+            status={(showError || !isEmailValid) && 'danger'}
+            onChangeText={(text) => setEmail(text.trim())}
+            accessoryRight={FormIcons.FormEmailIcon}
+            caption={!isEmailValid ? renderError : <></>}
+          />
+          <Input
+            style={styles.passwordInput}
+            secureTextEntry
+            placeholder={translations['form.password']}
+            label={translations['form.password']}
+            value={password}
+            status={(showError || !isPasswordValid) && 'danger'}
+            onChangeText={setPassword}
+            caption={() => (<Text appearance='hint' category='p2' status={!isPasswordValid ? 'danger' : 'basic'} style={styles.captionText}>{translations['auth.password.criteria']}</Text>)}
+          />
+        </View>
+        {
+          showError === true && (
+            <Text style={styles.signinErrorLabel} category='p2' status='danger'>
+              {translations['auth.signIn.error']}
+            </Text>
+          )
+        }
+        <View style={styles.bottomButtonContainer}>
+          <Button
+            status='primary'
+            onPress={onSignInButtonPress}
+            accessoryRight={loadingIndicator}
+          >
+            {translations['auth.signInButton'].toUpperCase()}
+          </Button>
+          <Button
+            style={styles.signUpButton}
+            appearance='ghost'
+            size='small'
+            status='basic'
+            onPress={onForgotButtonPressed}
+          >
+            {translations['auth.forgotPassword.forgotButton']}
+          </Button>
+          <Button
+            style={styles.signUpButton}
+            appearance='ghost'
+            status='primary'
+            onPress={onSignUpButtonPress}
+          >
+            {translations['auth.signUpReminder']}
+          </Button>
+        </View>
       </View>
-      {
-        showError === true && (
-          <Text style={styles.signinErrorLabel} category='p2' status='danger'>
-            {translations['auth.signIn.error']}
-          </Text>
-        )
-      }
-      <View style={styles.bottomButtonContainer}>
+      <View>
         <Button
-          status='primary'
-          onPress={onSignInButtonPress}
-          accessoryRight={loadingIndicator}
-        >
-          {translations['auth.signInButton'].toUpperCase()}
-        </Button>
-        <Button
-          style={styles.signUpButton}
+          style={styles.lendingPartnerButton}
           appearance='ghost'
           size='small'
           status='basic'
-          onPress={onForgotButtonPressed}
+          onPress={() => navigation.navigate('LendingPartners')}
         >
-          {translations['auth.forgotPassword.forgotButton']}
-        </Button>
-        <Button
-          style={styles.signUpButton}
-          appearance='ghost'
-          status='primary'
-          onPress={onSignUpButtonPress}
-        >
-          {translations['auth.signUpReminder']}
+          {translations['auth.lending.partners']}
         </Button>
       </View>
     </KeyboardAwareScrollView>
@@ -169,15 +182,14 @@ const themedStyles = StyleService.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    paddingHorizontal: 16
-    // justifyContent: 'flex-start'
+    paddingHorizontal: 16,
+    justifyContent: 'space-between'
   },
 
   socialAuthContainer: {
     marginTop: 48
   },
   formContainer: {
-    flex: 1,
     marginTop: 32
   },
   passwordInput: {
@@ -231,6 +243,9 @@ const themedStyles = StyleService.create({
   captionText: {
     fontSize: 12,
     fontWeight: '400'
+  },
+  lendingPartnerButton: {
+    marginBottom: 10
   }
 })
 

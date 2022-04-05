@@ -363,7 +363,6 @@ export const appApi = {
     loanAgreement: {
       execute: async (loanApplicationId) => {
         try {
-          loanApplicationId = '29561a-06' // TODO: Need to fix it later
           const payload = JSON.stringify({ loanApplicationId })
           const executionDetails = await sdk.functions.createExecution(config.appWrite.loanAgreementFunctionId, payload)
           return executionDetails.$id
