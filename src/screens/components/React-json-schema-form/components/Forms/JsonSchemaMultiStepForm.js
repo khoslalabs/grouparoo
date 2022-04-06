@@ -221,7 +221,7 @@ const JsonSchemaMultiStepForm = ({
     step
   })
   const useOkayHandler = useRequest(async () => {
-    await dispatch.authentication.checkAndAuthenticateUser() // it will load the ApplicationForm with latest data
+    await dispatch.authentication.reloadTheFormWithLatestData() // it will load the app with latest data
     navigation.push('Onboarding')
   }, { manual: true })
   return (

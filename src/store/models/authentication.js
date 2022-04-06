@@ -140,6 +140,20 @@ const authentication = {
     },
     async resetAccountExistsFlag () {
       await dispatch.authentication.updateAccountExistsFlag()
+    },
+    async reloadTheFormWithLatestData (_, rootState) {
+      const customer = rootState?.customer
+      const customerDetails = customer?.customerDetails
+      const loanApplications = await getAllLoanApplications(customerDetails.$id)
+      await Promise.all([
+        dispatch.customer.setCustomer({
+          customer,
+          isFirstTime: false,
+          customerDetails,
+          loanApplications,
+          prefs: customer.prefs
+        })
+      ])
     }
   })
 }
@@ -148,6 +162,7 @@ const commonAuthenticateSteps = async (dispatch, customer, isFirstTime, customer
     customerDetails = await apiService.appApi.customer.getCustomerByUserId(customer.$id)
   }
   const loanApplications = await getAllLoanApplications(customerDetails.$id)
+  console.log('loanApplications', loanApplications)
   await Promise.all([
     dispatch.customer.setCustomer({
       customer,
