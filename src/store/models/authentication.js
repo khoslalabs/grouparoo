@@ -162,7 +162,6 @@ const commonAuthenticateSteps = async (dispatch, customer, isFirstTime, customer
     customerDetails = await apiService.appApi.customer.getCustomerByUserId(customer.$id)
   }
   const loanApplications = await getAllLoanApplications(customerDetails.$id)
-  console.log('loanApplications', loanApplications)
   await Promise.all([
     dispatch.customer.setCustomer({
       customer,
