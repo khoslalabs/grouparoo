@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { View } from 'react-native'
+import { View, TouchableWithoutFeedback } from 'react-native'
 import {
   Button,
   Input,
   Text,
   StyleService,
   useStyleSheet,
-  Spinner
+  Spinner,
+  Icon,
+  useTheme
 } from '@ui-kitten/components'
 import { useStore, useSelector, useDispatch } from 'react-redux'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -32,6 +34,16 @@ const SignIn = ({ navigation, route }) => {
   const styles = useStyleSheet(themedStyles)
   const [isEmailValid, setIsEmailValid] = useState(true)
   const [isPasswordValid, setIsPasswordValid] = useState(true)
+  const [secureTextEntry, setSecureTextEntry] = useState(true)
+  const theme = useTheme()
+  const toggleSecureEntry = () => {
+    setSecureTextEntry(!secureTextEntry)
+  }
+  const renderIcon = (props) => (
+    <TouchableWithoutFeedback onPress={toggleSecureEntry}>
+      <Icon {...props} name={secureTextEntry ? 'eye-off' : 'eye'} fill={theme['color-basic-600']} width={24} height={24} />
+    </TouchableWithoutFeedback>
+  )
   const loginUserRequest = useRequest(loginUser, {
     manual: true
   })
@@ -120,11 +132,12 @@ const SignIn = ({ navigation, route }) => {
           />
           <Input
             style={styles.passwordInput}
-            secureTextEntry
+            secureTextEntry={secureTextEntry}
             placeholder={translations['form.password']}
             label={translations['form.password']}
             value={password}
             status={(showError || !isPasswordValid) && 'danger'}
+            accessoryRight={renderIcon}
             onChangeText={setPassword}
             caption={() => (<Text appearance='hint' category='p2' status={!isPasswordValid ? 'danger' : 'basic'} style={styles.captionText}>{translations['auth.password.criteria']}</Text>)}
           />

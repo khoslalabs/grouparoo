@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { View } from 'react-native'
+import { View, TouchableWithoutFeedback } from 'react-native'
 import { useRequest } from 'ahooks'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -8,7 +8,9 @@ import {
   Text,
   StyleService,
   useStyleSheet,
-  Spinner
+  Spinner,
+  useTheme,
+  Icon
 } from '@ui-kitten/components'
 import ScreenTitle from '../components/ScreenTitle'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -39,6 +41,16 @@ const SetPassword = ({ navigation, route }) => {
   const isAccountExists = useSelector(state => state.authentication.accountExists)
   const isLoggedIn = useSelector(state => state.authentication.isLoggedIn)
   const styles = useStyleSheet(themedStyles)
+  const [secureTextEntry, setSecureTextEntry] = useState(true)
+  const theme = useTheme()
+  const toggleSecureEntry = () => {
+    setSecureTextEntry(!secureTextEntry)
+  }
+  const renderIcon = (props) => (
+    <TouchableWithoutFeedback onPress={toggleSecureEntry}>
+      <Icon {...props} name={secureTextEntry ? 'eye-off' : 'eye'} fill={theme['color-basic-600']} width={24} height={24} />
+    </TouchableWithoutFeedback>
+  )
 
   useEffect(() => {
     if (isSignInBtnClicked) {
@@ -95,12 +107,13 @@ const SetPassword = ({ navigation, route }) => {
           <ScreenTitle title={title} description={translations['auth.setPassword.desc']} />
           <Input
             style={styles.passwordInput}
-            secureTextEntry
+            secureTextEntry={secureTextEntry}
             placeholder={translations['form.password']}
             label={translations['form.password']}
             value={userPassword}
             caption={() => (<Text appearance='hint' status={!isUserPasswordValid ? 'danger' : 'basic'} style={styles.captionText}>{translations['auth.password.criteria']}</Text>)}
             size='large'
+            accessoryRight={renderIcon}
             onChangeText={setUserPassword}
           />
         </View>
