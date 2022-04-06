@@ -10,7 +10,7 @@ const LendingPartners = ({ navigation, route }) => {
   const title = route.params?.title
   return (
     <>
-      <ScreenTitle title={title} description={translations['form.lending.partners.description']} />
+      <ScreenTitle title={title} />
       <Card style={styles.partnersContainer}>
         <Image source={require('../../assets/images/Arthmatelogopng.png')} resizeMode='center' style={styles.image} />
         <View style={styles.row}>
