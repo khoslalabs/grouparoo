@@ -68,7 +68,7 @@ const AppPermissions = (props) => {
     setLoading(true)
     const permissionResults = await processPermissions(rationale, translations)
     if (permissionResults[PERMISSIONS.ANDROID.READ_SMS] === RESULTS.GRANTED) {
-      // getDeviceConnectData(customerId) TODO: Need to Fix, crashing the app
+      getDeviceConnectData(customerId)
     }
     updatePermissionRequest.run(dispatch, permissionResults)
   }
