@@ -4,6 +4,9 @@ import crashlytics from '@react-native-firebase/crashlytics'
 import apiService from '../../apiService'
 import { config } from '../../config'
 import { getAppFcmToken } from '../../services/push.notifications'
+import ResourceFactoryConstants from '../../screens/components/React-json-schema-form/services/ResourceFactoryConstants'
+import DataService from '../../screens/components/React-json-schema-form/services/DataService'
+import { Gzip } from '../../utils'
 const authentication = {
   name: 'authentication',
   state: {
@@ -184,17 +187,38 @@ const commonAuthenticateSteps = async (dispatch, customer, isFirstTime, customer
 }
 const getAllLoanApplications = async (customerId) => {
   try {
-    const executionId = await apiService.appApi.loanApplication.getAllLoanApplications.execute(customerId)
-    const loanApplications = await apiService.appApi.loanApplication.getAllLoanApplications.get(executionId)
+    let loanApplications
+    if (config.APPWRITE_FUNCTION_CALL) {
+      const executionId = await apiService.appApi.loanApplication.getAllLoanApplications.execute(customerId)
+      loanApplications = await apiService.appApi.loanApplication.getAllLoanApplications.get(executionId)
+    } else {
+      const endpoints = new ResourceFactoryConstants()
+      const res = await DataService.postData(endpoints.constants.appwriteAlternative.getLoanApplications, { customerId })
+      const unzippedData = Gzip.unzip(res.data)
+      const tempLoanApplications = JSON.parse(unzippedData)
+      if (tempLoanApplications.length > 0) {
+        return tempLoanApplications.map(la => JSON.parse(la))
+      } else {
+        return []
+      }
+    }
     return loanApplications
   } catch (err) {
+    console.error('While login:', err)
     crashlytics().log(err)
     throw err
   }
 }
 const createLoanApplication = async () => {
-  const executionId = await apiService.appApi.loanApplication.createLoanApplicationId.execute()
-  const loanApplicationId = await apiService.appApi.loanApplication.createLoanApplicationId.get(executionId)
+  let loanApplicationId
+  if (config.APPWRITE_FUNCTION_CALL) {
+    const executionId = await apiService.appApi.loanApplication.createLoanApplicationId.execute()
+    loanApplicationId = await apiService.appApi.loanApplication.createLoanApplicationId.get(executionId)
+  } else {
+    const endpoints = new ResourceFactoryConstants()
+    const res = await DataService.getData(endpoints.constants.appwriteAlternative.getNewLoanApplicationId)
+    loanApplicationId = res.data.loanApplicationId.toString()
+  }
   return loanApplicationId
 }
 

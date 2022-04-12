@@ -3,6 +3,9 @@ import isEmpty from 'lodash.isempty'
 import isUndefined from 'lodash.isundefined'
 import apiService from '../../../apiService'
 import maxBy from 'lodash.maxby'
+import { config } from '../../../config'
+import ResourceFactoryConstants from '../../../screens/components/React-json-schema-form/services/ResourceFactoryConstants'
+import DataService from '../../../screens/components/React-json-schema-form/services/DataService'
 
 const addLoanAplication = (state, loanApplication) => {
   if (loanApplication.data.status === 'ACTIVE') {
@@ -22,7 +25,7 @@ const addLoanApplications = (state, { loanApplications }) => {
       loanApplications.forEach(la => {
         const { data, ...rest } = la
         // FIXME: remove this when done
-        rest.processState = 'cpvCompleted'
+        rest.processState = 'cpvInitiated'
         state.applications[data.loanApplicationId] = data
         state.applicationStage[data.loanApplicationId] = rest
         if (la.status === 'ACTIVE') {
@@ -169,8 +172,20 @@ const loanApplications = {
     },
     async generateLoanAgreement ({ loanApplicationId }, rootState) {
       try {
-        const executionId = await apiService.appApi.loanApplication.loanAgreement.execute(loanApplicationId)
-        const loanAgreementId = await apiService.appApi.loanApplication.loanAgreement.get(executionId)
+        let loanAgreementId
+        if (config.APPWRITE_FUNCTION_CALL) {
+          const executionId = await apiService.appApi.loanApplication.loanAgreement.execute(loanApplicationId)
+          loanAgreementId = await apiService.appApi.loanApplication.loanAgreement.get(executionId)
+        } else {
+          const payload = JSON.stringify({ loanApplicationId })
+          const endpoints = new ResourceFactoryConstants()
+          const res = await DataService.postData(endpoints.constants.appwriteAlternative.getNewLoanAgreementId, payload)
+          const data = JSON.parse(res.data)
+          loanAgreementId = data.loanAgreementId
+          if (data.status === 'FAILED') {
+            throw new Error('CANNOT_GET_LOANAGREEMET_ID')
+          }
+        }
         dispatch.loanApplications.setLoanAgreementId({ loanAgreementId, loanApplicationId })
       } catch (e) {
         console.log(e)

@@ -6,6 +6,7 @@ class ResourceFactoryConstants {
   documentGatewayURL = "/api-gateway/document/v1/";
   platformApiGatewayURL = "/api-gateway/api/v1/";
   voyagerContext = "voyager/";
+  appwriteApiGateway = "https://dev-functions.novopay.in"
   apiGateWay = "https://dev-codeapp.novopay.in";
   adapterServiceUrl = "https://novo-adapter-qa.novopay.in/";
   appWriteUrl = "https://dev-appwrite.novopay.in/v1/";
@@ -165,6 +166,16 @@ class ResourceFactoryConstants {
     finbox: {
       getSessionAPI: "https://portal.finbox.in/bank-connect/v1/session/",
     },
+    // below apis will be called, if appWrite function call would be disabled
+    appwriteAlternative: {
+      validateBankStatement: this.getCustomUrl(this.appwriteApiGateway,'bankstatement','/validate/'),
+      indicativeLoanOffers: this.getCustomUrl(this.appwriteApiGateway,'offers','/indicative/'),
+      getLoanProducts: this.getCustomUrl(this.appwriteApiGateway,'metadata','/loan/'),
+      getLoanApplications: this.getCustomUrl(this.appwriteApiGateway,'retrieve','/application/'),
+      getAllLoans: this.getCustomUrl(this.appwriteApiGateway,'accounts','/lms/'),
+      getNewLoanApplicationId: this.getCustomUrl(this.appwriteApiGateway,'id','/loanapplication/'),
+      getNewLoanAgreementId: this.getCustomUrl(this.appwriteApiGateway,'id','/loanapplication/') // need to change to loanAgreementId api
+    }
   };
 
   getApiUrl(apiName) {

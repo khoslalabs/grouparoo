@@ -95,5 +95,8 @@ export const config = {
   APP_STAGE_CPV_COMPLETE: 'cpvCompleted',
   APP_STAGE_CPV_INITIATED: 'cpvInitiated',
   LOAN_APP_PROGRESS_COMPLETE: 'COMPLETE',
-  LOAN_APP_PROGRESS_INCOMPLETE: 'INCOMPLETE'
+  LOAN_APP_PROGRESS_INCOMPLETE: 'INCOMPLETE',
+
+  // if false, rest api call will be done otherwise app write function will be called
+  APPWRITE_FUNCTION_CALL: false
 }

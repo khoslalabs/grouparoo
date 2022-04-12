@@ -14,8 +14,8 @@ import DocumentUploadComponent from '../common/DocumentUploadComponent'
 import ReactJsonSchemaUtil from '../../../../services/ReactJsonSchemaFormUtil'
 import apiService from '../../../../../../../apiService'
 import { WebView } from 'react-native-webview'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import appConstants from '../../../../constants/appConstants'
+import { config } from '../../../../../../../config'
 
 const getNewFileAdded = (newFiles, oldFiles = []) => {
   if (newFiles.length === 0) {
@@ -105,8 +105,15 @@ const uploadToAppWrite = async (file) => {
 
 const validateBankStatement = async (panData, bankStatementData) => {
   try {
-    const executionId = await apiService.appApi.bankStatement.validation.execute({ panData, bankStatementData })
-    const validationResult = await apiService.appApi.bankStatement.validation.get(executionId)
+    let validationResult
+    if (config.APPWRITE_FUNCTION_CALL) {
+      const executionId = await apiService.appApi.bankStatement.validation.execute({ panData, bankStatementData })
+      validationResult = await apiService.appApi.bankStatement.validation.get(executionId)
+    } else {
+      const endpoints = new ResourceFactoryConstants()
+      const res = await DataService.postData(endpoints.constants.appwriteAlternative.validateBankStatement, { panData, bankStatementData })
+      validationResult = res.data
+    }
     if (validationResult.status === 'success') {
       return true
     } else {

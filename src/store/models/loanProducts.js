@@ -1,5 +1,7 @@
 import apiService from '../../apiService'
 import { config } from '../../config'
+import DataService from '../../screens/components/React-json-schema-form/services/DataService'
+import ResourceFactoryConstants from '../../screens/components/React-json-schema-form/services/ResourceFactoryConstants'
 const loanProducts = {
   name: 'loanProducts',
   state: {
@@ -106,8 +108,15 @@ const loanProducts = {
   effects: (dispatch) => ({
     async getAllProducts (_, rootState) {
       try {
-        const executionId = await apiService.appApi.loanProducts.getAll.execute()
-        const products = await apiService.appApi.loanProducts.getAll.get(executionId)
+        let products
+        if (config.APPWRITE_FUNCTION_CALL) {
+          const executionId = await apiService.appApi.loanProducts.getAll.execute()
+          products = await apiService.appApi.loanProducts.getAll.get(executionId)
+        } else {
+          const endpoints = new ResourceFactoryConstants()
+          const res = await DataService.postData(endpoints.constants.appwriteAlternative.getLoanProducts)
+          products = res.data
+        }
         dispatch.loanProducts.setLoanProducts({ products })
       } catch (e) {
         throw new Error(e.message)
