@@ -6735,6 +6735,11 @@ load-json-file@^5.2.0:
     strip-bom "^3.0.0"
     type-fest "^0.3.0"
 
+loanjs@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/loanjs/-/loanjs-1.0.7.tgz#348b64c2f1862c31db00e49fa21ac90856d32238"
+  integrity sha512-YRFOQUbFZH1iM8T8MLBR1CJph9+x0D5fY11UQomlnw7IJ7qeM4rrFHdG6uiZ9yJDAS552mfwaMmXkZwEN7a8xw==
+
 localized-strings@^0.2.0:
   version "0.2.4"
   resolved "https://registry.yarnpkg.com/localized-strings/-/localized-strings-0.2.4.tgz#9d61c06b60cc7b5edf7c46e6c7f2d1ecb84aeb2c"
@@ -8594,10 +8599,10 @@ react-native-appstate-hook@1.0.0:
   resolved "https://registry.yarnpkg.com/react-native-appstate-hook/-/react-native-appstate-hook-1.0.0.tgz#ee9f05fd55d38aa9f5a45314d9967faf8ebc7107"
   integrity sha512-2UGN842kfN7Vv+3XPOloFCWvLRV/PyxHhotd36jnGqETM62xeqd57Qo4Lh7cpZ9buw+56W87mxw/k7lunZTVKw==
 
-react-native-blob-util@^0.13.18:
-  version "0.13.18"
-  resolved "https://registry.yarnpkg.com/react-native-blob-util/-/react-native-blob-util-0.13.18.tgz#7b924d55607bda380d6e9862b621ed1ac0c007ec"
-  integrity sha512-f9NyydQKMd24QiyW+LZmDg2rjCTi4GBff3UJzP1BDgEQ8aoHMs4MZmPs5erNH4E577qhEFp5v7HGzXVRQL8SnQ==
+react-native-blob-util@^0.14.1:
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/react-native-blob-util/-/react-native-blob-util-0.14.1.tgz#2c75816888439d8062b46dd6d703f5f41e38d35a"
+  integrity sha512-Rf2aURRqM7j96fFdO5tbiVlAsfLOkSyBqrAPlG4VcJj9jT6G7bVHebwJg7BBfTKWTFwPjiOIAdUjsjkGaUUOyQ==
   dependencies:
     base-64 "0.1.0"
     glob "^7.1.6"
@@ -8762,10 +8767,10 @@ react-native-restart@^0.0.22:
   resolved "https://registry.yarnpkg.com/react-native-restart/-/react-native-restart-0.0.22.tgz#81fcb7f31e35951d85410c68b9556acf3ab88705"
   integrity sha512-XwCqAMAKsO8yCM3xACPFKvkDQZe41lcavOuO0gUEu803IuTLtciualCq/qs83ryRDCDh1jkXYRqFjsGjLMCN3Q==
 
-react-native-risk-sdk@^1.2.4:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/react-native-risk-sdk/-/react-native-risk-sdk-1.2.4.tgz#d137a76c2b21cf7dd30c2937e8fc22510efd3fb4"
-  integrity sha512-8nWIRyR2OPiEe18r8qwyQ+lht93lF9mf7gjLJexSm57oLpsWviXHjyc/B/aT1TDefHkHj/GLWxzVjr5actngtA==
+react-native-risk-sdk@1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/react-native-risk-sdk/-/react-native-risk-sdk-1.2.6.tgz#67f87bafdd0aaf7a63b532507f5754c8f051fe70"
+  integrity sha512-wYJTrtTO4xdJW3z8j7RCEA5qpoZ1w6oDsjQmUld78n7DyDQ5IkLjNdJRKujFeGGZ2ImbtG9OsNL+uWtyqG/Ipg==
 
 react-native-safe-area-context@^3.2.0:
   version "3.2.0"

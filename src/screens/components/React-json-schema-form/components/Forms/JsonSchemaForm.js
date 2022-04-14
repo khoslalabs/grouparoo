@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useDispatch } from 'react-redux'
+import ReactJsonSchemaUtil from '../../services/ReactJsonSchemaFormUtil'
 
 import { RNForm } from '../extLibraries/JsonSchemaForm'
 const JsonSchemaForm = props => {
@@ -42,6 +43,7 @@ const JsonSchemaForm = props => {
         onChange={onFormDataUpdateHandler}
         formContext={cntxt}
         showErrorList={false}
+        transformErrors={ReactJsonSchemaUtil.transformErrors}
       >
         {props.children}
       </RNForm>

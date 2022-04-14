@@ -393,7 +393,7 @@ const loans = {
             }
           )
           const endpoints = new ResourceFactoryConstants()
-          const res = await DataService.postData(endpoints.constants.appwriteAlternative.getLoanProducts, payload)
+          const res = await DataService.postData(endpoints.constants.appwriteAlternative.getAllLoans, payload)
           allLoans = res.data
         }
         console.log('All Loans:', allLoans)

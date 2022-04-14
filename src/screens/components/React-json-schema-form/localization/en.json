@@ -133,5 +133,9 @@
   "bank.details.account.type": "A/c Type",
   "bank.details.hint": "If the above details are correct, please click on the below button",
   "enach.details.hint": "If the above details are correct, please click on the eMandate",
-  "esign.details.hint": "Please click on above button to esign the loan agreement" 
+  "esign.details.hint": "Please click on above button to esign the loan agreement",
+  "transform.error.required":"This is a required field",
+  "transform.error.pattern.name": "Invalid Name",
+  "transform.error.pattern.email": "Please provide correct Email Id",
+  "transform.error.invalid.data": "Invalid Data"  
 }
