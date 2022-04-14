@@ -266,6 +266,35 @@ export const appApi = {
         crashlytics().log(e)
         throw new Error('CANNOT_CREATE_NEW_CUSTOMER')
       }
+    },
+    getCustomerByEmailId: async (email) => {
+      const { appWrite } = config
+      const customerQuery = [
+        Query.equal('email', email)
+      ]
+      try {
+        const response = await sdk.database.listDocuments(appWrite.customersCollectionId, customerQuery)
+        console.log('response:', response)
+        if (response.documents.length > 0) {
+          const customerData = response.documents[0]
+          // remove all default values
+          Object.keys(customerData).forEach(key => {
+            if (customerData[key] === 'np') {
+              customerData[key] = undefined
+            }
+          })
+          return customerData
+        } else {
+          throw new Error('EMAIL_DOES_NOT_EXISTS')
+        }
+      } catch (e) {
+        console.error(e)
+        crashlytics().log(e)
+        if (e.message === 'EMAIL_DOES_NOT_EXISTS') {
+          throw e
+        }
+        throw new Error('CANNOT_GET_CUSTOMER_BY_EMAIL')
+      }
     }
   },
   preferences: {
