@@ -174,7 +174,7 @@ class ResourceFactoryConstants {
       getLoanApplications: this.getCustomUrl(this.appwriteApiGateway,'retrieve','/application/'),
       getAllLoans: this.getCustomUrl(this.appwriteApiGateway,'accounts','/lms/'),
       getNewLoanApplicationId: this.getCustomUrl(this.appwriteApiGateway,'id','/loanapplication/'),
-      getNewLoanAgreementId: this.getCustomUrl(this.appwriteApiGateway,'id','/loanapplication/') // need to change to loanAgreementId api
+      generateLoanAgreement: this.getCustomUrl(this.appwriteApiGateway,'loanagreement','/generate/') 
     }
   };
 

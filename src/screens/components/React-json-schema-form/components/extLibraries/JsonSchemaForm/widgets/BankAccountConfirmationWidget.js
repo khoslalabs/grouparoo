@@ -51,7 +51,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.holder.name']}</Text>
             </View>
             <View>
-              <Text category='h6' appearance='default' >{accountHolderName}</Text>
+              <Text style={styles.valueText} category='s1' appearance='default'>{accountHolderName}</Text>
             </View>
           </View>
           <View style={styles.line} />
@@ -60,7 +60,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.bank.name']}</Text>
             </View>
             <View>
-              <Text category='h6' appearance='default'>{bankName}</Text>
+              <Text style={styles.valueText} category='s1' appearance='default'>{bankName}</Text>
             </View>
           </View>
           <View style={styles.line} />
@@ -69,7 +69,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.account.number']}</Text>
             </View>
             <View>
-              <Text category='h6' appearance='default'>{accountNo}</Text>
+              <Text style={styles.valueText} category='s1' appearance='default'>{accountNo}</Text>
             </View>
           </View>
           <View style={styles.line} />
@@ -78,7 +78,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.ifsc']}</Text>
             </View>
             <View>
-              <Text category='h6' appearance='default'>{ifsc}</Text>
+              <Text style={styles.valueText} category='s1' appearance='default'>{ifsc}</Text>
             </View>
           </View>
           <View style={styles.line} />
@@ -107,6 +107,9 @@ const BankAccountConfirmationWidget = (props) => {
 }
 
 const themedStyles = StyleService.create({
+  valueText: {
+    fontWeight: 'bold'
+  },
   iconContainer: {
     flex: 1,
     alignItems: 'center',
@@ -134,6 +137,7 @@ const themedStyles = StyleService.create({
   },
   rowDesign: {
     flexDirection: 'row',
+    flexShrink: 1,
     alignItems: 'center',
     justifyContent: 'space-between',
     marginTop: 10

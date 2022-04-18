@@ -242,7 +242,7 @@ const EnachWidget = (props) => {
                 <Text category='p1' appearance='hint'> {translations['enach.planType']}</Text>
               </View>
               <View>
-                <Text category='h6' appearance='default'>{planObject.type === 'PERIODIC' ? 'Periodic' : 'No Data'}</Text>
+                <Text style={styles.valueText} category='s1' appearance='default'>{planObject.type === 'PERIODIC' ? 'Periodic' : 'No Data'}</Text>
               </View>
             </View>
             <View style={styles.line} />
@@ -251,7 +251,7 @@ const EnachWidget = (props) => {
                 <Text category='p1' appearance='hint'>{translations['enach.intervalType']}</Text>
               </View>
               <View>
-                <Text category='h6' appearance='default'>{planObject.intervalType === 'month' ? 'Monthly' : 'No Data'}</Text>
+                <Text style={styles.valueText} category='s1' appearance='default'>{planObject.intervalType === 'month' ? 'Monthly' : 'No Data'}</Text>
               </View>
             </View>
             <View style={styles.line} />
@@ -260,7 +260,7 @@ const EnachWidget = (props) => {
                 <Text category='p1' appearance='hint'>{translations['enach.amount']}</Text>
               </View>
               <View>
-                <Text category='h6' appearance='default'>₹ {planObject.amount}</Text>
+                <Text style={styles.valueText} category='s1' appearance='default'>₹ {planObject.amount}</Text>
               </View>
             </View>
             <View style={styles.line} />
@@ -269,7 +269,7 @@ const EnachWidget = (props) => {
                 <Text category='p1' appearance='hint'>{translations['enach.noOfIntervals']}</Text>
               </View>
               <View>
-                <Text category='h6' appearance='default'>{planObject.intervals}</Text>
+                <Text style={styles.valueText} category='s1' appearance='default'>{planObject.intervals}</Text>
               </View>
             </View>
             <View style={styles.line} />
@@ -278,7 +278,7 @@ const EnachWidget = (props) => {
                 <Text category='p1' appearance='hint'>{translations['enach.expiresOn']}</Text>
               </View>
               <View>
-                <Text category='h6' appearance='default'>{expiresOnForUi}</Text>
+                <Text style={styles.valueText} category='s1' appearance='default'>{expiresOnForUi}</Text>
               </View>
             </View>
             <View style={styles.rowDesignBtn}>
@@ -297,6 +297,9 @@ const EnachWidget = (props) => {
   )
 }
 const styles = StyleSheet.create({
+  valueText: {
+    fontWeight: 'bold'
+  },
   iconContainer: {
     flex: 1,
     alignItems: 'center',

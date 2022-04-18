@@ -177,14 +177,14 @@ const loanApplications = {
           const executionId = await apiService.appApi.loanApplication.loanAgreement.execute(loanApplicationId)
           loanAgreementId = await apiService.appApi.loanApplication.loanAgreement.get(executionId)
         } else {
-          const payload = JSON.stringify({ loanApplicationId })
+          const payload = { loanApplicationId }
           const endpoints = new ResourceFactoryConstants()
-          const res = await DataService.postData(endpoints.constants.appwriteAlternative.getNewLoanAgreementId, payload)
-          const data = JSON.parse(res.data)
-          loanAgreementId = data.loanAgreementId
+          const res = await DataService.postData(endpoints.constants.appwriteAlternative.generateLoanAgreement, payload)
+          const data = res?.data
           if (data.status === 'FAILED') {
             throw new Error('CANNOT_GET_LOANAGREEMET_ID')
           }
+          loanAgreementId = data?.fileId
         }
         dispatch.loanApplications.setLoanAgreementId({ loanAgreementId, loanApplicationId })
       } catch (e) {
