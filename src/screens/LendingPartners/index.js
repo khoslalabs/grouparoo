@@ -27,7 +27,7 @@ const LendingPartners = ({ navigation, route }) => {
         </View>
         <View style={styles.row}>
           <Text category='c1' appearance='hint'>{translations['lending.partner.help.desk']}: </Text>
-          <Text category='c2' appearance='default'>+91 73021186677</Text>
+          <Text category='c2' appearance='default'>+91 7302118667</Text>
         </View>
       </Card>
     </>
