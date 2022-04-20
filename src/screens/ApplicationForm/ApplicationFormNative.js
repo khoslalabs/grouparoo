@@ -11,14 +11,15 @@ class ApplicationFormNative extends React.PureComponent {
     if (isUndefined(this.props.jwt)) {
       try {
         await this.props.getCustomerJwt()
-        if (this.props.isAgreement) {
-          try {
-            await this.props.generateLoanAgreementLink(this.props.currentLoanApplication.loanApplicationId)
-          } catch (e) {
-            console.log(e)
-            throw new Error('CANNOT_GENERATE_LOAN_AGREEMENT_LINK')
-          }
-        }
+        // cant generate link from here, as account type we are taking in first step of agreement flow
+        // if (this.props.isAgreement) {
+        //   try {
+        //     await this.props.generateLoanAgreementLink(this.props.currentLoanApplication.loanApplicationId)
+        //   } catch (e) {
+        //     console.log(e)
+        //     throw new Error('CANNOT_GENERATE_LOAN_AGREEMENT_LINK')
+        //   }
+        // }
       } catch (err) {
         console.log(err)
         console.log('CANNOT_GET_JWT')
@@ -57,8 +58,8 @@ const mapStateToProps = (state) => {
   }
 }
 const mapDispatchToProps = (dispatch) => ({
-  getCustomerJwt: () => dispatch.customer.getCustomerJwt(),
-  generateLoanAgreementLink: (loanApplicationId) => dispatch.loanApplications.generateLoanAgreement({ loanApplicationId })
+  getCustomerJwt: () => dispatch.customer.getCustomerJwt()
+  // generateLoanAgreementLink: (loanApplicationId) => dispatch.loanApplications.generateLoanAgreement({ loanApplicationId })
 })
 const Component = connect(mapStateToProps, mapDispatchToProps)(ApplicationFormNative)
 export default withStyles(Component, themes => ({
