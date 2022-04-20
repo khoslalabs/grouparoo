@@ -11,6 +11,8 @@ import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsi
 import { LocalizationContext } from '../../../../translation/Translation'
 import isEmpty from 'lodash.isempty'
 import { useSelector } from 'react-redux'
+import MaskedInput from '../../textMask/text-input-mask'
+import { useFormContext } from '../FormContext'
 
 const accountTypes = ['Savings', 'Current']
 const BankAccountConfirmationWidget = (props) => {
@@ -19,13 +21,15 @@ const BankAccountConfirmationWidget = (props) => {
   const { translations } = useContext(LocalizationContext)
   const styles = useStyleSheet(themedStyles)
   const [selectedIndex, setSelectedIndex] = useState()
-  const bankAccountTypeDisplayValue = selectedIndex ? accountTypes[selectedIndex.row] : props.value
+  const bankAccountTypeDisplayValue = selectedIndex ? accountTypes[selectedIndex.row] : props?.formData?.accountType
   const bankStatementData = useSelector(state => state.formDetails.bankStatementData)
   const bankName = bankStatementData?.statement?.bank_name
   const accountHolderName = bankStatementData?.statement?.identity?.name
   const accountNo = bankStatementData?.statement?.identity?.account_number
   const accounts = bankStatementData?.transaction_details?.accounts
-  const ifsc = accounts && accounts.length > 0 ? accounts[0].ifsc : ''
+  const ifsc = accounts && accounts.length > 0 ? accounts[0].ifsc : undefined
+  const [userEnteredIfsc, setUserEnteredIfsc] = useState(props?.formData?.ifsc || undefined)
+  const { theme } = useFormContext()
 
   const renderOption = (title, index) => (
     <SelectItem title={title} key={index} />
@@ -37,8 +41,16 @@ const BankAccountConfirmationWidget = (props) => {
   }, [value])
   const accountTypeChangeHandler = (index) => {
     setSelectedIndex(index)
-    onChange(accountTypes[index.row])
   }
+  useEffect(() => {
+    if (!isEmpty(bankAccountTypeDisplayValue) && (!isEmpty(ifsc) || !isEmpty(userEnteredIfsc))) {
+      onChange({
+        ifsc: ifsc || userEnteredIfsc,
+        accountType: bankAccountTypeDisplayValue
+      })
+    }
+  }, [bankAccountTypeDisplayValue, ifsc, userEnteredIfsc])
+
   return (
     <>
       <View style={styles.container}>
@@ -60,7 +72,7 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.bank.name']}</Text>
             </View>
             <View>
-              <Text style={styles.valueText} category='s1' appearance='default'>{bankName}</Text>
+              <Text style={styles.valueText} category='s1' appearance='default'>{bankName?.toUpperCase()}</Text>
             </View>
           </View>
           <View style={styles.line} />
@@ -78,7 +90,19 @@ const BankAccountConfirmationWidget = (props) => {
               <Text category='p1' appearance='hint'>{translations['bank.details.ifsc']}</Text>
             </View>
             <View>
-              <Text style={styles.valueText} category='s1' appearance='default'>{ifsc}</Text>
+              {!isEmpty(ifsc) && <Text style={styles.valueText} category='s1' appearance='default'>{ifsc}</Text>}
+              {isEmpty(ifsc) && <MaskedInput
+                style={{ width: 150 }}
+                type='custom'
+                options={{
+                  mask: 'AAAASSSSSSS'
+                }}
+                includeRawValueInChangeText
+                placeholder='XXXX1234567'
+                value={userEnteredIfsc}
+                onChangeText={(_, rawText) => setUserEnteredIfsc(rawText)}
+                placeholderTextColor={theme.placeholderTextColor}
+              />}
             </View>
           </View>
           <View style={styles.line} />
@@ -102,11 +126,21 @@ const BankAccountConfirmationWidget = (props) => {
         </View>
       </View>
       <Text appearance='hint' category='label'>{translations['bank.details.hint']}</Text>
+      {
+        !isEmpty(props.errorSchema) && (
+          <Text style={styles.error} category='p2' status='danger'>
+            {translations['bank.details.required']}
+          </Text>
+        )
+      }
     </>
   )
 }
 
 const themedStyles = StyleService.create({
+  error: {
+    marginVertical: 10
+  },
   valueText: {
     fontWeight: 'bold'
   },

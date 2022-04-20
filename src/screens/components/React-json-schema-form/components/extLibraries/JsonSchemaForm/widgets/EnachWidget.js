@@ -71,12 +71,11 @@ const EnachWidget = (props) => {
   const [appUrl, setAppUrl] = useState(null)
   const [planId, setPlanId] = useState(getRandomId())
   const bankStatementData = useSelector(state => state.formDetails.bankStatementData)
-  const accountType = useSelector(state => state.formDetails.formData.bankAccountType)
+  const accountType = useSelector(state => state?.formDetails?.formData?.bankAccountType?.accountType)
   const { loanOffer, email, primaryPhone } = useSelector(state => state.formDetails.formData)
   const bankName = bankStatementData?.statement?.bank_name
-  const accountHolderName = bankStatementData?.statement?.identity?.name || 'VISHAL SHAW'
-  const accountNo = bankStatementData?.statement?.identity?.account_number || '3512392038'
-
+  const accountHolderName = bankStatementData?.statement?.identity?.name
+  const accountNo = bankStatementData?.statement?.identity?.account_number
   useEffect(async () => {
     if (!isEmpty(bankName) && isEmpty(props.value)) {
       const tempBankCode = await getBankCodeFromBankName(bankName.toUpperCase())

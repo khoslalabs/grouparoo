@@ -16,29 +16,18 @@ import FormSuccess from '../../../Forms/FormSuccess'
 import { useSelector } from 'react-redux'
 import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen'
 
-const uploadToAppWrite = async (file, url) => {
+const uploadToAppWrite = async (url) => {
   try {
-    const response = await RNFetchBlob.fetch(
-      'POST',
-      url,
-      {
-        'Content-Type': 'multipart/form-data'
-      },
-      [
-        { name: 'file', filename: 'agreement', data: file }
-      ]
-    )
-    if (response?.respInfo?.status === 200) {
-      const data = JSON.parse(response.data)
+    const res = await DataService.postData(url)
+    if (res?.data?.status === 'SUCCESS') {
       return {
-        uploadedDocId: data.fileId,
-        file
+        uploadedDocId: res?.data?.fileId
       }
     } else {
-      throw new Error('UPLOAD_TO_APPWRITE_SERVER_FAILED')
+      throw new Error('ESIGNED_PDF_SAVING_FAILED')
     }
   } catch (e) {
-    if (e.message === 'UPLOAD_TO_APPWRITE_SERVER_FAILED') {
+    if (e.message === 'ESIGNED_PDF_SAVING_FAILED') {
       throw e
     } else {
       throw new Error('CANNOT_REACH_APPWRITE_SERVICE')
@@ -54,6 +43,8 @@ const EsignInputWidget = (props) => {
   const [appUrl, setAppUrl] = useState(null)
   const loanAgreementId = useSelector(state => state.loanApplications.applications[state.loanApplications.currentLoanApplicationId].loanAgreementId)
   const loanAgreentUrl = `${resourceFactoryConstants.constants.lending.downloadFile}${loanAgreementId}`
+  const [esignedPdfId, setEsignedPdfId] = useState()
+  const signerName = useSelector(state => state?.formDetails?.panData?.name)
 
   const fileUrl = loanAgreentUrl
 
@@ -79,6 +70,8 @@ const EsignInputWidget = (props) => {
       if (key === 'esign_status' && queryParamObject[key] === 'success') {
         setIsEsignDone(true)
         temp = true
+      } else if (key === 'id') {
+        setEsignedPdfId(queryParamObject?.id)
       }
       if (key === 'esign_status') {
         isEsignCallBack = true
@@ -140,7 +133,8 @@ const EsignInputWidget = (props) => {
         },
         [
           { name: 'file', filename: 'agreement', data: file },
-          { name: 'page_no', data: '1' },
+          { name: 'signer_name', data: signerName },
+          { name: 'purpose', data: 'Loan Agreement Esign' },
           {
             name: 'redirect_url',
             data: encodeURIComponent(appUrl)
@@ -193,10 +187,10 @@ const EsignInputWidget = (props) => {
   }, [])
 
   useEffect(async () => {
-    if (isEsignDone && !isEmpty(file) && !props.value) {
-      useUploadToAppwrite.run(file, resourceFactoryConstants.constants.lending.uploadFile)
+    if (isEsignDone && !isEmpty(esignedPdfId) && !props.value) {
+      useUploadToAppwrite.run(`${resourceFactoryConstants.constants.eSign.signedPdfToSaveInDB}?id=${esignedPdfId}`) // calling this to upload signed pdf into appwrite
     }
-  }, [isEsignDone, JSON.stringify(file)])
+  }, [isEsignDone, esignedPdfId])
 
   const openLink = async (esignUrl) => {
     const supported = await Linking.canOpenURL(esignUrl)
