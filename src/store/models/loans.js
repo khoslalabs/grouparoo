@@ -55,6 +55,11 @@ const loans = {
       return rootState.loans[loanApplicationId]
     },
     hasActiveLoan: select => (rootState) => {
+      const currenLoanApplication = rootState.loanApplications.applicationStage[rootState.loanApplications.currentLoanApplicationId]
+      const isAgreementFormCompleted = currenLoanApplication?.isAgreementFormCompleted || false
+      if (isAgreementFormCompleted || rootState?.loans?.isAgreementFormCompleted) {
+        return true
+      }
       return Object.keys(rootState.loans)
         .map(rs => rs.status === config.LOAN_DISBURSED_STATUS)
         .some(
@@ -373,6 +378,10 @@ const loans = {
         state[al.loanApplicationId] = al
       })
       return state
+    },
+    updateIsAgreementFormCompleted: (state, _) => {
+      state.isAgreementFormCompleted = true
+      return state
     }
   },
   effects: (dispatch) => ({
@@ -403,6 +412,9 @@ const loans = {
         console.log(e.stack)
         console.log(e.message)
       }
+    },
+    async setIsAgreementFormCompleted (_, rootState) {
+      dispatch.loans.updateIsAgreementFormCompleted()
     }
   })
 }

@@ -147,7 +147,7 @@ const authentication = {
     async reloadTheFormWithLatestData (_, rootState) {
       const customer = rootState?.customer
       const customerDetails = customer?.customerDetails
-      const loanApplications = await getAllLoanApplications(customerDetails.$id)
+      const loanApplications = await getAllLoanApplications(customerDetails.userId)
       await Promise.all([
         dispatch.customer.setCustomer({
           customer,

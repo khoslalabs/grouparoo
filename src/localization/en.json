@@ -20,7 +20,7 @@
   "application.stageComplete.title": "Almost there!",
   "application.stageComplete.description": "Just two more steps to go",
   "application.stageComplete.content": "Meet with our agent. Answer all the questions. It will only take 5 minutes. ",
-  "pendingLoanApplication.title": "Pending Loan Application",
+  "pendingLoanApplication.title": "Current Loan Application",
   "pendingLoanApplication.conetent": "Loan Application Status",
   "pendingLoanApplication.viewDetails": "View Details",
   "pendingLoanApplication.applicationStartDate": "Application Date",

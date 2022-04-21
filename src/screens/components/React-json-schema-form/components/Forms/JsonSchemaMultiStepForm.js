@@ -222,7 +222,11 @@ const JsonSchemaMultiStepForm = ({
   })
   const useOkayHandler = useRequest(async () => {
     await dispatch.authentication.reloadTheFormWithLatestData() // it will load the app with latest data
-    navigation.push('Onboarding')
+    if (formId === 'loanform_assessment') {
+      navigation.push('Onboarding')
+    } else if (formId === 'loanform_agreement') {
+      dispatch.loans.setIsAgreementFormCompleted()
+    }
   }, { manual: true })
   return (
     <>

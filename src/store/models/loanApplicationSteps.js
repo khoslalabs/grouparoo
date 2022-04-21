@@ -33,8 +33,8 @@ const loanApplicationSteps = {
     },
     getCurrentStep: select => (rootState, { loanApplicationId }) => {
       return {
-        step: loanApplicationSteps[2],
-        index: 2
+        step: loanApplicationSteps[3],
+        index: 3
       }
     }
   },
