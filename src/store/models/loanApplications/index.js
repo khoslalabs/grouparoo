@@ -24,8 +24,7 @@ const addLoanApplications = (state, { loanApplications }) => {
     if (!isUndefined(loanApplications)) {
       loanApplications.forEach(la => {
         const { data, ...rest } = la
-        // FIXME: remove this when done
-        rest.processState = 'cpvInitiated'
+        rest.processState = rest?.processState || config.APP_STAGE_CPV_INITIATED
         state.applications[data.loanApplicationId] = data
         state.applicationStage[data.loanApplicationId] = rest
         if (la.status === 'ACTIVE') {
@@ -148,7 +147,7 @@ const loanApplications = {
         isPrimaryPhoneVerified: 'yes',
         loanApplicationId,
         status: 'ACTIVE',
-        customerId: customerDetails.$id
+        customerId: id // In backend this field needs to be changed to userId, as we are tapping userId in it
       }
       try {
         const data = await apiService.appApi.loanApplication.create(formData, id)

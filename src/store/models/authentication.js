@@ -164,7 +164,7 @@ const commonAuthenticateSteps = async (dispatch, customer, isFirstTime, customer
   if (isUndefined(customerDetails)) {
     customerDetails = await apiService.appApi.customer.getCustomerByUserId(customer.$id)
   }
-  const loanApplications = await getAllLoanApplications(customerDetails.$id)
+  const loanApplications = await getAllLoanApplications(customerDetails.userId) // As per Ravindra, we need to communicate the tables using userId not customerId
   await Promise.all([
     dispatch.customer.setCustomer({
       customer,

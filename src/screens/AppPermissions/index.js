@@ -41,7 +41,7 @@ const AppPermissions = (props) => {
   const dispatch = useDispatch()
   const styles = useStyleSheet(themedStyles)
   const state = useSelector(state => state)
-  const customerId = state.customer?.customerDetails?.$id
+  const customerId = state.customer?.customerDetails?.userId
   const updatePermissionRequest = useRequest(updatePermissions, { manual: true })
   const selection = store.select(models => ({
     isPermissionsRequested: models.permissionsHelp.getIsPermissionsRequested,
