@@ -20,6 +20,7 @@ import { AppStorage } from './src/services/app-storage.service'
 import { checkNotificationPermissions, onMessageReceived } from './src/services/push.notifications'
 import AppStateManager from './src/components/AppStateManager'
 import ErrorFallbackComponent from './src/screens/Errors/ErrorFallbackComponent'
+// import SplashScreen from './src/SplashScreen'
 
 const initialSetup = async () => {
   const enabled = await checkNotificationPermissions()
@@ -41,7 +42,7 @@ const App = props => {
   const { loading, data } = useRequest(() => initialSetup())
   // This will print the message hash to be appended.
   // see https://developers.google.com/identity/sms-retriever/verify
-  // When app state changes send state to server. Also manage notifications and push it to client. 
+  // When app state changes send state to server. Also manage notifications and push it to client.
   RNOtpVerify.getHash()
     .then(hash => {
       console.log('Use this hash to construct otp message', hash)
@@ -67,10 +68,11 @@ const App = props => {
             customMapping={customMappingsEva}
           >
             <SafeAreaProvider>
+              {/* <SplashScreen /> */}
               <LocalizationProvider>
                 <AppStateManager>
                   <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
-                  <MainApp {...props} notificationsEnabled={data} loading={loading} />
+                    <MainApp {...props} notificationsEnabled={data} loading={loading} />
                   </ErrorBoundary>
                 </AppStateManager>
               </LocalizationProvider>
