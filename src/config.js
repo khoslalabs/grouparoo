@@ -1,35 +1,37 @@
 import { PERMISSIONS, RESULTS } from 'react-native-permissions'
-
+import ResourceFactoryConstants from './screens/components/React-json-schema-form/services/ResourceFactoryConstants'
+const resourse = new ResourceFactoryConstants()
 export const config = {
   appName: 'Novo Loans',
   entityType: 'retail',
   termsUrl: 'https://www.novopay.in/business-loan/terms-and-conditions',
   ppUrl: 'https://www.novopay.in/business-loan/privacy-policy',
   appWrite: {
-    url: 'https://dev-appwrite.novopay.in/v1',
-    projectId: '61fc67b0347f85b8f5b1',
-    customersCollectionId: '61fc6872e7eab316406d',
-    loanApplicationCollectionId: '61fc9d1ab041f556aa0c',
-    loanApplicationIdGenerationFunctionId: '6201dd75d89e37c8bcf5', // - Create a loan Application Id
-    lmsManagementFunctionId: '6201e05e6c0fb1554da9', // Function for getting all the existing loans
-    loanProductCollectionId: '6200fbbf2bd8d3306064', // Use this later
-    loanProductMetadataFunctionId: '6201da9175a47a240fc1', // Loan products metadata
-    loanTypesCollectionId: '62009a62478bcc3611a5',
-    retrieveLoanOffersFunctionId: '624aee82597da830b063',
-    borrowingEntitiesCollectionId: '620274f11aaf04f08370',
-    retrieveLoanApplicationFunctionId: '61ff77ef81669037d64a',
-    addressCollectionId: '61fc93bfae7d80de1ae2',
-    cashFreeTokenFunctionId: '621f9d2f51d07eca5f6b',
-    appStateEventsCollectionId: '6223228537efd99c9714',
-    cashfreeSignatureFunctionId: '6225db949e947cf7e996',
-    loanAgreementFunctionId: '622748ba485820ecd386',
-    bankStatementValidationFunctionId: '623b002f3c9d6860434b',
-    bankCodesCollectionId: '6233596db7c5e0e6e8b7'
+    url: 'https://lending-uat-appwrite.novopay.in/v1',
+    projectId: '6256a8e08472e11f9d44',
+    customersCollectionId: '6256b086d138efa50aa8',
+    loanApplicationCollectionId: '6256bbe7ec8c2f657734',
+    loanApplicationIdGenerationFunctionId: 'Not in UAT',
+    lmsManagementFunctionId: 'Not in UAT',
+    loanProductCollectionId: '1649852201794',
+    loanProductMetadataFunctionId: 'Not in UAT',
+    loanTypesCollectionId: '1649852181645',
+    retrieveLoanOffersFunctionId: ' Not in UAT',
+    borrowingEntitiesCollectionId: '1649852209922',
+    retrieveLoanApplicationFunctionId: 'Not in UAT',
+    addressCollectionId: '6256b66ad749ae51e1e3',
+    cashFreeTokenFunctionId: '62570938ae613be73afc',
+    appStateEventsCollectionId: '1649852234106',
+    cashfreeSignatureFunctionId: 'Not in UAT',
+    loanAgreementFunctionId: 'Not in UAT',
+    bankStatementValidationFunctionId: 'Not in UAT',
+    bankCodesCollectionId: '1649852246211'
   },
+
   DEFAULT_PASSWORD: 'welcome',
   otp: {
-    sendOtp: 'https://dev-codeapp.novopay.in/sendOtp',
-    validateOtp: 'https://dev-codeapp.novopay.in/validateOtp'
+    sendOtp: resourse.constants.otp.generateOTP,
+    validateOtp: resourse.constants.otp.validateOTP
   },
   PAYMENT_ENV: 'Test',
   CASHFREE_APP_ID: '10135219c0acc6b63005cb8cf8253101',
@@ -55,7 +57,7 @@ export const config = {
       RESULTS.GRANTED
     ]
   },
-  loanApplicationWebView: 'https://dev-codeapp.novopay.in/?formName=onboarding_test&stepSchemaName=onboarding_test_mob&isHeaderRequired=false',
+  loanApplicationWebView: 'https://uat-codeapp.novopay.in/?formName=onboarding_test&stepSchemaName=onboarding_test_mob&isHeaderRequired=false',
   // loanApplicationWebView: 'https://92da-111-125-218-187.ngrok.io/?formName=onboarding_test&stepSchemaName=onboarding_test_mob&isHeaderRequired=false'
   LOAN_APPLICATION_TYPE: 'loanapp',
   FINBOX_CLIENT_API_KEY: 'HKKK42YfZh5tCkD0tZ0LH631mT0lYkj799StDtfK',
