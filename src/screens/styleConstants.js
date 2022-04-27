@@ -53,7 +53,7 @@ const styleConstants = {
     height: heightPercentageToDP('30%')
   },
   loanOfferCard: {
-    width: widthPercentageToDP('43%'),
+    width: widthPercentageToDP('41%'),
     height: widthPercentageToDP('43%')
   },
   faqCard: {
