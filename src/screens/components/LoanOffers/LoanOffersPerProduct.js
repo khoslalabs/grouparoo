@@ -62,7 +62,7 @@ const LoanOffersPerProduct = ({
         style={styles.listStyle}
         contentContainerStyle={styles.horizontalList}
         horizontal
-        showsHorizontalScrollIndicator={false}
+        showsHorizontalScrollIndicator
         data={loanOption.offers}
         renderItem={renderLoanOfferCard}
       />
