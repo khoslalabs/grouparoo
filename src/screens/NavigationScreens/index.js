@@ -30,6 +30,7 @@ import FormWrapper from './FormWrapper'
 import IntroWrapper from './IntroWrapper'
 import ModalWrapper from './ModalWrapper'
 import LendingPartners from '../LendingPartners'
+import ContactUs from '../ContactUs'
 const WrapScreen = (Component, props) => {
   return (
     <ScreenWrapper {...props}>
@@ -188,6 +189,13 @@ export const NavigationScreens = options => {
       title: 'form.lending.partners.title',
       navigations: ['auth'],
       options
+    },
+    {
+      name: 'ContactUs',
+      Component: (props) => WrapAuthScreen(ContactUs, props),
+      title: 'form.lending.contact.us.title',
+      navigations: ['auth', 'onboard', 'home'],
+      options
     }
   ]
   return navigations
@@ -223,9 +231,9 @@ export const OnboardNavigationScreens = options => {
     }, {})
   const isReadyForApplication = isPermissionsRequested && isAllPermissionsValid
   if (!isReadyForApplication) {
-    return onboardNavigations.Permissions
+    return { screens: [onboardNavigations.Permissions], initialRouteName: 'Permissions' }
   } else {
-    return isReadyForApplication ? onboardNavigations.ApplicationForm : onboardNavigations.ApplicationForm
+    return { screens: [onboardNavigations.ApplicationForm, onboardNavigations.ContactUs], initialRouteName: 'ApplicationForm' }
   }
 }
 

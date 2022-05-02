@@ -49,8 +49,8 @@ const styleConstants = {
     marginVertical: 4
   },
   blockCard: {
-    width: widthPercentageToDP('45%'),
-    height: heightPercentageToDP('30%')
+    width: widthPercentageToDP('41%'),
+    height: heightPercentageToDP('28%')
   },
   loanOfferCard: {
     width: widthPercentageToDP('41%'),
