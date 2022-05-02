@@ -5,7 +5,8 @@ import {
   TopNavigationAction,
   StyleService,
   useStyleSheet,
-  Icon
+  Icon,
+  useTheme
 } from '@ui-kitten/components'
 import { BackHandler } from 'react-native'
 import isUndefined from 'lodash.isundefined'
@@ -16,12 +17,14 @@ import SimpleModal from '../components/SimpleModal'
 import LoanApplicationHelp from './LoanApplicationHelp'
 import ApplicationStage from './ApplicationStage'
 import { config } from '../../config'
+import { CallIcon } from '../../components/Icons.component'
 const ApplicationForm = ({ navigation, route }) => {
   let loanApplicationId = route.params?.loanApplicationId
   const dispatch = useDispatch()
   const store = useStore()
   const styles = useStyleSheet(themedStyles)
   const state = useSelector(state => state)
+  const theme = useTheme()
   const [visible, setVisible] = React.useState(false)
   const { translations } = useContext(LocalizationContext)
   let currentLoanApplication
@@ -43,6 +46,9 @@ const ApplicationForm = ({ navigation, route }) => {
   )
   const BackAction = () => (
     <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
+  )
+  const renderRightActions = () => (
+    <TopNavigationAction onPress={() => navigation.navigate('ContactUs')} icon={(imageProps) => <CallIcon {...imageProps} fill={theme['color-primary-500']} />} />
   )
   const navigateBack = () => {
     // props.navigation.goBack()
@@ -72,6 +78,7 @@ const ApplicationForm = ({ navigation, route }) => {
           style={styles.topNavigationStyle}
           alignment='center'
           accessoryLeft={BackAction}
+          accessoryRight={renderRightActions}
         />
         {/* If Agreement is enabled, no need to show loan Application Help */}
         {!isHelpShown && !isAgreement && (<LoanApplicationHelp onPress={onPress} />)}
