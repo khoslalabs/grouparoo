@@ -172,7 +172,7 @@ const EsignInputWidget = (props) => {
   const useUploadToAppwrite = useRequest(uploadToAppWrite, {
     manual: true,
     onSuccess: (res) => {
-      props.onChange(res?.uploadedDocId)
+      props.onChange(`${res?.uploadedDocId}::${signerName}_Loan_Agreement.pdf`)
     },
     onError: (err) => {
       crashlytics().log(ErrorUtil.createError(err, err.message, err.message, undefined, 'useUploadToAppwrite', 'EsignInputWidget.js'))
