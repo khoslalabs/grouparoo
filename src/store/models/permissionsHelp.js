@@ -39,6 +39,12 @@ const permissionsHelp = {
         title: 'help.contacts.title',
         content: 'help.contacts.content',
         icon: 'ContactListIcon'
+      },
+      {
+        order: 6,
+        title: 'help.apps.data.title',
+        content: 'help.apps.data.content',
+        icon: 'DeviceIcon'
       }]
     },
     rationale: {
