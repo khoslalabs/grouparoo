@@ -215,6 +215,8 @@
   "help.accounts.content": "This app collects and monitors list of account information like account names, account types in your device for credit profile enrichment.",
   "help.contacts.title": "Access To Contacts",
   "help.contacts.content": "This app collects contact information like number of contacts on the device with a phone number and without a phone number. In addition to it, the app collects other non personal infiormation to understand the risk profile of the user and enable credit facility. This app doesn't upload your contact information like names, phone numbers, email addresses and other personal information to our servers.",
+  "help.apps.data.title": "Apps Data",
+  "help.apps.data.content": "We collect a list of the installed applications’ metadata information which includes the application name, package name, installed time, updated time, version name and version code of each installed application on your device to assess your credit worthiness and enrich your profile with pre-approved customized loan offers.",
   "help.camera.title": "Access To Camera",
   "help.camera.content": "Require access to camera to capture documents such as Identity proof, Address Proof and Selfie that are required for loan",
   "help.sms.title": "Access to transaction SMS",
