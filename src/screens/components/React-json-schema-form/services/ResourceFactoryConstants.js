@@ -6,10 +6,10 @@ class ResourceFactoryConstants {
   documentGatewayURL = "/api-gateway/document/v1/";
   platformApiGatewayURL = "/api-gateway/api/v1/";
   voyagerContext = "voyager/";
-  appwriteApiGateway = "https://uat-appwrite-functions.novopay.in"
-  apiGateWay = "https://uat-codeapp.novopay.in";
-  adapterServiceUrl = "https://novo-adapter-uat.novopay.in/";
-  appWriteUrl = "https://dev-appwrite.novopay.in/v1/";
+  appwriteApiGateway = "https://prod-appwrite-functions.novopay.in"
+  apiGateWay = "https://prod-codeapp.novopay.in";
+  adapterServiceUrl = "https://novo-adapter-prod.novopay.in/";
+  appWriteUrl = "https://uat-appwrite.novopay.in/v1/";
   REACT_APP_DMS_SERVER_URL = "https://asset-qa-platform.novopay.in";
   REACT_APP_SPRING_VERIFY_SERVER_URL = "https://api-dev.springscan.springverify.com/";
   REACT_APP_AADHAR_PAN_SERVICE = "https://sandbox.veri5digital.com/verification-service/api/1.0/";

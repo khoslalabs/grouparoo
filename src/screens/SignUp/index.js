@@ -41,7 +41,7 @@ const SignUp = ({ navigation, route }) => {
   const dispatch = useDispatch()
 
   // Reset the Account Exists Error
-  useEffect(async () => { await dispatch.authentication.resetAccountExistsFlag() }, [])
+  // useEffect(async () => { await dispatch.authentication.resetAccountExistsFlag() }, [])
 
   const onDataChange = (key, value) => {
     formData[key] = value
