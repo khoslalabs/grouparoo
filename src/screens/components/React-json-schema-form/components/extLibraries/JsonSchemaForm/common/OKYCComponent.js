@@ -29,7 +29,7 @@ const generateOtp = async (aadharNumber, panNumber) => {
 
     })
     const data = res.data
-
+    
     if (data.status === 'SUCCESS') {
       return true
     } else {
@@ -148,6 +148,8 @@ const OKYCComponent = (props) => {
           }
         })
       }
+      setOtpGenerated(false) // If otp verification failed, need to regenerate otp
+      setShareCode(undefined)
     },
     onSuccess: (result) => {
       setOtpVerified(true)
