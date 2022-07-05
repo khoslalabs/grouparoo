@@ -1,11 +1,11 @@
-import { PERMISSIONS, RESULTS } from 'react-native-permissions'
-import ResourceFactoryConstants from './screens/components/React-json-schema-form/services/ResourceFactoryConstants'
-const resourse = new ResourceFactoryConstants()
+import { PERMISSIONS, RESULTS } from "react-native-permissions";
+import ResourceFactoryConstants from "./screens/components/React-json-schema-form/services/ResourceFactoryConstants";
+const resourse = new ResourceFactoryConstants();
 export const config = {
-  appName: 'Novo Loans',
-  entityType: 'retail',
-  termsUrl: 'https://www.novopay.in/business-loan/terms-and-conditions',
-  ppUrl: 'https://www.novopay.in/business-loan/privacy-policy',
+  appName: "Novo Loans",
+  entityType: "retail",
+  termsUrl: "https://www.novopay.in/business-loan/terms-and-conditions",
+  ppUrl: "https://www.novopay.in/business-loan/privacy-policy",
   appWrite: {
     url: 'https://lending-prod-appwrite.novopay.in/v1',
     projectId: '629f37455c061d9bf6e6',
@@ -28,30 +28,30 @@ export const config = {
     bankCodesCollectionId: '1649852246211'
   },
 
-  DEFAULT_PASSWORD: 'welcome',
+  DEFAULT_PASSWORD: "welcome",
   otp: {
     sendOtp: resourse.constants.otp.generateOTP,
-    validateOtp: resourse.constants.otp.validateOTP
+    validateOtp: resourse.constants.otp.validateOTP,
   },
 
   PAYMENT_ENV: 'Test',
   CASHFREE_APP_ID: '10135219c0acc6b63005cb8cf8253101',
   CASHFREE_STATUSES: {
-    SUCCESS: 'SUCCESS',
-    FLAGGED: 'FLAGGED',
-    PENDING: 'PENDING',
-    FAILED: 'FAILED',
-    CANCELLED: 'CANCELLED',
-    INCOMPLETE: 'INCOMPLETE',
-    USER_DROPPED: 'USER_DROPPED',
-    VOID: 'VOID'
+    SUCCESS: "SUCCESS",
+    FLAGGED: "FLAGGED",
+    PENDING: "PENDING",
+    FAILED: "FAILED",
+    CANCELLED: "CANCELLED",
+    INCOMPLETE: "INCOMPLETE",
+    USER_DROPPED: "USER_DROPPED",
+    VOID: "VOID",
   },
 
   permissions: {
     permissionTypes: [
       PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
       PERMISSIONS.ANDROID.CAMERA,
-      PERMISSIONS.ANDROID.READ_SMS
+      PERMISSIONS.ANDROID.READ_SMS,
     ],
 
     // This is for android only and not IOS. Need to enhance app for IOS later
