@@ -147,6 +147,7 @@ const netBankingHandle = async () => {
 
 const BankStatementUploadField = (props) => {
   let uploadedFileIdsWithName
+  const [reset, setResetToFalse] = useState(false)
   const dispatch = useDispatch()
   const store = useStore()
   const state = useSelector(state => state)
@@ -187,7 +188,15 @@ const BankStatementUploadField = (props) => {
       if (error.message === 'CANNOT_REACH_STATEMENT_VALIDATION_SERVICE' ||
         error.message === 'CANNOT_REACH_STATEMENT_UPLOAD_SERVER'
       ) {
-        throw error
+        setResetToFalse(true)
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          props: {
+            title: translations['statement.title'],
+            description: translations['something.went.wrong']
+          }
+        })
       } else if (error.message === 'BANK_STATEMENT_VALIDATION_FAILED') {
         Toast.show({
           type: 'error',
@@ -219,6 +228,7 @@ const BankStatementUploadField = (props) => {
   }
   const onFileChange = (allFiles) => {
     setIsUploadDone(false)
+    setResetToFalse(false)
     const newFilesAdded = getNewFileAdded(allFiles, uploadedFileIdsWithName)
     if (newFilesAdded.length > 0) {
       uploadFiles.run(dispatch, newFilesAdded, currentLoanApplicationId, panData, uploadedFileIdsWithName)
@@ -279,6 +289,7 @@ const BankStatementUploadField = (props) => {
         selectText={translations['statement.uploadText']}
         removeFile={removeFile}
         isAddMore={false}
+        reset={reset}
       />
       {/* Will Uncomment, once statement Data Api is ready */}
       {/* <TouchableOpacity

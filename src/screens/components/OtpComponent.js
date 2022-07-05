@@ -56,6 +56,7 @@ const OtpComponent = ({
           codeInputFieldStyle={styles.underlineStyleBase}
           codeInputHighlightStyle={styles.underlineStyleHighLighted}
           onCodeFilled={verifyCode}
+          editable
         />
         <View style={size === 'small' ? styles.actionRowSmall : styles.actionRow}>
           <TimeoutComponent
