@@ -15,7 +15,10 @@ import ErrorUtil from '../../../../../../Errors/ErrorUtil'
 import dayjs from 'dayjs'
 import FormSuccess from '../../../Forms/FormSuccess'
 import { config } from '../../../../../../../config'
-import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen'
+import {
+  heightPercentageToDP,
+  widthPercentageToDP
+} from 'react-native-responsive-screen'
 import apiService from '../../../../../../../apiService'
 const resourceFactoryConstants = new ResourceFactoryConstants()
 const dayjsMapper = {
@@ -33,6 +36,7 @@ const createPlan = async (planObject) => {
     planObject
   )
   const data = res.data
+  console.log('createPlan data', data)
   if (data.status === 'SUCCESS') {
     return true
   } else {
@@ -46,6 +50,8 @@ const createSubscription = async (subscriptionObj) => {
     subscriptionObj
   )
   const data = res.data
+  console.log('createSubscription data', data)
+
   if (data.status === 'SUCCESS') {
     return data.authLink
   } else {
@@ -53,7 +59,9 @@ const createSubscription = async (subscriptionObj) => {
   }
 }
 const getBankCodeFromBankName = async (bankCode) => {
-  const code = await apiService.appApi.bankStatement.code.get(bankCode.toUpperCase())
+  const code = await apiService.appApi.bankStatement.code.get(
+    bankCode.toUpperCase()
+  )
   return code
 }
 
@@ -70,15 +78,23 @@ const EnachWidget = (props) => {
   )
   const [appUrl, setAppUrl] = useState(null)
   const [planId, setPlanId] = useState(getRandomId())
-  const bankStatementData = useSelector(state => state.formDetails.bankStatementData)
-  const accountType = useSelector(state => state?.formDetails?.formData?.bankAccountType?.accountType)
-  const { loanOffer, email, primaryPhone } = useSelector(state => state.formDetails.formData)
+  const bankStatementData = useSelector(
+    (state) => state.formDetails.bankStatementData
+  )
+  const accountType = useSelector(
+    (state) => state?.formDetails?.formData?.bankAccountType?.accountType
+  )
+  const { loanOffer, email, primaryPhone } = useSelector(
+    (state) => state.formDetails.formData
+  )
   const bankName = bankStatementData?.statement?.bank_name
   const accountHolderName = bankStatementData?.statement?.identity?.name
   const accountNo = bankStatementData?.statement?.identity?.account_number
   useEffect(async () => {
     if (!isEmpty(bankName) && isEmpty(props.value)) {
-      const tempBankCode = await getBankCodeFromBankName(bankName.toUpperCase())
+      const tempBankCode = await getBankCodeFromBankName(
+        bankName.toUpperCase()
+      )
       setBankCode(tempBankCode)
     }
   }, [bankName])
@@ -93,18 +109,28 @@ const EnachWidget = (props) => {
   }
 
   const expiresOn = `${dayjs()
-    .add(30 * planObject.intervals, 'day')
-    .format('YYYY-MM-DD')}`
+    .add(30 * (planObject.intervals + 2), 'day')
+    .format('YYYY-MM-DD HH:mm:ss')}`
 
   const expiresOnForUi = `${dayjs()
     .add(30 * planObject.intervals, 'day')
     .format('DD-MMM-YYYY')}`
 
+  const calFirstChargeDate = () => {
+    const now = dayjs()
+    const date = now.format('D') > 20
+      ? dayjs(`${now.format('YYYY')}-${Number(now.format('MM')) + 2}-4`)
+      : dayjs(`${now.format('YYYY')}-${Number(now.format('MM')) + 1}-4`)
+    return date.format('YYYY-MM-DD')
+  }
+
   const subscriptionObject = {
+    // cashfree
     subscriptionId: `${formName}_${getRandomId()}`,
     planId: planId,
     customerEmail: email,
     customerPhone: primaryPhone,
+    firstChargeDate: calFirstChargeDate(),
     expiresOn: expiresOn,
     returnUrl: appUrl,
     paymentOption: 'emandate',
@@ -223,61 +249,103 @@ const EnachWidget = (props) => {
         visible={useCreatePlan.loading || useCreateSubscription.loading}
       />
       {isRetryEnabled && (
-        <Button
-          appearance='outline'
-          onPress={retryHandler}
-        >
+        <Button appearance='outline' onPress={retryHandler}>
           Retry
         </Button>
       )}
       {!isSubscriptionCreated && isPlanCreated && !isRetryEnabled && (
         <View style={styles.container}>
           <View style={styles.iconContainer}>
-            <Image source={require('../../../../../../../assets/images/enach-icon.png')} style={styles.image} resizeMode='center' />
+            <Image
+              source={require('../../../../../../../assets/images/enach-icon.png')}
+              style={styles.image}
+              resizeMode='center'
+            />
           </View>
           <View style={styles.card}>
             <View style={styles.rowDesign}>
               <View>
-                <Text category='p1' appearance='hint'> {translations['enach.planType']}</Text>
+                <Text category='p1' appearance='hint'>
+                  {' '}
+                  {translations['enach.planType']}
+                </Text>
               </View>
               <View>
-                <Text style={styles.valueText} category='s1' appearance='default'>{planObject.type === 'PERIODIC' ? 'Periodic' : 'No Data'}</Text>
-              </View>
-            </View>
-            <View style={styles.line} />
-            <View style={styles.rowDesign}>
-              <View>
-                <Text category='p1' appearance='hint'>{translations['enach.intervalType']}</Text>
-              </View>
-              <View>
-                <Text style={styles.valueText} category='s1' appearance='default'>{planObject.intervalType === 'month' ? 'Monthly' : 'No Data'}</Text>
-              </View>
-            </View>
-            <View style={styles.line} />
-            <View style={styles.rowDesign}>
-              <View>
-                <Text category='p1' appearance='hint'>{translations['enach.amount']}</Text>
-              </View>
-              <View>
-                <Text style={styles.valueText} category='s1' appearance='default'>₹ {planObject.amount}</Text>
+                <Text
+                  style={styles.valueText}
+                  category='s1'
+                  appearance='default'
+                >
+                  {planObject.type === 'PERIODIC' ? 'Periodic' : 'No Data'}
+                </Text>
               </View>
             </View>
             <View style={styles.line} />
             <View style={styles.rowDesign}>
               <View>
-                <Text category='p1' appearance='hint'>{translations['enach.noOfIntervals']}</Text>
+                <Text category='p1' appearance='hint'>
+                  {translations['enach.intervalType']}
+                </Text>
               </View>
               <View>
-                <Text style={styles.valueText} category='s1' appearance='default'>{planObject.intervals}</Text>
+                <Text
+                  style={styles.valueText}
+                  category='s1'
+                  appearance='default'
+                >
+                  {planObject.intervalType === 'month' ? 'Monthly' : 'No Data'}
+                </Text>
               </View>
             </View>
             <View style={styles.line} />
             <View style={styles.rowDesign}>
               <View>
-                <Text category='p1' appearance='hint'>{translations['enach.expiresOn']}</Text>
+                <Text category='p1' appearance='hint'>
+                  {translations['enach.amount']}
+                </Text>
               </View>
               <View>
-                <Text style={styles.valueText} category='s1' appearance='default'>{expiresOnForUi}</Text>
+                <Text
+                  style={styles.valueText}
+                  category='s1'
+                  appearance='default'
+                >
+                  ₹ {planObject.amount}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.line} />
+            <View style={styles.rowDesign}>
+              <View>
+                <Text category='p1' appearance='hint'>
+                  {translations['enach.noOfIntervals']}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={styles.valueText}
+                  category='s1'
+                  appearance='default'
+                >
+                  {planObject.intervals}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.line} />
+            <View style={styles.rowDesign}>
+              <View>
+                <Text category='p1' appearance='hint'>
+                  {translations['enach.expiresOn']}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={styles.valueText}
+                  category='s1'
+                  appearance='default'
+                >
+                  {expiresOnForUi}
+                </Text>
               </View>
             </View>
             <View style={styles.rowDesignBtn}>
@@ -285,12 +353,17 @@ const EnachWidget = (props) => {
                 {translations['enach.start']}
               </Button>
             </View>
-            <Text appearance='hint' category='label'>{translations['enach.details.hint']}</Text>
+            <Text appearance='hint' category='label'>
+              {translations['enach.details.hint']}
+            </Text>
           </View>
         </View>
       )}
       {isSubscriptionCreated && (
-        <FormSuccess description={translations['enach.subscription.done']} isButtonVisible={false} />
+        <FormSuccess
+          description={translations['enach.subscription.done']}
+          isButtonVisible={false}
+        />
       )}
     </>
   )
