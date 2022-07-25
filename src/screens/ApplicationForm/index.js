@@ -77,7 +77,7 @@ const ApplicationForm = ({ navigation, route }) => {
         <TopNavigation
           style={styles.topNavigationStyle}
           alignment='center'
-          accessoryLeft={BackAction}
+          // accessoryLeft={BackAction} 
           accessoryRight={renderRightActions}
         />
         {/* If Agreement is enabled, no need to show loan Application Help */}

@@ -40,7 +40,7 @@ const LoanOffers = ({
       <View>
         <LoanAmountDisplayBig
           value={loanAmount}
-          hasEdit
+          hasEdit={false} // No need to edit, if he has already selected the loan amount on first step
           editLoanAmount={editLoanAmount}
           setEditLoanAmount={setEditLoanAmount}
         />

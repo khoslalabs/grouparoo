@@ -36,7 +36,8 @@ const DocumentUploadComponent = ({
   selectText,
   files = [],
   isAddMore = true,
-  removeFile
+  removeFile,
+  reset = false
 }) => {
   const refRBSheet = useRef()
   const themeStyle = useStyleSheet(theme)
@@ -85,7 +86,10 @@ const DocumentUploadComponent = ({
     setTempFiles([...newTempFiles])
     removeFile(deletedFile)
   }
-  const displayFiles = mergeTempFilesWithExisting(tempFiles, files)
+  let displayFiles = mergeTempFilesWithExisting(tempFiles, files)
+  if (reset) {
+    displayFiles = []
+  }
   return (
     <>
       {(displayFiles.length === 0) && (

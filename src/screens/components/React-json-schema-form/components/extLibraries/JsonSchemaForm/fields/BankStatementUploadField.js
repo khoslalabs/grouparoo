@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react'
 import { useRequest } from 'ahooks'
 import { useDispatch, useSelector, useStore } from 'react-redux'
-import { Card, Modal, Spinner, StyleService, Text } from '@ui-kitten/components'
-import { Dimensions } from 'react-native'
+import { Button, Card, Input, Modal, Spinner, StyleService, Text } from '@ui-kitten/components'
+import { Dimensions, Alert } from 'react-native'
 import isEmpty from 'lodash.isempty'
 import Toast from 'react-native-toast-message'
 import { LocalizationContext } from '../../../../translation/Translation'
@@ -33,7 +33,7 @@ const getNewFileAdded = (newFiles, oldFiles = []) => {
   return addedFiles
 }
 
-const uploadBankStatement = async (dispatch, files, currentLoanApplicationId, panData, uploadedFileIdsWithName) => {
+const uploadBankStatement = async (dispatch, files, currentLoanApplicationId, panData, uploadedFileIdsWithName, password) => {
   // Code to upload bank Statement
   const resourceFactoryConstants = new ResourceFactoryConstants()
   const url = resourceFactoryConstants.constants.bankStatement.uploadBankStatement
@@ -42,6 +42,9 @@ const uploadBankStatement = async (dispatch, files, currentLoanApplicationId, pa
     formData.append('file', file)
   }
   formData.append('currentLoanApplicationId', currentLoanApplicationId)
+  if (password) {
+    formData.append('pdfPassword', password)
+  }
   try {
     const res = await DataService.postData(url, formData)
     const responseData = res.data
@@ -144,9 +147,12 @@ const netBankingHandle = async () => {
     }
   }
 }
-
+let newFilesAdded
 const BankStatementUploadField = (props) => {
   let uploadedFileIdsWithName
+  const [password, setPassword] = useState()
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [reset, setResetToFalse] = useState(false)
   const dispatch = useDispatch()
   const store = useStore()
   const state = useSelector(state => state)
@@ -187,7 +193,15 @@ const BankStatementUploadField = (props) => {
       if (error.message === 'CANNOT_REACH_STATEMENT_VALIDATION_SERVICE' ||
         error.message === 'CANNOT_REACH_STATEMENT_UPLOAD_SERVER'
       ) {
-        throw error
+        setResetToFalse(true)
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          props: {
+            title: translations['statement.title'],
+            description: translations['something.went.wrong']
+          }
+        })
       } else if (error.message === 'BANK_STATEMENT_VALIDATION_FAILED') {
         Toast.show({
           type: 'error',
@@ -219,9 +233,29 @@ const BankStatementUploadField = (props) => {
   }
   const onFileChange = (allFiles) => {
     setIsUploadDone(false)
-    const newFilesAdded = getNewFileAdded(allFiles, uploadedFileIdsWithName)
+    setResetToFalse(false)
+    setPassword(undefined)
+    newFilesAdded = getNewFileAdded(allFiles, uploadedFileIdsWithName)
+    // Add logic to get password, if password protected
     if (newFilesAdded.length > 0) {
-      uploadFiles.run(dispatch, newFilesAdded, currentLoanApplicationId, panData, uploadedFileIdsWithName)
+      Alert.alert(
+        translations['statement.title'],
+        translations['statement.password.protected'],
+        [
+          {
+            text: translations['text.yes'],
+            onPress: () => {
+              setShowPasswordModal(true)
+            }
+          },
+          {
+            text: translations['text.no'],
+            onPress: () => {
+              uploadFiles.run(dispatch, newFilesAdded, currentLoanApplicationId, panData, uploadedFileIdsWithName)
+            }
+          }
+        ]
+      )
     }
   }
   const finboxEventHandler = (event) => {
@@ -264,6 +298,10 @@ const BankStatementUploadField = (props) => {
   const openNetBankingModalHandler = () => {
     useNetBankingHandler.run()
   }
+  const updatePdfPassword = () => {
+    uploadFiles.run(dispatch, newFilesAdded, currentLoanApplicationId, panData, uploadedFileIdsWithName, password)
+    setShowPasswordModal(false)
+  }
   return (
     <>
       <Text appearance='hint' category='label'>
@@ -279,6 +317,7 @@ const BankStatementUploadField = (props) => {
         selectText={translations['statement.uploadText']}
         removeFile={removeFile}
         isAddMore={false}
+        reset={reset}
       />
       {/* Will Uncomment, once statement Data Api is ready */}
       {/* <TouchableOpacity
@@ -303,6 +342,18 @@ const BankStatementUploadField = (props) => {
             onMessage={finboxEventHandler}
             nestedScrollEnabled
           />
+        </Card>
+      </Modal>
+      {/* Modal to take password */}
+      <Modal visible={showPasswordModal} backdropStyle={styles.backdrop}>
+        <Card style={{ width: Dimensions.get('window').width - 70 }}>
+          <Input
+            value={password}
+            label={translations['statement.password.field.title']}
+            placeholder={translations['statement.password.placeholder']}
+            onChangeText={nextValue => setPassword(nextValue)}
+          />
+          <Button onPress={updatePdfPassword} style={{ marginTop: 10 }}>{translations['text.update']}</Button>
         </Card>
       </Modal>
     </>
