@@ -3,6 +3,9 @@ import isEmpty from 'lodash.isempty'
 import isUndefined from 'lodash.isundefined'
 import apiService from '../../../apiService'
 import maxBy from 'lodash.maxby'
+import { config } from '../../../config'
+import ResourceFactoryConstants from '../../../screens/components/React-json-schema-form/services/ResourceFactoryConstants'
+import DataService from '../../../screens/components/React-json-schema-form/services/DataService'
 
 const addLoanAplication = (state, loanApplication) => {
   if (loanApplication.data.status === 'ACTIVE') {
@@ -21,8 +24,7 @@ const addLoanApplications = (state, { loanApplications }) => {
     if (!isUndefined(loanApplications)) {
       loanApplications.forEach(la => {
         const { data, ...rest } = la
-        // FIXME: remove this when done
-        rest.processState = 'cpvCompleted'
+        rest.processState = rest?.processState || config.APP_STAGE_CPV_INITIATED
         state.applications[data.loanApplicationId] = data
         state.applicationStage[data.loanApplicationId] = rest
         if (la.status === 'ACTIVE') {
@@ -128,9 +130,9 @@ const loanApplications = {
       state.applicationStage[data.loanApplicationId].status = status
       return state
     },
-    setLoanAgreementId: (state, { loanApplicationId, loanAgreementUrl }) => {
+    setLoanAgreementId: (state, { loanApplicationId, loanAgreementId }) => {
       const loanApplication = state.applications[loanApplicationId]
-      loanApplication.loanAgreementUrl = loanAgreementUrl
+      loanApplication.loanAgreementId = loanAgreementId
       state.applications[loanApplicationId] = Object.assign({}, loanApplication)
       return state
     }
@@ -145,7 +147,7 @@ const loanApplications = {
         isPrimaryPhoneVerified: 'yes',
         loanApplicationId,
         status: 'ACTIVE',
-        customerId: customerDetails.$id
+        customerId: id // In backend this field needs to be changed to userId, as we are tapping userId in it
       }
       try {
         const data = await apiService.appApi.loanApplication.create(formData, id)
@@ -169,9 +171,21 @@ const loanApplications = {
     },
     async generateLoanAgreement ({ loanApplicationId }, rootState) {
       try {
-        const executionId = await apiService.appApi.loanApplication.loanAgreement.execute(loanApplicationId)
-        const loanAgreementUrl = await apiService.appApi.loanApplication.loanAgreement.get(executionId)
-        dispatch.loanApplications.setLoanAgreementId({ loanAgreementUrl, loanApplicationId })
+        let loanAgreementId
+        if (config.APPWRITE_FUNCTION_CALL) {
+          const executionId = await apiService.appApi.loanApplication.loanAgreement.execute(loanApplicationId)
+          loanAgreementId = await apiService.appApi.loanApplication.loanAgreement.get(executionId)
+        } else {
+          const payload = { loanApplicationId }
+          const endpoints = new ResourceFactoryConstants()
+          const res = await DataService.postData(endpoints.constants.appwriteAlternative.generateLoanAgreement, payload)
+          const data = res?.data
+          if (data.status === 'FAILED') {
+            throw new Error('CANNOT_GET_LOANAGREEMET_ID')
+          }
+          loanAgreementId = data?.fileId
+        }
+        dispatch.loanApplications.setLoanAgreementId({ loanAgreementId, loanApplicationId })
       } catch (e) {
         console.log(e)
         throw new Error('CANNOT_GET_LOAN_AGREEMENT_ID')

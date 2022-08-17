@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Text } from '@ui-kitten/components'
 import TitleField from './TitleField'
 import DescriptionField from './DescriptionField'
 import { useFormContext } from '../FormContext'
+import { LocalizationContext } from '../../../../translation/Translation'
 
 const FieldTemplate = ({
   label,
@@ -16,6 +17,7 @@ const FieldTemplate = ({
 }) => {
   const { theme } = useFormContext()
   const hasErrors = rawErrors?.length > 0
+  const { translations } = useContext(LocalizationContext)
   return (
     <View style={styles.container}>
       {displayLabel && label ? (
@@ -35,7 +37,7 @@ const FieldTemplate = ({
               { color: theme.errorColor }
             ]}
           >
-            {'\u2022'} {error}
+            {translations[error] || error}
           </Text>
         ))}
       {rawHelp?.length > 0 && <Text category='c1' appearence='hint' status='info'>{rawHelp}</Text>}

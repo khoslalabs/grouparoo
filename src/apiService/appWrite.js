@@ -266,6 +266,35 @@ export const appApi = {
         crashlytics().log(e)
         throw new Error('CANNOT_CREATE_NEW_CUSTOMER')
       }
+    },
+    getCustomerByEmailId: async (email) => {
+      const { appWrite } = config
+      const customerQuery = [
+        Query.equal('email', email)
+      ]
+      try {
+        const response = await sdk.database.listDocuments(appWrite.customersCollectionId, customerQuery)
+        console.log('response:', response)
+        if (response.documents.length > 0) {
+          const customerData = response.documents[0]
+          // remove all default values
+          Object.keys(customerData).forEach(key => {
+            if (customerData[key] === 'np') {
+              customerData[key] = undefined
+            }
+          })
+          return customerData
+        } else {
+          throw new Error('EMAIL_DOES_NOT_EXISTS')
+        }
+      } catch (e) {
+        console.error(e)
+        crashlytics().log(e)
+        if (e.message === 'EMAIL_DOES_NOT_EXISTS') {
+          throw e
+        }
+        throw new Error('CANNOT_GET_CUSTOMER_BY_EMAIL')
+      }
     }
   },
   preferences: {
@@ -375,13 +404,13 @@ export const appApi = {
         try {
           const responseWithStatus = await getCompletionStatus(config.appWrite.loanAgreementFunctionId, executionId)
           if (responseWithStatus.status === 'completed') {
-            const { status, loanAgreementUrl } = JSON.parse(responseWithStatus.stdout)
+            const { status, loanAgreementId } = JSON.parse(responseWithStatus.stdout)
             if (status === 'FAILED') {
-              throw new Error('CANNOT_GET_LOANAGREEMET_URL')
+              throw new Error('CANNOT_GET_LOANAGREEMET_ID')
             }
-            return loanAgreementUrl
+            return loanAgreementId
           } else {
-            throw new Error('CANNOT_CALL_TO_GET_LOANAGREEMET_URL')
+            throw new Error('CANNOT_CALL_TO_GET_LOANAGREEMET_ID')
           }
         } catch (e) {
           crashlytics().log(e)
@@ -478,11 +507,11 @@ export const appApi = {
       })
       return loanApplication
     },
-    // FIXME: Change this
     getAllOffers: {
       execute: async (loanApplicationId) => {
         try {
-          const executionDetails = await sdk.functions.createExecution(config.appWrite.retrieveLoanOffersFunctionId, loanApplicationId)
+          const payload = JSON.stringify({ loanApplicationId })
+          const executionDetails = await sdk.functions.createExecution(config.appWrite.retrieveLoanOffersFunctionId, payload)
           return executionDetails.$id
         } catch (err) {
           crashlytics().log(err)
@@ -492,7 +521,7 @@ export const appApi = {
       get: async (executionId) => {
         try {
           const responseWithStatus = await getCompletionStatus(config.appWrite.retrieveLoanOffersFunctionId, executionId)
-          if (responseWithStatus === 'completed') {
+          if (responseWithStatus.status === 'completed') {
             const loanDeatails = JSON.parse(responseWithStatus.stdout)
             return loanDeatails
           } else {
@@ -501,6 +530,46 @@ export const appApi = {
         } catch (err) {
           crashlytics().log(err)
           throw new Error('CANNOT_GET_LOAN_OFFER_DETAILS')
+        }
+      }
+    }
+  },
+  bankStatement: {
+    validation: {
+      execute: async ({ panData, bankStatementData }) => {
+        try {
+          const payload = JSON.stringify({ panData, bankStatementData })
+          const executionDetails = await sdk.functions.createExecution(config.appWrite.bankStatementValidationFunctionId, payload)
+          return executionDetails.$id
+        } catch (err) {
+          crashlytics().log(err)
+          throw new Error('CANNOT_EXECUTE_BANK_STATEMENT_VALIDATION')
+        }
+      },
+      get: async (executionId) => {
+        try {
+          const responseWithStatus = await getCompletionStatus(config.appWrite.bankStatementValidationFunctionId, executionId)
+          if (responseWithStatus.status === 'completed') {
+            const validationResult = JSON.parse(responseWithStatus.stdout)
+            return validationResult
+          } else {
+            throw new Error('CANNOT_GET_BANK_VALIDATION')
+          }
+        } catch (err) {
+          crashlytics().log(err)
+          throw new Error('CANNOT_GET_BANK_VALIDATION_SERVER')
+        }
+      }
+    },
+    code: {
+      get: async (bankCode) => {
+        try {
+          const { documents } = await sdk.database.listDocuments(config.appWrite.bankCodesCollectionId, [Query.equal('bankCode', bankCode)])
+          const bankCodeDetails = documents[0]
+          return bankCodeDetails?.bankId
+        } catch (err) {
+          crashlytics().log(err)
+          return undefined
         }
       }
     }

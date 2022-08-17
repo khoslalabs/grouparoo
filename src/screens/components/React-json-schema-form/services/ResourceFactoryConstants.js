@@ -1,18 +1,20 @@
 class ResourceFactoryConstants {
   apiContextPath = "/novocode/";
   brokerContextPath = "/broker/";
-  udyamContextPath = "/udyam?udyam="
+  udyamContextPath = "/udyam?udyam=";
   defaultApiContextPath = "/";
   documentGatewayURL = "/api-gateway/document/v1/";
   platformApiGatewayURL = "/api-gateway/api/v1/";
   voyagerContext = "voyager/";
-  apiGateWay = "https://dev-codeapp.novopay.in";
-  adapterServiceUrl = "https://novo-adapter-qa.novopay.in/";
-  appWriteUrl = "https://dev-appwrite.novopay.in/v1/";
-  qaGateWay = "https://novo-adapter-qa.novopay.in/";
+  appwriteApiGateway = "https://prod-appwrite-functions.novopay.in";
+  apiGateWay = "https://prod-codeapp.novopay.in";
+  adapterServiceUrl = "https://novo-adapter-prod.novopay.in/";
+  // appWriteUrl = "https://dev-appwrite.novopay.in/v1/";
   REACT_APP_DMS_SERVER_URL = "https://asset-qa-platform.novopay.in";
-  REACT_APP_SPRING_VERIFY_SERVER_URL = "https://api-dev.springscan.springverify.com/";
-  REACT_APP_AADHAR_PAN_SERVICE = "https://sandbox.veri5digital.com/verification-service/api/1.0/"
+  REACT_APP_SPRING_VERIFY_SERVER_URL =
+    "https://api-dev.springscan.springverify.com/";
+  REACT_APP_AADHAR_PAN_SERVICE =
+    "https://sandbox.veri5digital.com/verification-service/api/1.0/";
   constants = {
     masterData: {
       getStates: this.getPlatformApiUrl("getChildHierarchyElements"),
@@ -27,6 +29,11 @@ class ResourceFactoryConstants {
       createSubscription: this.getCustomUrl(
         this.adapterServiceUrl,
         "payment/createSubscription",
+        ""
+      ),
+      createSeamlessSubscription: this.getCustomUrl(
+        this.adapterServiceUrl,
+        "payment/createSeamlessSubscription",
         ""
       ),
     },
@@ -63,7 +70,7 @@ class ResourceFactoryConstants {
     },
     gstin: {
       verifyGstin: this.getCustomUrl(
-        this.adapterServiceUrl,
+        "https://novo-adapter-dev.novopay.in/",
         "verify/gst?gstin=",
         ""
       ),
@@ -104,10 +111,15 @@ class ResourceFactoryConstants {
         "enterOtp",
         "/okyc/"
       ),
-      getUrlForIdMatch: this.qaGateWay + 'match',
+      getUrlForIdMatch: this.adapterServiceUrl + "match",
       getUrlForFaceMatch: this.getCustomUrl(
         this.apiGateWay,
         "faceMatch",
+        "/okyc/"
+      ),
+      getKycData: this.getCustomUrl(
+        this.apiGateWay,
+        "getAadhaarData?pan=",
         "/okyc/"
       ),
     },
@@ -125,7 +137,7 @@ class ResourceFactoryConstants {
     },
     bankStatement: {
       uploadBankStatement: this.getCustomUrl(
-        "https://novo-adapter-qa.novopay.in/",
+        this.adapterServiceUrl,
         "",
         "v1/api/bankstatement"
       ),
@@ -160,6 +172,44 @@ class ResourceFactoryConstants {
     finbox: {
       getSessionAPI: "https://portal.finbox.in/bank-connect/v1/session/",
     },
+    // below apis will be called, if appWrite function call would be disabled
+    appwriteAlternative: {
+      validateBankStatement: this.getCustomUrl(
+        this.appwriteApiGateway,
+        "bankstatement",
+        "/validate/"
+      ),
+      indicativeLoanOffers: this.getCustomUrl(
+        this.appwriteApiGateway,
+        "offers",
+        "/indicative/"
+      ),
+      getLoanProducts: this.getCustomUrl(
+        this.appwriteApiGateway,
+        "metadata",
+        "/loan/"
+      ),
+      getLoanApplications: this.getCustomUrl(
+        this.appwriteApiGateway,
+        "retrieve",
+        "/application/"
+      ),
+      getAllLoans: this.getCustomUrl(
+        this.appwriteApiGateway,
+        "accounts",
+        "/lms/"
+      ),
+      getNewLoanApplicationId: this.getCustomUrl(
+        this.appwriteApiGateway,
+        "id",
+        "/loanapplication/"
+      ),
+      generateLoanAgreement: this.getCustomUrl(
+        this.appwriteApiGateway,
+        "loanagreement",
+        "/generate/"
+      ),
+    },
   };
 
   getApiUrl(apiName) {
@@ -173,16 +223,12 @@ class ResourceFactoryConstants {
   }
   getDocumentApiUrl(apiName) {
     return (
-      this.REACT_APP_DMS_SERVER_URL +
-      `${this.documentGatewayURL}` +
-      apiName
+      this.REACT_APP_DMS_SERVER_URL + `${this.documentGatewayURL}` + apiName
     );
   }
   getPlatformApiUrl(apiName) {
     return (
-      this.REACT_APP_DMS_SERVER_URL +
-      `${this.platformApiGatewayURL}` +
-      apiName
+      this.REACT_APP_DMS_SERVER_URL + `${this.platformApiGatewayURL}` + apiName
     );
   }
   getSpringVerifyApiUrl(apiName) {

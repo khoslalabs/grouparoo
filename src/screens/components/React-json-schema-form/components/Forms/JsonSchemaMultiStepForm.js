@@ -15,7 +15,7 @@ import SpinnerButton from '../../../SpinnerButton'
 import styleConstants from '../../styleConstants'
 import { LocalizationContext } from '../../translation/Translation'
 import appConstants from '../../constants/appConstants'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import ResourceFactoryConstants from '../../services/ResourceFactoryConstants'
 import DataService from '../../services/DataService'
 import merge from 'lodash/merge'
@@ -23,6 +23,7 @@ import IconUtil from '../common/IconUtil'
 import crashlytics from '@react-native-firebase/crashlytics'
 import ErrorUtil from '../../../../Errors/ErrorUtil'
 import FormSuccess from './FormSuccess'
+import { useRequest } from 'ahooks'
 const FIRST_STEP_INDEX = 1
 const finalformObject = {}
 const JsonSchemaMultiStepForm = ({
@@ -36,7 +37,8 @@ const JsonSchemaMultiStepForm = ({
   setLiveValidate,
   formId,
   stepSchemaName,
-  token
+  token,
+  navigation
 }) => {
   useAppState({
     onBackground: () => apiService.appApi.stateEvents.send({
@@ -84,6 +86,7 @@ const JsonSchemaMultiStepForm = ({
   const [loaderVisibility, setLoaderVisibility] = useState(false)
   const totalSteps = Object.keys(steps).length
   const step = steps[currentStep.toString()]
+  const dispatch = useDispatch()
   step.liveValidate = isSubmit
   const onSubmit = (form, stepIndex) => {
     setLiveValidate(false)
@@ -133,9 +136,10 @@ const JsonSchemaMultiStepForm = ({
           requestBody[appConstants.communicationAddressField] =
           kycData?.data?.address
         }
-      } else if (field === appConstants.okycField && !isEmpty(kycData)) {
-        requestBody.kycData = kycData
       }
+      //  else if (field === appConstants.okycField && !isEmpty(kycData)) {
+      //   // requestBody.kycData = kycData
+      // }
     }
   }
 
@@ -149,6 +153,7 @@ const JsonSchemaMultiStepForm = ({
       requestDataToUpdate.progress = 'COMPLETE'
     }
     // requestDataToUpdate.loanApplicationId = tempId
+    // console.log(requestDataToUpdate)
     crashlytics().log(ErrorUtil.createLog('Request body at this step', requestDataToUpdate, 'saveOrUpdateFormData', 'JsonSchemaMultiStepForm.js'))
     DataService.postData(`${url}`, requestDataToUpdate)
       .then((res) => {
@@ -215,7 +220,14 @@ const JsonSchemaMultiStepForm = ({
     uiSchema,
     step
   })
-
+  const useOkayHandler = useRequest(async () => {
+    await dispatch.authentication.reloadTheFormWithLatestData() // it will load the app with latest data
+    if (formId === 'loanform_assessment') {
+      navigation.push('Onboarding')
+    } else if (formId === 'loanform_agreement') {
+      dispatch.loans.setIsAgreementFormCompleted()
+    }
+  }, { manual: true })
   return (
     <>
       {/* <HorizontalProgressBar progressNum={(currentStep * 100) / totalSteps} /> */}
@@ -267,7 +279,10 @@ const JsonSchemaMultiStepForm = ({
         </View>
       )}
       {finalSaveMessageVisibility && (
-        <FormSuccess />
+        <FormSuccess
+          onOkay={() => useOkayHandler.run()}
+          loading={useOkayHandler.loading}
+        />
       )}
     </>
   )

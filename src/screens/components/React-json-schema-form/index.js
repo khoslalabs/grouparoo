@@ -12,6 +12,7 @@ const ReactNativeJsonSchemaForm = (props) => {
         stepSchemaName={props.stepSchemaName}
         token={props.token}
         currentFormData={props.currentFormData}
+        navigation={props.navigation}
       />
     </>
   )

@@ -68,9 +68,10 @@ const PendingLoanApplications = ({
         onPress={onPress}
         loanApplicationId={loanApplicationId}
       />
-      <Button onPress={onPress}>
+      {/* <Button onPress={onPress}>
         {translations['pendingLoanApplication.viewDetails']}
-      </Button>
+      </Button> */} 
+      {/* TODO: Need to fix, button. We can't show form to do agreement */}
     </Card>
   )
 }

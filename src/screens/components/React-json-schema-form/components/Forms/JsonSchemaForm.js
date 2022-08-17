@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { useStore } from 'react-redux'
+import { useDispatch } from 'react-redux'
+import ReactJsonSchemaUtil from '../../services/ReactJsonSchemaFormUtil'
 
 import { RNForm } from '../extLibraries/JsonSchemaForm'
 const JsonSchemaForm = props => {
-  const store = useStore()
+  const dispatch = useDispatch()
   const {
     formData,
     schema,
@@ -21,7 +22,7 @@ const JsonSchemaForm = props => {
   const [cntxt, setContext] = useState()
   const onFormDataUpdateHandler = (event) => {
     setRnFormdata(event.formData)
-    store.dispatch.formDetails.setFormData(event.formData)
+    dispatch.formDetails.setFormData(event.formData)
     onChange(event)
   }
 
@@ -42,6 +43,7 @@ const JsonSchemaForm = props => {
         onChange={onFormDataUpdateHandler}
         formContext={cntxt}
         showErrorList={false}
+        transformErrors={ReactJsonSchemaUtil.transformErrors}
       >
         {props.children}
       </RNForm>

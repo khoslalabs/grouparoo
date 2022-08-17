@@ -1,6 +1,6 @@
-import { Button } from '@ui-kitten/components'
+import { Button, Text } from '@ui-kitten/components'
 import React, { useContext, useEffect, useState } from 'react'
-import { Alert, Linking } from 'react-native'
+import { Alert, Linking, StyleSheet, Image, View } from 'react-native'
 import Toast from 'react-native-toast-message'
 import DataService from '../../../../services/DataService'
 import ResourceFactoryConstants from '../../../../services/ResourceFactoryConstants'
@@ -13,30 +13,21 @@ import ErrorUtil from '../../../../../../Errors/ErrorUtil'
 import { useRequest } from 'ahooks'
 import isEmpty from 'lodash.isempty'
 import FormSuccess from '../../../Forms/FormSuccess'
+import { useSelector } from 'react-redux'
+import { heightPercentageToDP, widthPercentageToDP } from 'react-native-responsive-screen'
 
-const uploadToAppWrite = async (file, url) => {
+const uploadToAppWrite = async (url) => {
   try {
-    const response = await RNFetchBlob.fetch(
-      'POST',
-      url,
-      {
-        'Content-Type': 'multipart/form-data'
-      },
-      [
-        { name: 'file', filename: 'agreement', data: file }
-      ]
-    )
-    if (response?.respInfo?.status === 200) {
-      const data = JSON.parse(response.data)
+    const res = await DataService.postData(url)
+    if (res?.data?.status === 'SUCCESS') {
       return {
-        uploadedDocId: data.fileId,
-        file
+        uploadedDocId: res?.data?.fileId
       }
     } else {
-      throw new Error('UPLOAD_TO_APPWRITE_SERVER_FAILED')
+      throw new Error('ESIGNED_PDF_SAVING_FAILED')
     }
   } catch (e) {
-    if (e.message === 'UPLOAD_TO_APPWRITE_SERVER_FAILED') {
+    if (e.message === 'ESIGNED_PDF_SAVING_FAILED') {
       throw e
     } else {
       throw new Error('CANNOT_REACH_APPWRITE_SERVICE')
@@ -50,10 +41,12 @@ const EsignInputWidget = (props) => {
   const [isEsignDone, setIsEsignDone] = useState(!!props.value)
   const [file, setFile] = useState('')
   const [appUrl, setAppUrl] = useState(null)
+  const loanAgreementId = useSelector(state => state.loanApplications.applications[state.loanApplications.currentLoanApplicationId].loanAgreementId)
+  const loanAgreentUrl = `${resourceFactoryConstants.constants.lending.downloadFile}${loanAgreementId}`
+  const [esignedPdfId, setEsignedPdfId] = useState()
+  const signerName = useSelector(state => state?.formDetails?.panData?.name)
 
-  const fileUrl =
-    props?.schema?.url ||
-    'https://www.agstartups.org.br/uploads/2020/07/sample.pdf'
+  const fileUrl = loanAgreentUrl
 
   useEffect(async () => {
     const initialUrl = await Linking.getInitialURL()
@@ -77,6 +70,8 @@ const EsignInputWidget = (props) => {
       if (key === 'esign_status' && queryParamObject[key] === 'success') {
         setIsEsignDone(true)
         temp = true
+      } else if (key === 'id') {
+        setEsignedPdfId(queryParamObject?.id)
       }
       if (key === 'esign_status') {
         isEsignCallBack = true
@@ -138,7 +133,8 @@ const EsignInputWidget = (props) => {
         },
         [
           { name: 'file', filename: 'agreement', data: file },
-          { name: 'page_no', data: '1' },
+          { name: 'signer_name', data: signerName },
+          { name: 'purpose', data: 'Loan Agreement Esign' },
           {
             name: 'redirect_url',
             data: encodeURIComponent(appUrl)
@@ -176,7 +172,7 @@ const EsignInputWidget = (props) => {
   const useUploadToAppwrite = useRequest(uploadToAppWrite, {
     manual: true,
     onSuccess: (res) => {
-      props.onChange(res?.uploadedDocId)
+      props.onChange(`${res?.uploadedDocId}::${signerName}_Loan_Agreement.pdf`)
     },
     onError: (err) => {
       crashlytics().log(ErrorUtil.createError(err, err.message, err.message, undefined, 'useUploadToAppwrite', 'EsignInputWidget.js'))
@@ -185,14 +181,16 @@ const EsignInputWidget = (props) => {
   })
 
   useEffect(() => {
-    useTodownFileBlob.run(fileUrl)
+    if (!props.value) {
+      useTodownFileBlob.run(fileUrl)
+    }
   }, [])
 
   useEffect(async () => {
-    if (isEsignDone && !isEmpty(file) && !props.value) {
-      useUploadToAppwrite.run(file, resourceFactoryConstants.constants.lending.uploadFile)
+    if (isEsignDone && !isEmpty(esignedPdfId) && !props.value) {
+      useUploadToAppwrite.run(`${resourceFactoryConstants.constants.eSign.signedPdfToSaveInDB}?id=${esignedPdfId}`) // calling this to upload signed pdf into appwrite
     }
-  }, [isEsignDone, JSON.stringify(file)])
+  }, [isEsignDone, esignedPdfId])
 
   const openLink = async (esignUrl) => {
     const supported = await Linking.canOpenURL(esignUrl)
@@ -222,14 +220,22 @@ const EsignInputWidget = (props) => {
     <>
       <LoadingSpinner visible={useEsignProcessHandler.loading || useTodownFileBlob.loading} />
       {!isEsignDone && (
-        <Button
-          appearance='outline'
-          status='primary'
-          onPress={esignProcessHandler}
-          style={{ marginTop: 5 }}
-        >
-          {translations['esign.start.esign']}
-        </Button>
+        <View style={styles.container}>
+          <View style={styles.iconContainer}>
+            <Image source={require('../../../../../../../assets/images/esign-icon.png')} style={styles.image} resizeMode='center' />
+          </View>
+          <View style={styles.card}>
+            <Button
+              appearance='outline'
+              status='primary'
+              onPress={esignProcessHandler}
+              style={{ marginTop: 5 }}
+            >
+              {translations['esign.start.esign']}
+            </Button>
+            <Text appearance='hint' category='label'>{translations['esign.details.hint']}</Text>
+          </View>
+        </View>
       )}
       {isEsignDone && (
         <FormSuccess description={translations['esign.successfull']} isButtonVisible={false} />
@@ -238,4 +244,37 @@ const EsignInputWidget = (props) => {
   )
 }
 
+const styles = StyleSheet.create({
+  iconContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: heightPercentageToDP('70%')
+  },
+  card: {
+    width: widthPercentageToDP('85%'),
+    marginBottom: 30
+  },
+  image: {
+    width: widthPercentageToDP('45%'),
+    height: widthPercentageToDP('45%')
+  },
+  line: {
+    marginTop: 10,
+    borderBottomColor: '#F0F0FF',
+    borderBottomWidth: 1
+  },
+  rowDesign: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10
+  }
+})
 export default EsignInputWidget

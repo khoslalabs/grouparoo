@@ -39,15 +39,15 @@ const permissionsHelp = {
         title: 'help.contacts.title',
         content: 'help.contacts.content',
         icon: 'ContactListIcon'
+      },
+      {
+        order: 6,
+        title: 'help.apps.data.title',
+        content: 'help.apps.data.content',
+        icon: 'DeviceIcon'
       }]
     },
     rationale: {
-      [PERMISSIONS.ANDROID.ACCESS_BACKGROUND_LOCATION]: {
-        title: 'permissions.background.title',
-        message: 'permissions.background.message',
-        buttonPositive: 'permissions.positive',
-        buttonNegative: 'permissions.negative'
-      },
       [PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION]: {
         title: 'permissions.location.title',
         message: 'permissions.location.message',

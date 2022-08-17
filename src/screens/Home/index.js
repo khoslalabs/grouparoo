@@ -128,7 +128,7 @@ const HomeScreen = ({ navigation, route }) => {
     if (item.name === 'RepaymentsPending') {
       navigation.navigate('Repayments', params)
     } else if (item.name === 'PendingApplications') {
-      navigation.navigate('ApplicationForm', params)
+      // navigation.navigate('ApplicationForm', params) // TODO: Will Fix it Later, it will not go to ApplicationForm, It is already done
     } else if (item.name === 'MyLoans') {
       navigation.navigate('MyLoans', params)
     } else if (item.name === 'NextEmi') {

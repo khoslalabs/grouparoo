@@ -24,7 +24,8 @@ const appConstants = {
   // is Address fetched by aadhar is same as communication address
   isCommunicationAddSameAsPermanentAddress:
     'isCommunicationAddSameAsPermanentAddress',
-  communicationAddressField: 'communicationAddress'
+  communicationAddressField: 'communicationAddress',
+  finboxApiKey: '73qqTni5iE4yexhz0sL9PHlwgHR9nvqHqHV8DKzb'
 
 }
 

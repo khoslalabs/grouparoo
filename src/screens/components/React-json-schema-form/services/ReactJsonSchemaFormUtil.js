@@ -72,8 +72,37 @@ const ReactJsonSchemaUtil = {
       reader.onloadend = () => resolve(reader.result)
     })
     const base64Data = await base64DataPromis
-    console.log('--->', base64Data)
     return base64Data
+  },
+  transformErrors: (errors) => {
+    return errors.map((error) => {
+      switch (error?.name) {
+        case 'required':
+          error.message = 'transform.error.required'
+          break
+        case 'pattern':
+          if (error?.property && error.property.includes('Name')) {
+            error.message = 'transform.error.pattern.name'
+            break
+          } else if (error?.property && error.property.includes('email')) {
+            error.message = 'transform.error.pattern.email'
+            break
+          }
+          error.message = 'transform.error.invalid.data'
+          break
+        case 'type':
+          error.message = 'transform.error.invalid.data'
+          break
+        case 'format':
+          if (error?.property && error.property.includes('email')) {
+            error.message = 'transform.error.pattern.email'
+            break
+          }
+          error.message = 'transform.error.invalid.data'
+          break
+      }
+      return error
+    })
   }
 }
 

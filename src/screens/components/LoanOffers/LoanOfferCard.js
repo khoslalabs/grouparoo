@@ -27,11 +27,12 @@ const LoanOfferCard = ({
   onSelect,
   loading,
   loanOffer,
-  loanAmount
+  loanAmount,
+  interestRate
 }) => {
-  // if (loading) {
-  //   return <Loading />
-  // }
+  if (loading) {
+    return <Loading />
+  }
   const { translations } = useContext(LocalizationContext)
   const repaymentDisplay = loanOffer.repayments.map(rp => translations[`period.${rp}ly`])
   const [selectedRepayment, setSelectedRepayment] = useState(loanOffer.defaultRepayment)
@@ -40,13 +41,14 @@ const LoanOfferCard = ({
     loanAmount,
     loanOffer.tenure,
     selectedRepayment,
-    loanOffer.unit
+    loanOffer.unit,
+    interestRate
   )
 
   const styles = useStyleSheet(themedStyles)
   return (
     <View style={styles.absoluteViewContainer}>
-      <Card style={styles.cardContainer} onPress={() => onSelect(loanOffer.offerId)}>
+      <Card style={styles.cardContainer} onPress={() => onSelect(loanOffer.offerId, loanEMI)}>
         <View style={styles.contentContainer}>
           <View style={styles.cardTitleContainer}>
             {selected && (<LoanOfferIcons.IconSelected />)}

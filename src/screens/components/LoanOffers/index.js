@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { View } from 'react-native'
 import { StyleService, useStyleSheet } from '@ui-kitten/components'
 import LoanOffersPerProduct from './LoanOffersPerProduct'
-import { loanOfferPart2 } from '../../../test/loanOffers'
 import AmountRangeSelector from '../AmountRangeSelector'
 import { LoanAmountDisplayBig } from '../ValueDisplayComponent'
 import { config } from '../../../config'
@@ -10,9 +9,9 @@ const LoanOffers = ({
   currentLoanAmount,
   selectedLoanOffer = {},
   onOfferSelected,
-  loanOffers
+  loanOffers,
+  loading
 }) => {
-  loanOffers = loanOffers || loanOfferPart2
   const styles = useStyleSheet(themedStyles)
   const [loanAmount, setLoanAmount] = useState(
     currentLoanAmount || config.TERM_LOAN_MIN_AMOUNT
@@ -23,6 +22,7 @@ const LoanOffers = ({
     offerId,
     finalLoanTenure,
     finalInstallmentFrequency,
+    finalEmiAmount,
     unit
   }) => {
     onOfferSelected({
@@ -31,6 +31,7 @@ const LoanOffers = ({
       finalLoanAmount: loanAmount,
       finalLoanTenure,
       finalInstallmentFrequency,
+      finalEmiAmount,
       unit
     })
   }
@@ -39,7 +40,7 @@ const LoanOffers = ({
       <View>
         <LoanAmountDisplayBig
           value={loanAmount}
-          hasEdit
+          hasEdit={false} // No need to edit, if he has already selected the loan amount on first step
           editLoanAmount={editLoanAmount}
           setEditLoanAmount={setEditLoanAmount}
         />
@@ -63,6 +64,7 @@ const LoanOffers = ({
             selectedLoanOffer={selectedLoanOffer}
             onSelect={onSelectLoanOffer}
             loanAmount={loanAmount}
+            loading={loading}
           />
         ))}
       </View>

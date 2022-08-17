@@ -35,7 +35,9 @@ const DocumentUploadComponent = ({
   type = [DocumentPicker.types.pdf],
   selectText,
   files = [],
-  removeFile
+  isAddMore = true,
+  removeFile,
+  reset = false
 }) => {
   const refRBSheet = useRef()
   const themeStyle = useStyleSheet(theme)
@@ -80,11 +82,14 @@ const DocumentUploadComponent = ({
   const onDeleteHandler = (id) => {
     const deletedFile = files[id]
     // delete this from tempFiles as well
-    const newTempFiles = tempFiles.filter(f => f.uri !== deletedFile.uri)
+    const newTempFiles = tempFiles.filter(f => f.name !== deletedFile.name) // name will always be there, but uri not (in case of repopulating)
     setTempFiles([...newTempFiles])
     removeFile(deletedFile)
   }
-  const displayFiles = mergeTempFilesWithExisting(tempFiles, files)
+  let displayFiles = mergeTempFilesWithExisting(tempFiles, files)
+  if (reset) {
+    displayFiles = []
+  }
   return (
     <>
       {(displayFiles.length === 0) && (
@@ -126,7 +131,7 @@ const DocumentUploadComponent = ({
                   )
                 })}
             </View>
-            {multiple && (
+            {multiple && isAddMore && (
               <TouchableOpacity onPress={() => refRBSheet.current.open()}>
                 <Card>
                   <View style={themeStyle.fileCardContainer}>

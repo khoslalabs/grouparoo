@@ -34,7 +34,7 @@ const OKYCWidget = (props) => {
         <OKYCComponent onOtpSuccess={onOtpSuccessHandler} />
       )}
       {(isKycDone || props.value === 'Yes') && (
-        <FormSuccess description={translations['okyc.facematch.success']} isButtonVisible={false} />
+        <FormSuccess description={translations['okyc.kyc.success']} isButtonVisible={false} />
       )}
     </>
   )

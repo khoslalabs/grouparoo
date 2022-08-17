@@ -15,7 +15,7 @@ const LoanOffersPerProduct = ({
   const { translations } = useContext(LocalizationContext)
   const { offerId, productId } = selectedLoanOffer
   const isThisProduct = productId === loanOption.productId
-  const onOfferSelect = (offerId) => {
+  const onOfferSelect = (offerId, emi) => {
     const tempselctedLoanOffer = loanOption?.offers?.find(
       (item) => offerId === item.offerId
     )
@@ -25,6 +25,7 @@ const LoanOffersPerProduct = ({
       finalLoanTenure: tempselctedLoanOffer?.tenure,
       finalInstallmentFrequency: tempselctedLoanOffer?.defaultRepayment,
       finalLoanAmount: loanAmount,
+      finalEmiAmount: emi,
       unit: tempselctedLoanOffer?.unit
     })
   }
@@ -34,32 +35,34 @@ const LoanOffersPerProduct = ({
         loanOffer={item}
         selected={isThisProduct && item.offerId === offerId}
         onSelect={onOfferSelect}
-        loading
+        loading={loading}
         loanAmount={loanAmount}
+        interestRate={loanOption.estimatedInterestRate}
       />
     )
   }
   return (
     <View style={styles.optionContainer}>
-      <View style={styles.titleContainer}>
-        <View>
-          <Text category='h6' appearance='hint'>
-            {loanOption.heading}
-          </Text>
-        </View>
-        <View style={{ marginLeft: 50 }}>
-          <InterestDisplay
-            label={translations['loan.interestRate']}
-            interestRate={loanOption.estimatedInterestRate}
-            horizontal
-          />
-        </View>
-      </View>
+      {loanOption.heading &&
+        <View style={styles.titleContainer}>
+          <View>
+            <Text category='h6' appearance='hint'>
+              {loanOption.heading}
+            </Text>
+          </View>
+          <View style={{ marginLeft: 50 }}>
+            <InterestDisplay
+              label={translations['loan.interestRate']}
+              interestRate={loanOption.estimatedInterestRate}
+              horizontal
+            />
+          </View>
+        </View>}
       <List
         style={styles.listStyle}
         contentContainerStyle={styles.horizontalList}
         horizontal
-        showsHorizontalScrollIndicator={false}
+        showsHorizontalScrollIndicator
         data={loanOption.offers}
         renderItem={renderLoanOfferCard}
       />

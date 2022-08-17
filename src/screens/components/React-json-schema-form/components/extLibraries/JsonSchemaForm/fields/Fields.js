@@ -13,6 +13,7 @@ import AddressInputField from './AddressInputField'
 import BankStatementUploadField from './BankStatementUploadField'
 import ITRUploadField from './ITRUploadField'
 import LoanOfferField from './LoanOfferField'
+import BankAccountConfirmationWidget from '../widgets/BankAccountConfirmationWidget'
 export const Fields = {
   TitleField,
   AnyOfField: MultiSchemaField,
@@ -29,5 +30,6 @@ export const Fields = {
   'np-address-input-field': AddressInputField,
   'np-bank-statement-field': BankStatementUploadField,
   'np-itr-upload-field': ITRUploadField,
-  'np-loan-offer-field': LoanOfferField
+  'np-loan-offer-field': LoanOfferField,
+  'np-bank-account-details-field': BankAccountConfirmationWidget
 }

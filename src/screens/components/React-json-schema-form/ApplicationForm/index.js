@@ -77,7 +77,6 @@ const ApplicationForm = (props) => {
       } else if (event.errors.length === 0) {
         setLiveValidate(false)
       }
-      dispatch.formDetails.setFormData(formData)
     }
   }
 
@@ -96,6 +95,7 @@ const ApplicationForm = (props) => {
         formId={formId}
         stepSchemaName={stepSchemaName}
         token={token}
+        navigation={props.navigation}
       />
     </View>
   )

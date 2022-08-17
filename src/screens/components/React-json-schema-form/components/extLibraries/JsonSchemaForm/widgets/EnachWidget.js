@@ -2,7 +2,7 @@ import { Button, Text } from '@ui-kitten/components'
 import React, { useContext, useEffect, useState } from 'react'
 import DataService from '../../../../services/DataService'
 import ResourceFactoryConstants from '../../../../services/ResourceFactoryConstants'
-import { Linking, View, StyleSheet, Alert } from 'react-native'
+import { Linking, View, StyleSheet, Alert, Image } from 'react-native'
 import isEmpty from 'lodash.isempty'
 import { useSelector } from 'react-redux'
 import LoadingSpinner from '../../../../../LoadingSpinner'
@@ -14,8 +14,20 @@ import crashlytics from '@react-native-firebase/crashlytics'
 import ErrorUtil from '../../../../../../Errors/ErrorUtil'
 import dayjs from 'dayjs'
 import FormSuccess from '../../../Forms/FormSuccess'
+import { config } from '../../../../../../../config'
+import {
+  heightPercentageToDP,
+  widthPercentageToDP
+} from 'react-native-responsive-screen'
+import apiService from '../../../../../../../apiService'
 const resourceFactoryConstants = new ResourceFactoryConstants()
-
+const dayjsMapper = {
+  [config.FREQ_MONTHLY]: 'month',
+  [config.FREQ_DAILY]: 'day',
+  [config.FREQ_WEEKLY]: 'week',
+  [config.FREQ_YEARLY]: 'year',
+  [config.FREQ_HALFYEARLY]: 'year'
+}
 const getRandomId = () => String(Math.floor(100000 + Math.random() * 900000))
 
 const createPlan = async (planObject) => {
@@ -24,6 +36,7 @@ const createPlan = async (planObject) => {
     planObject
   )
   const data = res.data
+  console.log('createPlan data', data)
   if (data.status === 'SUCCESS') {
     return true
   } else {
@@ -31,68 +44,103 @@ const createPlan = async (planObject) => {
   }
 }
 
-const createSubscription = async (
-  formName,
-  planId,
-  applicationId,
-  primaryPhone,
-  expiresOn,
-  appUrl
-) => {
+const createSubscription = async (subscriptionObj) => {
   const res = await DataService.postData(
-    resourceFactoryConstants.constants.enach.createSubscription,
-    {
-      subscriptionId: `${formName}_${getRandomId()}`,
-      planId: planId,
-      customerEmail: 'nplending@gmail.com',
-      customerPhone: primaryPhone || '93465577484',
-      expiresOn: expiresOn,
-      returnUrl: appUrl
-    }
+    resourceFactoryConstants.constants.enach.createSeamlessSubscription,
+    subscriptionObj
   )
   const data = res.data
+  console.log('createSubscription data', data)
+
   if (data.status === 'SUCCESS') {
     return data.authLink
   } else {
     throw new Error('SUBSCRIPTION_CREATION_FAILED')
   }
 }
+const getBankCodeFromBankName = async (bankCode) => {
+  const code = await apiService.appApi.bankStatement.code.get(
+    bankCode.toUpperCase()
+  )
+  return code
+}
 
 const EnachWidget = (props) => {
-  const applicationId = useSelector(
-    (state) => state?.formDetails?.formData?.loanApplicationId
-  )
   const jsonSchema = useSelector((state) => state?.formDetails?.schema)
   const formName = jsonSchema?.formName
   const [isRetryEnabled, setIsRetryEnabled] = useState(false)
   const [authLink, setAuthLink] = useState()
   const { translations } = useContext(LocalizationContext)
   const [isPlanCreated, setIsPlanCreated] = useState(false)
+  const [bankCode, setBankCode] = useState()
   const [isSubscriptionCreated, setIsSubscriptionCreated] = useState(
     !!props.value
   )
   const [appUrl, setAppUrl] = useState(null)
   const [planId, setPlanId] = useState(getRandomId())
-  const primaryPhone = useSelector(
-    (state) => state.formDetails.formData.primaryPhone
+  const bankStatementData = useSelector(
+    (state) => state.formDetails.bankStatementData
   )
+  const accountType = useSelector(
+    (state) => state?.formDetails?.formData?.bankAccountType?.accountType
+  )
+  const { loanOffer, email, primaryPhone } = useSelector(
+    (state) => state.formDetails.formData
+  )
+  const bankName = bankStatementData?.statement?.bank_name
+  const accountHolderName = bankStatementData?.statement?.identity?.name
+  const accountNo = bankStatementData?.statement?.identity?.account_number
+  useEffect(async () => {
+    if (!isEmpty(bankName) && isEmpty(props.value)) {
+      const tempBankCode = await getBankCodeFromBankName(
+        bankName.toUpperCase()
+      )
+      setBankCode(tempBankCode)
+    }
+  }, [bankName])
 
   const planObject = {
     planId: planId,
     planName: `${formName}_${getRandomId()}`,
     type: 'PERIODIC',
-    amount: 100,
-    intervalType: 'month',
-    intervals: 12
+    amount: loanOffer.finalEmiAmount, // Need to set it from its loan Offer Data, emi amount
+    intervalType: dayjsMapper[loanOffer.finalInstallmentFrequency],
+    intervals: loanOffer.finalLoanTenure
   }
 
   const expiresOn = `${dayjs()
-    .add(30 * planObject.intervals, 'day')
-    .format('YYYY-MM-DD')} 23:59:59`
+    .add(30 * (planObject.intervals + 2), 'day')
+    .format('YYYY-MM-DD HH:mm:ss')}`
 
   const expiresOnForUi = `${dayjs()
     .add(30 * planObject.intervals, 'day')
     .format('DD-MMM-YYYY')}`
+
+  const calFirstChargeDate = () => {
+    const now = dayjs()
+    const date = now.format('D') > 20
+      ? dayjs(`${now.format('YYYY')}-${Number(now.format('MM')) + 2}-4`)
+      : dayjs(`${now.format('YYYY')}-${Number(now.format('MM')) + 1}-4`)
+    return date.format('YYYY-MM-DD')
+  }
+
+  const subscriptionObject = {
+    // cashfree
+    subscriptionId: `${formName}_${getRandomId()}`,
+    planId: planId,
+    customerEmail: email,
+    customerPhone: primaryPhone,
+    firstChargeDate: calFirstChargeDate(),
+    expiresOn: expiresOn,
+    returnUrl: appUrl,
+    paymentOption: 'emandate',
+    emandate_accountHolder: accountHolderName,
+    emandate_accountNumber: accountNo,
+    emandate_bankId: bankCode,
+    emandate_authMode: 'netbanking',
+    emandate_accountType: accountType?.toUpperCase()
+  }
+
   // Automatically Starts creating Plan
   useEffect(() => {
     if (!props.value) {
@@ -144,14 +192,7 @@ const EnachWidget = (props) => {
     onSuccess: () => {
       setIsRetryEnabled(false)
       setIsPlanCreated(true)
-      useCreateSubscription.run(
-        formName,
-        planId,
-        applicationId,
-        primaryPhone,
-        expiresOn,
-        appUrl
-      )
+      useCreateSubscription.run(subscriptionObject)
     },
     onError: (error) => {
       setIsRetryEnabled(true)
@@ -197,79 +238,173 @@ const EnachWidget = (props) => {
       }
     ])
   }
+  const retryHandler = () => {
+    const id = getRandomId()
+    setPlanId(id)
+    useCreatePlan.run({ ...planObject, planId: id })
+  }
   return (
     <>
       <LoadingSpinner
         visible={useCreatePlan.loading || useCreateSubscription.loading}
       />
       {isRetryEnabled && (
-        <Button
-          appearance='outline'
-          onPress={() => {
-            setPlanId((prev) =>
-              String(Math.floor(100000 + Math.random() * 900000))
-            )
-            useCreatePlan.run(planObject)
-          }}
-        >
+        <Button appearance='outline' onPress={retryHandler}>
           Retry
         </Button>
       )}
-      {isPlanCreated && !isSubscriptionCreated && !isRetryEnabled && (
-        <>
-          <View style={styles.row}>
-            <Text category='h6' style={styles.label}>
-              {translations['enach.planType']}
-            </Text>
-            <Text appearance='hint'>
-              {planObject.type === 'PERIODIC' ? 'Periodic' : 'No Data'}
+      {!isSubscriptionCreated && isPlanCreated && !isRetryEnabled && (
+        <View style={styles.container}>
+          <View style={styles.iconContainer}>
+            <Image
+              source={require('../../../../../../../assets/images/enach-icon.png')}
+              style={styles.image}
+              resizeMode='center'
+            />
+          </View>
+          <View style={styles.card}>
+            <View style={styles.rowDesign}>
+              <View>
+                <Text category='p1' appearance='hint'>
+                  {' '}
+                  {translations['enach.planType']}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={styles.valueText}
+                  category='s1'
+                  appearance='default'
+                >
+                  {planObject.type === 'PERIODIC' ? 'Periodic' : 'No Data'}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.line} />
+            <View style={styles.rowDesign}>
+              <View>
+                <Text category='p1' appearance='hint'>
+                  {translations['enach.intervalType']}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={styles.valueText}
+                  category='s1'
+                  appearance='default'
+                >
+                  {planObject.intervalType === 'month' ? 'Monthly' : 'No Data'}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.line} />
+            <View style={styles.rowDesign}>
+              <View>
+                <Text category='p1' appearance='hint'>
+                  {translations['enach.amount']}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={styles.valueText}
+                  category='s1'
+                  appearance='default'
+                >
+                  ₹ {planObject.amount}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.line} />
+            <View style={styles.rowDesign}>
+              <View>
+                <Text category='p1' appearance='hint'>
+                  {translations['enach.noOfIntervals']}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={styles.valueText}
+                  category='s1'
+                  appearance='default'
+                >
+                  {planObject.intervals}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.line} />
+            <View style={styles.rowDesign}>
+              <View>
+                <Text category='p1' appearance='hint'>
+                  {translations['enach.expiresOn']}
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={styles.valueText}
+                  category='s1'
+                  appearance='default'
+                >
+                  {expiresOnForUi}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.rowDesignBtn}>
+              <Button appearance='outline' onPress={eMandateHandler}>
+                {translations['enach.start']}
+              </Button>
+            </View>
+            <Text appearance='hint' category='label'>
+              {translations['enach.details.hint']}
             </Text>
           </View>
-          <View style={styles.row}>
-            <Text category='h6' style={styles.label}>
-              {translations['enach.intervalType']}
-            </Text>
-            <Text appearance='hint'>
-              {planObject.intervalType === 'month' ? 'Monthly' : 'No Data'}
-            </Text>
-          </View>
-          <View style={styles.row}>
-            <Text category='h6' style={styles.label}>
-              {translations['enach.amount']}
-            </Text>
-            <Text appearance='hint'>₹ {planObject.amount}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text category='h6' style={styles.label}>
-              {translations['enach.noOfIntervals']}
-            </Text>
-            <Text appearance='hint'>{planObject.intervals}</Text>
-          </View>
-          <View style={styles.row}>
-            <Text category='h6' style={styles.label}>
-              {translations['enach.expiresOn']}
-            </Text>
-            <Text appearance='hint'>{expiresOnForUi}</Text>
-          </View>
-          <View style={styles.row}>
-            <Button appearance='outline' onPress={eMandateHandler}>
-              {translations['enach.start']}
-            </Button>
-          </View>
-        </>
+        </View>
       )}
       {isSubscriptionCreated && (
-        <FormSuccess description={translations['enach.subscription.done']} isButtonVisible={false} />
+        <FormSuccess
+          description={translations['enach.subscription.done']}
+          isButtonVisible={false}
+        />
       )}
     </>
   )
 }
 const styles = StyleSheet.create({
-  row: {
-    marginVertical: 5
+  valueText: {
+    fontWeight: 'bold'
   },
-  label: {
-    marginTop: 2
+  iconContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  container: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: heightPercentageToDP('75%')
+  },
+  card: {
+    width: widthPercentageToDP('85%'),
+    marginBottom: 30
+  },
+  image: {
+    width: widthPercentageToDP('45%'),
+    height: widthPercentageToDP('45%')
+  },
+  line: {
+    marginTop: 10,
+    borderBottomColor: '#F0F0FF',
+    borderBottomWidth: 1
+  },
+  rowDesign: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10
+  },
+  rowDesignBtn: {
+    marginTop: 10
   }
 })
 export default EnachWidget

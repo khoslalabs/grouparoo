@@ -6,6 +6,8 @@ import humanizeDuration from 'humanize-duration'
 import { rupeeFormatter } from '../../utils'
 import apiService from '../../apiService'
 import { config } from '../../config'
+import ResourceFactoryConstants from '../../screens/components/React-json-schema-form/services/ResourceFactoryConstants'
+import DataService from '../../screens/components/React-json-schema-form/services/DataService'
 const formatAmount = amount => rupeeFormatter(parseFloat(amount))
 /*************** loanApplicationId and loanId are used interchangably here *************/
 const dayjsMapper = {
@@ -53,6 +55,11 @@ const loans = {
       return rootState.loans[loanApplicationId]
     },
     hasActiveLoan: select => (rootState) => {
+      const currenLoanApplication = rootState.loanApplications.applicationStage[rootState.loanApplications.currentLoanApplicationId]
+      const isAgreementFormCompleted = currenLoanApplication?.isAgreementFormCompleted || false
+      if (isAgreementFormCompleted || rootState?.loans?.isAgreementFormCompleted) {
+        return true
+      }
       return Object.keys(rootState.loans)
         .map(rs => rs.status === config.LOAN_DISBURSED_STATUS)
         .some(
@@ -371,20 +378,43 @@ const loans = {
         state[al.loanApplicationId] = al
       })
       return state
+    },
+    updateIsAgreementFormCompleted: (state, _) => {
+      state.isAgreementFormCompleted = true
+      return state
     }
   },
   effects: (dispatch) => ({
     async getAllLoans (_, rootState) {
       const { customer } = rootState
       try {
-        const executionId = await apiService.appApi.loans.getAllLoans.execute(customer.customerDetails.$id)
-        let allLoans = await apiService.appApi.loans.getAllLoans.get(executionId)
+        let allLoans
+        if (config.APPWRITE_FUNCTION_CALL) {
+          const executionId = await apiService.appApi.loans.getAllLoans.execute(customer.customerDetails.$id)
+          allLoans = await apiService.appApi.loans.getAllLoans.get(executionId)
+        } else {
+          const payload = JSON.stringify(
+            {
+              data: {
+                type: 'customerLoans',
+                customerId: customer.customerDetails.$id
+              }
+            }
+          )
+          const endpoints = new ResourceFactoryConstants()
+          const res = await DataService.postData(endpoints.constants.appwriteAlternative.getAllLoans, payload)
+          allLoans = res.data
+        }
+        console.log('All Loans:', allLoans)
         allLoans = allLoans.filter(al => rootState.loanProducts.schemeCodes.indexOf(al.basicDetails.schemeCode) > -1)
         dispatch.loans.addAllLoans({ allLoans })
       } catch (e) {
         console.log(e.stack)
         console.log(e.message)
       }
+    },
+    async setIsAgreementFormCompleted (_, rootState) {
+      dispatch.loans.updateIsAgreementFormCompleted()
     }
   })
 }

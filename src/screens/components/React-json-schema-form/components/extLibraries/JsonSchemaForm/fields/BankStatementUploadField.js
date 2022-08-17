@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react'
 import { useRequest } from 'ahooks'
 import { useDispatch, useSelector, useStore } from 'react-redux'
-import { Text } from '@ui-kitten/components'
+import { Button, Card, Input, Modal, Spinner, StyleService, Text } from '@ui-kitten/components'
+import { Dimensions, Alert } from 'react-native'
 import isEmpty from 'lodash.isempty'
 import Toast from 'react-native-toast-message'
 import { LocalizationContext } from '../../../../translation/Translation'
@@ -11,6 +12,10 @@ import DocumentPicker from 'react-native-document-picker'
 import DataService from '../../../../services/DataService'
 import DocumentUploadComponent from '../common/DocumentUploadComponent'
 import ReactJsonSchemaUtil from '../../../../services/ReactJsonSchemaFormUtil'
+import apiService from '../../../../../../../apiService'
+import { WebView } from 'react-native-webview'
+import appConstants from '../../../../constants/appConstants'
+import { config } from '../../../../../../../config'
 
 const getNewFileAdded = (newFiles, oldFiles = []) => {
   if (newFiles.length === 0) {
@@ -21,14 +26,14 @@ const getNewFileAdded = (newFiles, oldFiles = []) => {
   }
   const addedFiles = []
   newFiles.forEach(file => {
-    if (!oldFiles.some((of) => of.uri === file.uri)) {
+    if (!oldFiles.some((of) => of.name === file.name)) {
       addedFiles.push(file)
     }
   })
   return addedFiles
 }
 
-const uploadBankStatement = async (dispatch, files) => {
+const uploadBankStatement = async (dispatch, files, currentLoanApplicationId, panData, uploadedFileIdsWithName, password) => {
   // Code to upload bank Statement
   const resourceFactoryConstants = new ResourceFactoryConstants()
   const url = resourceFactoryConstants.constants.bankStatement.uploadBankStatement
@@ -36,28 +41,38 @@ const uploadBankStatement = async (dispatch, files) => {
   for (const file of files) {
     formData.append('file', file)
   }
+  formData.append('currentLoanApplicationId', currentLoanApplicationId)
+  if (password) {
+    formData.append('pdfPassword', password)
+  }
   try {
     const res = await DataService.postData(url, formData)
     const responseData = res.data
     const uploadedDocIds = []
     if (responseData.status === 'SUCCESS') {
+      const bankStatementData = { statement: responseData?.data?.statement, transaction_details: { accounts: responseData?.data?.transaction_details?.accounts } }
+      // Validate BankStatement Data with PanData
+      const isBankStatementValidationPass = await validateBankStatement(panData, bankStatementData)
+      if (!isBankStatementValidationPass) {
+        throw new Error('BANK_STATEMENT_VALIDATION_FAILED')
+      }
       for (let r = 0; r < files.length; r++) {
         const docDetails = await uploadToAppWrite(files[r])
-        uploadedDocIds.push(`${docDetails.uploadedDocId}'::'${docDetails.uploadedFileName}`)
+        uploadedDocIds.push(`${docDetails.uploadedDocId}::${docDetails.uploadedFileName}`)
       }
       await dispatch.formDetails.setIsBankStatementVerified('Yes')
       files.forEach(file => {
         file.uploading = false
       })
-      await dispatch.formDetails.setBankStatementFiles(files)
-      await dispatch.formDetails.setBankStatementData(responseData.data)
+      await dispatch.formDetails.setBankStatementFiles(uploadedFileIdsWithName ? [...uploadedFileIdsWithName, ...files] : files)
+      await dispatch.formDetails.setBankStatementData(bankStatementData)
       return { uploadedDocIds }
     } else {
       throw new Error('INVALID_BANK_STATEMENT')
     }
   } catch (e) {
     console.log(e)
-    if (e.message === 'INVALID_BANK_STATEMENT') {
+    if (e.message === 'INVALID_BANK_STATEMENT' || e.message === 'BANK_STATEMENT_VALIDATION_FAILED') {
       throw e
     } else {
       throw new Error('CANNOT_REACH_STATEMENT_VALIDATION_SERVICE')
@@ -90,16 +105,66 @@ const uploadToAppWrite = async (file) => {
     }
   }
 }
+
+const validateBankStatement = async (panData, bankStatementData) => {
+  try {
+    let validationResult
+    if (config.APPWRITE_FUNCTION_CALL) {
+      const executionId = await apiService.appApi.bankStatement.validation.execute({ panData, bankStatementData })
+      validationResult = await apiService.appApi.bankStatement.validation.get(executionId)
+    } else {
+      const endpoints = new ResourceFactoryConstants()
+      const res = await DataService.postData(endpoints.constants.appwriteAlternative.validateBankStatement, { panData, bankStatementData })
+      validationResult = res.data
+    }
+    if (validationResult.status === 'success') {
+      return true
+    } else {
+      return false
+    }
+  } catch (error) {
+    throw new Error('CANNOT_REACH_BANK_VALIDATION_SERVER')
+  }
+}
+
+const netBankingHandle = async () => {
+  try {
+    const resourceFactoryConstants = new ResourceFactoryConstants()
+    const res = await DataService.postData(resourceFactoryConstants.constants.finbox.getSessionAPI, {
+      link_id: ReactJsonSchemaUtil.getRandomUUID(),
+      api_key: appConstants.finboxApiKey
+    })
+    if (res.status === 200) {
+      return res.data.redirect_url
+    } else {
+      throw new Error('FINBOX_CONNECTION_FAILED')
+    }
+  } catch (err) {
+    if (err.message === 'FINBOX_CONNECTION_FAILED') {
+      throw err
+    } else {
+      throw new Error('UNABLE_TO_CONNECT_FINBOX')
+    }
+  }
+}
+let newFilesAdded
 const BankStatementUploadField = (props) => {
   let uploadedFileIdsWithName
+  const [password, setPassword] = useState()
+  const [showPasswordModal, setShowPasswordModal] = useState(false)
+  const [reset, setResetToFalse] = useState(false)
   const dispatch = useDispatch()
   const store = useStore()
   const state = useSelector(state => state)
+  const [show, setShow] = useState(false)
+  const [redirectUrl, setRedirectUrl] = useState()
   // need a copy of bank statement files and not direct reference to state
+  const currentLoanApplicationId = state.loanApplications.currentLoanApplicationId
   const bankStatementFiles = store.select.formDetails.getBankStatementFiles(state)
   const bankStaementFilesCopy = JSON.parse(JSON.stringify(bankStatementFiles))
   const [isUploadDone, setIsUploadDone] = useState(false)
   const { translations } = useContext(LocalizationContext)
+  const panData = state?.formDetails?.panData
   const useRemoveFile = useRequest((file) => dispatch.formDetails.removeFromBankStatementFiles(file), {
     manual: true
   })
@@ -111,7 +176,7 @@ const BankStatementUploadField = (props) => {
     manual: true,
     onSuccess: (result, params) => {
       const { uploadedDocIds } = result
-      const allUploadedDocIds = props.formData ? [...props.value, ...uploadedDocIds] : uploadedDocIds
+      const allUploadedDocIds = props.formData ? [...props.formData, ...uploadedDocIds] : uploadedDocIds
       props.onChange(allUploadedDocIds)
       setIsUploadDone(true)
       Toast.show({
@@ -125,12 +190,27 @@ const BankStatementUploadField = (props) => {
       })
     },
     onError: (error, params) => {
-      console.log(error)
-      setIsUploadDone(true)
       if (error.message === 'CANNOT_REACH_STATEMENT_VALIDATION_SERVICE' ||
         error.message === 'CANNOT_REACH_STATEMENT_UPLOAD_SERVER'
       ) {
-        throw error
+        setResetToFalse(true)
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          props: {
+            title: translations['statement.title'],
+            description: translations['something.went.wrong']
+          }
+        })
+      } else if (error.message === 'BANK_STATEMENT_VALIDATION_FAILED') {
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          props: {
+            title: translations['statement.title'],
+            description: translations['statement.bankstatement.failed']
+          }
+        })
       } else {
         Toast.show({
           type: 'error',
@@ -147,16 +227,80 @@ const BankStatementUploadField = (props) => {
     if (!isEmpty(file) > 0) {
       useRemoveFile.run(file)
       // remove from props
-      const newProps = props.formData.filter(v => v.indexOf(file.name) > -1)
-      props.onChange([...newProps])
+      const newProps = props.formData.filter(v => v.indexOf(file.name) === -1)
+      props.onChange(isEmpty(newProps) ? undefined : [...newProps])
     }
   }
   const onFileChange = (allFiles) => {
     setIsUploadDone(false)
-    const newFilesAdded = getNewFileAdded(allFiles, bankStatementFiles)
+    setResetToFalse(false)
+    setPassword(undefined)
+    newFilesAdded = getNewFileAdded(allFiles, uploadedFileIdsWithName)
+    // Add logic to get password, if password protected
     if (newFilesAdded.length > 0) {
-      uploadFiles.run(dispatch, newFilesAdded)
+      Alert.alert(
+        translations['statement.title'],
+        translations['statement.password.protected'],
+        [
+          {
+            text: translations['text.yes'],
+            onPress: () => {
+              setShowPasswordModal(true)
+            }
+          },
+          {
+            text: translations['text.no'],
+            onPress: () => {
+              uploadFiles.run(dispatch, newFilesAdded, currentLoanApplicationId, panData, uploadedFileIdsWithName)
+            }
+          }
+        ]
+      )
     }
+  }
+  const finboxEventHandler = (event) => {
+    const data = JSON.parse(event.nativeEvent.data)
+    if (data?.entityId) {
+      props.onChange(data.entityId)
+      setTimeout(() => {
+        setShow(false)
+      }, 5000)
+    } else if (data?.reason && data?.error_type) {
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        props: {
+          title: translations['statement.title'],
+          description: data.reason
+        }
+      })
+    } else if (data?.message) {
+      setShow(false)
+    }
+  }
+  const useNetBankingHandler = useRequest(netBankingHandle, {
+    manual: true,
+    onSuccess: (redirectUrl) => {
+      setRedirectUrl(redirectUrl)
+      setShow(true)
+    },
+    onError: () => {
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        props: {
+          title: translations['statement.title'],
+          description: translations['esign.unexpected.error']
+        }
+      })
+    }
+  })
+  const openNetBankingModalHandler = () => {
+    useNetBankingHandler.run()
+  }
+  const updatePdfPassword = () => {
+    uploadFiles.run(dispatch, newFilesAdded, currentLoanApplicationId, panData, uploadedFileIdsWithName, password)
+    setShowPasswordModal(false)
   }
   return (
     <>
@@ -172,11 +316,58 @@ const BankStatementUploadField = (props) => {
         loading={uploadFiles.loading}
         selectText={translations['statement.uploadText']}
         removeFile={removeFile}
+        isAddMore={false}
+        reset={reset}
       />
+      {/* Will Uncomment, once statement Data Api is ready */}
+      {/* <TouchableOpacity
+        onPress={openNetBankingModalHandler}
+        style={{ marginVertical: 3 }}
+      >
+        <Text category='label' status='primary'>
+          {translations['statement.upload.netbanking']}
+        </Text>
+      </TouchableOpacity> */}
       <Text appearance='hint' category='label' status='info'>
         {props.schema.description}
       </Text>
+      {/* Model */}
+      <Modal visible={show} backdropStyle={styles.backdrop}>
+        <Card style={styles.card}>
+          {useNetBankingHandler.loading && <Spinner />}
+          <WebView
+            source={{ uri: redirectUrl }}
+            height={Dimensions.get('window').height - 200}
+            width={Dimensions.get('window').width - 70}
+            onMessage={finboxEventHandler}
+            nestedScrollEnabled
+          />
+        </Card>
+      </Modal>
+      {/* Modal to take password */}
+      <Modal visible={showPasswordModal} backdropStyle={styles.backdrop}>
+        <Card style={{ width: Dimensions.get('window').width - 70 }}>
+          <Input
+            value={password}
+            label={translations['statement.password.field.title']}
+            placeholder={translations['statement.password.placeholder']}
+            onChangeText={nextValue => setPassword(nextValue)}
+          />
+          <Button onPress={updatePdfPassword} style={{ marginTop: 10 }}>{translations['text.update']}</Button>
+        </Card>
+      </Modal>
     </>
   )
 }
+const styles = StyleService.create({
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  card: {
+    flex: 1,
+    padding: 0,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+})
 export default BankStatementUploadField

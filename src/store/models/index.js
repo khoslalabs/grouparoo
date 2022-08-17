@@ -15,6 +15,7 @@ import loanProducts from './loanProducts'
 import formDetails from '../../screens/components/React-json-schema-form/store/formDetails'
 import cache from '../../screens/components/React-json-schema-form/store/cachedData'
 import borrowingEntities from './borrowingEntities'
+import loanOffers from './loanOffers'
 export default {
   customer,
   loanApplications,
@@ -32,5 +33,6 @@ export default {
   loanProducts,
   formDetails,
   cache,
-  borrowingEntities
+  borrowingEntities,
+  loanOffers
 }

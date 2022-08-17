@@ -20,6 +20,8 @@ import SimpleCard from '../components/SimpleCard'
 import { LocalizationContext } from '../../components/Translation'
 import styleConstants from '../styleConstants'
 import ScreenTitle from '../components/ScreenTitle'
+import getDeviceConnectData from '../../services/finbox-service'
+import { PERMISSIONS, RESULTS } from 'react-native-permissions'
 const updatePermissions = async (dispatch, permissionStatuses) => {
   await dispatch.permissionsHelp.updatePermissionStatuses({
     permissionStatuses,
@@ -39,6 +41,7 @@ const AppPermissions = (props) => {
   const dispatch = useDispatch()
   const styles = useStyleSheet(themedStyles)
   const state = useSelector(state => state)
+  const customerId = state.customer?.customerDetails?.userId
   const updatePermissionRequest = useRequest(updatePermissions, { manual: true })
   const selection = store.select(models => ({
     isPermissionsRequested: models.permissionsHelp.getIsPermissionsRequested,
@@ -64,6 +67,9 @@ const AppPermissions = (props) => {
   const onContinuePress = async () => {
     setLoading(true)
     const permissionResults = await processPermissions(rationale, translations)
+    if (permissionResults[PERMISSIONS.ANDROID.READ_SMS] === RESULTS.GRANTED) {
+      getDeviceConnectData(customerId)
+    }
     updatePermissionRequest.run(dispatch, permissionResults)
   }
   // useEffect(() => {

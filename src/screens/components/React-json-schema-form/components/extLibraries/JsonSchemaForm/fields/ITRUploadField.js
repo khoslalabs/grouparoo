@@ -19,27 +19,26 @@ const getNewFileAdded = (newFiles, oldFiles = []) => {
   }
   const addedFiles = []
   newFiles.forEach((file) => {
-    if (!oldFiles.some((of) => of.uri === file.uri)) {
+    if (!oldFiles.some((of) => of.name === file.name)) {
       addedFiles.push(file)
     }
   })
   return addedFiles
 }
 
-const uploadITR = async (dispatch, files) => {
+const uploadITR = async (dispatch, files, uploadedFileIdsWithName) => {
   try {
     const uploadedDocIds = []
     for (let r = 0; r < files.length; r++) {
       const docDetails = await uploadToAppWrite(files[r])
       uploadedDocIds.push(
-        `${docDetails.uploadedDocId}'::'${docDetails.uploadedFileName}`
+        `${docDetails.uploadedDocId}::${docDetails.uploadedFileName}`
       )
     }
     files.forEach((file) => {
       file.uploading = false
     })
-    await dispatch.formDetails.setIsBankStatementVerified('Yes')
-    await dispatch.formDetails.setItrFiles(files)
+    await dispatch.formDetails.setItrFiles(uploadedFileIdsWithName ? [...uploadedFileIdsWithName, ...files] : files)
     return { uploadedDocIds }
   } catch (e) {
     console.log('Inside uploadITR() exception occured', e)
@@ -92,8 +91,8 @@ const ITRUploadField = (props) => {
     manual: true,
     onSuccess: (result, params) => {
       const { uploadedDocIds } = result
-      const allUploadedDocIds = props.value
-        ? [...props.value, ...uploadedDocIds]
+      const allUploadedDocIds = props.formData
+        ? [...props.formData, ...uploadedDocIds]
         : uploadedDocIds
       props.onChange(allUploadedDocIds)
       setIsUploadDone(true)
@@ -132,16 +131,16 @@ const ITRUploadField = (props) => {
     if (!isEmpty(file) > 0) {
       useRemoveFile.run(file)
       // remove from props
-      const newProps = props.formData.filter((v) => v.indexOf(file.name) > -1)
-      props.onChange([...newProps])
+      const newProps = props.formData.filter((v) => v.indexOf(file.name) === -1)
+      props.onChange(isEmpty(newProps) ? undefined : [...newProps])
     }
   }
 
   const onFileChange = (allFiles) => {
     setIsUploadDone(false)
-    const newFilesAdded = getNewFileAdded(allFiles, itrFiles)
+    const newFilesAdded = getNewFileAdded(allFiles, uploadedFileIdsWithName)
     if (newFilesAdded.length > 0) {
-      uploadFiles.run(dispatch, newFilesAdded)
+      uploadFiles.run(dispatch, newFilesAdded, uploadedFileIdsWithName)
     }
   }
   return (
