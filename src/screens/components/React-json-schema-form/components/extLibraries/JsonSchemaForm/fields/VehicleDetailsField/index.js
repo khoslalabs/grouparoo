@@ -6,6 +6,7 @@ import DocumentUploadComponent from '../../common/DocumentUploadComponent'
 import DocumentPicker from 'react-native-document-picker'
 
 const VehicleDetailsField = (props) => {
+  console.log(props)
   const state = useSelector(state => state)
   const [selectBrandIndex, setSelectBrandIndex] = useState()
   const [selectModelIndex, setSelectModelIndex] = useState()

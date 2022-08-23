@@ -10,7 +10,8 @@ const AmountRangeSelector = ({
   onChange,
   step,
   minimumValue,
-  maximumValue
+  maximumValue,
+  iconText = '₹ '
 }) => {
   const theme = useTheme()
   return (
@@ -34,7 +35,7 @@ const AmountRangeSelector = ({
           category='s1'
         >
           <Text category='label' status='primary'>
-            {'₹ '}
+            {iconText}
           </Text>
           {rupeeFormatter(minimumValue)}
         </Text>
@@ -44,7 +45,7 @@ const AmountRangeSelector = ({
           appearence='hint'
         >
           <Text category='label' status='primary'>
-            {'₹ '}
+            {iconText}
           </Text>
           {rupeeFormatter(maximumValue)}
         </Text>
