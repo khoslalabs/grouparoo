@@ -36,8 +36,8 @@ class ApplicationFormNative extends React.PureComponent {
       <View style={style.container}>
         <JsonSchemaForm
           currentFormData={currentLoanApplication}
-          formId={formId}
-          stepSchemaName={stepSchemaName}
+          formId='twoWheeler1'
+          stepSchemaName='twoWheeler1_mob10'
           token={jwt}
           navigation={navigation}
         />

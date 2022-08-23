@@ -89,6 +89,7 @@ const JsonSchemaMultiStepForm = ({
   const dispatch = useDispatch()
   step.liveValidate = isSubmit
   const onSubmit = (form, stepIndex) => {
+    console.log(form)
     setLiveValidate(false)
     const { errors, errorSchema, formData } = form
     if (errors && errors.length > 0) {
