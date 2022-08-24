@@ -32,6 +32,7 @@ const formDetails = {
     udyamData: {},
     kycData: {},
     bankStatementData: {},
+    selectedVehicleModel: {},
     // tempId for application
     tempId: String(Math.floor(100000 + Math.random() * 900000))
   },
@@ -185,6 +186,12 @@ const formDetails = {
       return {
         ...state,
         bankStatementData: payload
+      }
+    },
+    setSelectedVehicleModel: (state, payload) => {
+      return {
+        ...state,
+        selectedVehicleModel: payload
       }
     },
     // Once I am reloading the form from saved data, need to reload the redux store too

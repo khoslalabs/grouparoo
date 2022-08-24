@@ -1,14 +1,24 @@
 import { useStyleSheet, StyleService, Text } from '@ui-kitten/components'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
+import { useSelector } from 'react-redux'
 import { calculateEmi } from '../../../../../../../../utils'
 import AmountRangeSelector from '../../../../../../AmountRangeSelector'
 
 const IndicativeLoanOfferField = (props) => {
+  const exShowroomPrice = useSelector(state => state.formDetails?.selectedVehicleModel?.exShowroomPrice)
+  const maxLoanAmount = Math.ceil(exShowroomPrice - (exShowroomPrice * 0.01))
   const styles = useStyleSheet(themedStyles)
-  const [loanAmount, setLoanAmount] = useState(1000)
-  const [tenure, setTenure] = useState(3)
+  const [loanAmount, setLoanAmount] = useState(maxLoanAmount)
+  const [tenure, setTenure] = useState(24)
   const emi = calculateEmi(loanAmount, tenure, '', '', 9)
+
+  useEffect(() => {
+    props.onChange({
+      loanAmount, emi, tenure, interestRate: 9
+    })
+  }, [loanAmount])
+
   return (
     <>
       <View style={styles.rangeSelector}>
@@ -16,10 +26,10 @@ const IndicativeLoanOfferField = (props) => {
           'Select the loan amount'
         </Text>
         <AmountRangeSelector
-          value={loanAmount}
+          value={maxLoanAmount}
           step={1000}
           minimumValue={1000}
-          maximumValue={5000}
+          maximumValue={maxLoanAmount}
           onChange={setLoanAmount}
         />
       </View>
@@ -49,7 +59,7 @@ const IndicativeLoanOfferField = (props) => {
           <Text appearance='hint' category='label' style={{ paddingTop: 6, paddingRight: 5 }}>EMI:</Text>
         </View>
         <View>
-          <Text appearance='default' category='h6'>{emi}</Text>
+          <Text appearance='default' category='h6'>₹ {emi}</Text>
         </View>
       </View>
       <View style={styles.container}>

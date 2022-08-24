@@ -1,36 +1,44 @@
 import { Select, SelectItem, Text } from '@ui-kitten/components'
 import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import DocumentUploadComponent from '../../common/DocumentUploadComponent'
 import DocumentPicker from 'react-native-document-picker'
+import { brands, delears, getModelsArray } from './Data'
+import isEmpty from 'lodash.isempty'
+import { useRequest } from 'ahooks'
 
 const VehicleDetailsField = (props) => {
-  console.log(props)
+  const dispatch = useDispatch()
+  const filledData = props.formData
+  console.log('filledData', filledData)
   const state = useSelector(state => state)
   const [selectBrandIndex, setSelectBrandIndex] = useState()
   const [selectModelIndex, setSelectModelIndex] = useState()
   const [selectDelearIndex, setSelectDelearIndex] = useState()
-  const brands = ['Hero', 'Bajaj']
-  const models = ['Splendor Plus, Self with Alloy Wheel', 'Splendor Plus, Black and Accent', 'Splendor Plus, Self with Alloy Wheel and i3S', 'Pulsar, NS 200', 'Pulsar, 125Neon', 'Pulsar, 150']
-  const delears = ['RT Krishna', 'Nidhi Motors', 'SS Motors', 'Anant Bajaj', 'Amba Bajaj']
-  const selectedBrand = brands[selectBrandIndex?.row]
-  const selectedModels = models[selectModelIndex?.row]
-  const selectedDealrs = delears[selectDelearIndex?.row]
+  const selectedBrand = brands[selectBrandIndex?.row] || filledData.brand
+  const selectedDealr = delears[selectDelearIndex?.row] || filledData.dealer
+  let models = []
+  if (selectedBrand && selectedDealr) {
+    models = getModelsArray(selectedBrand, selectedDealr)
+  }
+  const selectedModel = models[selectModelIndex?.row] || filledData.vehicleDetails
   const vehicleType = state?.formDetails?.vehicleType ? state?.formDetails?.vehicleType : 'New'
+
+  const setSelectedVehicleModel = useRequest((data, dispatch) => {
+    dispatch.formDetails.setSelectedVehicleModel(data)
+    return data
+  }, {
+    manual: true,
+    onSuccess: (data) => {
+      props.onChange({ ...data, exShowroomPrice: parseInt(data.exShowroomPrice), margin: parseInt(data.margin) })
+    }
+  })
   useEffect(() => {
-    props.onChange(
-      {
-        brand: 'Hero',
-        model: 'Splendor Plus',
-        variation: 'Self with Alloy Wheel',
-        dealer: 'RT Krishna',
-        pinCode: '560035',
-        exShowroomPrice: 70408,
-        Margin: 10
-      }
-    )
-  }, [])
+    if (!isEmpty(selectedModel)) {
+      setSelectedVehicleModel.run(selectedModel, dispatch)
+    }
+  }, [selectedModel])
   return (
     <View>
       {vehicleType === 'New' &&
@@ -42,36 +50,47 @@ const VehicleDetailsField = (props) => {
             label='Select Brand'
             placeholder='Select One...'
           >
-            <SelectItem title='Hero' />
-            <SelectItem title='Bajaj' />
-          </Select>
-          <Select
-            selectedIndex={selectModelIndex}
-            onSelect={index => setSelectModelIndex(index)}
-            label='Select Model'
-            value={selectedModels}
-            placeholder='Select One...'
-          >
-            <SelectItem title='Splendor Plus, Self with Alloy Wheel' />
-            <SelectItem title='Splendor Plus, Black and Accent' />
-            <SelectItem title='Splendor Plus, Self with Alloy Wheel and i3S' />
-            <SelectItem title='Pulsar, NS 200' />
-            <SelectItem title='Pulsar, 125Neon' />
-            <SelectItem title='Pulsar, 150' />
+            {brands.map((element, index) => {
+              return (
+                <SelectItem
+                  key={index}
+                  title={element}
+                />
+              )
+            })}
           </Select>
           <Select
             selectedIndex={selectDelearIndex}
             onSelect={index => setSelectDelearIndex(index)}
             label='Select Delear'
-            value={selectedDealrs}
+            value={selectedDealr}
             placeholder='Select One...'
           >
-            <SelectItem title='RT Krishna' />
-            <SelectItem title='Nidhi Motors' />
-            <SelectItem title='SS Motors' />
-            <SelectItem title='Anant Bajaj' />
-            <SelectItem title='Amba Bajaj' />
+            {delears.map((element, index) => {
+              return (
+                <SelectItem
+                  key={index}
+                  title={element}
+                />
+              )
+            })}
           </Select>
+          {models && models.length > 0 &&
+            <Select
+              selectedIndex={selectModelIndex}
+              onSelect={index => setSelectModelIndex(index)}
+              label='Select Model'
+              value={!isEmpty(selectedModel) || !isEmpty(filledData) ? `${selectedModel?.model || filledData?.model}, ${selectedModel?.variation || filledData?.variation}` : 'Select One...'}
+            >
+              {models.map((element, index) => {
+                return (
+                  <SelectItem
+                    key={index}
+                    title={`${element?.model}, ${element?.variation}`}
+                  />
+                )
+              })}
+            </Select>}
           <View style={{ marginTop: 5 }}>
             <Text appearance='hint' category='label'>
               'Quotation/Proforma Invoice'
