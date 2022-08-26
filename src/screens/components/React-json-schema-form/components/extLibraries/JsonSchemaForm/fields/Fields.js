@@ -16,6 +16,7 @@ import LoanOfferField from './LoanOfferField'
 import BankAccountConfirmationWidget from '../widgets/BankAccountConfirmationWidget'
 import VehicleDetailsField from './VehicleDetailsField'
 import IndicativeLoanOfferField from './IdicativeLoanOffer'
+import Downpayment from './Downpayment'
 export const Fields = {
   TitleField,
   AnyOfField: MultiSchemaField,
@@ -35,5 +36,6 @@ export const Fields = {
   'np-loan-offer-field': LoanOfferField,
   'np-bank-account-details-field': BankAccountConfirmationWidget,
   'np-vehicle-details-field': VehicleDetailsField,
-  'np-twl-indicative-offer': IndicativeLoanOfferField
+  'np-twl-indicative-offer': IndicativeLoanOfferField,
+  'np-downpayment-field':Downpayment,
 }

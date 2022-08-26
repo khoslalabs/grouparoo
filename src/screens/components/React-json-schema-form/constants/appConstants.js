@@ -25,7 +25,8 @@ const appConstants = {
   isCommunicationAddSameAsPermanentAddress:
     'isCommunicationAddSameAsPermanentAddress',
   communicationAddressField: 'communicationAddress',
-  finboxApiKey: '73qqTni5iE4yexhz0sL9PHlwgHR9nvqHqHV8DKzb'
+  finboxApiKey: '73qqTni5iE4yexhz0sL9PHlwgHR9nvqHqHV8DKzb',
+  paymentMethod:["UPI Payment","IMPS","NEFT","other"],
 
 }
 
