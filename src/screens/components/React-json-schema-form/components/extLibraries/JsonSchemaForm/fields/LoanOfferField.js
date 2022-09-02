@@ -12,6 +12,7 @@ import {
 } from 'rn-placeholder'
 import { Text } from '@ui-kitten/components'
 import { LocalizationContext } from '../../../../translation/Translation'
+import { loanOfferPart2 } from '../../../../../../../test/loanOffers'
 const Loading = () => (
   <>
     <Placeholder Animation={Fade} Left={PlaceholderMedia}>
@@ -27,16 +28,19 @@ const Loading = () => (
   </>
 )
 
-const getAllLoanOffers = async (dispatch, loanApplicationId) => {
-  await dispatch.loanOffers.getOffersForApplication({ loanApplicationId })
-}
+// const getAllLoanOffers = async (dispatch, loanApplicationId) => {
+//   await dispatch.loanOffers.getOffersForApplication({ loanApplicationId })
+// }
 const LoanOffersWidget = (props) => {
   const { translations } = useContext(LocalizationContext)
-  const dispatch = useDispatch()
-  const loanApplicationId = useSelector(state => state.loanApplications.currentLoanApplicationId)
-  const { loading } = useRequest(() => getAllLoanOffers(dispatch, loanApplicationId))
+  // Rule engine is down
+  // const dispatch = useDispatch()
+  // const loanApplicationId = useSelector(state => state.loanApplications.currentLoanApplicationId)
+  // const { loading } = useRequest(() => getAllLoanOffers(dispatch, loanApplicationId)) // Rule engine is down
+  const loading = false
   const loanAmount = useSelector((state) => state.formDetails.formData.loanAmount)
-  const loanOffers = useSelector((state) => state.loanOffers[loanApplicationId] ? state.loanOffers[loanApplicationId] : [])
+  // const loanOffers = useSelector((state) => state.loanOffers[loanApplicationId] ? state.loanOffers[loanApplicationId] : []) // Rule engine is down
+  const loanOffers = loanOfferPart2
   console.log('Loan Offers from appWrite-->', loanOffers)
   const onOfferSelected = (loanOffer) => {
     props.onChange(loanOffer)

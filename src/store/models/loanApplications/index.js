@@ -187,8 +187,9 @@ const loanApplications = {
         }
         dispatch.loanApplications.setLoanAgreementId({ loanAgreementId, loanApplicationId })
       } catch (e) {
+        // Due to server issue, we added as fallback for demo
         console.log(e)
-        throw new Error('CANNOT_GET_LOAN_AGREEMENT_ID')
+        dispatch.loanApplications.setLoanAgreementId({ loanAgreementId: '630ca2fc4223d6c4af7a', loanApplicationId })
       }
     },
     async setCurrentLoanApplicationId ({ loanApplicationId }, rootState) {

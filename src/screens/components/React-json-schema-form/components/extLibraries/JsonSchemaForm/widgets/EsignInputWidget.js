@@ -47,7 +47,7 @@ const EsignInputWidget = (props) => {
   const signerName = useSelector(state => state?.formDetails?.panData?.name)
 
   const fileUrl = loanAgreentUrl
-
+  console.log(loanAgreementId, loanAgreentUrl , signerName)
   useEffect(async () => {
     const initialUrl = await Linking.getInitialURL()
     crashlytics().log(
@@ -124,6 +124,7 @@ const EsignInputWidget = (props) => {
   )
 
   const useEsignProcessHandler = useRequest(async (url, file, appUrl) => {
+    debugger
     try {
       const response = await RNFetchBlob.fetch(
         'POST',
@@ -143,6 +144,7 @@ const EsignInputWidget = (props) => {
       )
       if (response?.respInfo?.status === 200) {
         const data = JSON.parse(response.data)
+        console.log('pdf uploading for esign', data, url)
         if (data.status === 'Uploaded Document') {
           const esignUrl = data.url
           Alert.alert(
@@ -161,6 +163,7 @@ const EsignInputWidget = (props) => {
           crashlytics().log(ErrorUtil.createLog('Upload Failed while uploading to veri5Digital with message', data, 'useEsignProcessHandler', 'EsignInputWidget.js'))
         }
       } else {
+        debugger
         throw new Error('UNEXPECTED_ERROR_WHILE_UPLOADING')
       }
     } catch (error) {
