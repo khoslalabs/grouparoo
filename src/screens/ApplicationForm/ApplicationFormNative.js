@@ -28,16 +28,16 @@ class ApplicationFormNative extends React.PureComponent {
   }
 
   render () {
-    const { currentLoanApplication, borrowingEntity, jwt, isAgreement, navigation } = this.props
+    const { currentLoanApplication, borrowingEntity, jwt, isAgreement, navigation,formId,stepSchemaName } = this.props
     const { eva: { style } } = this.props
-    const formId = isAgreement ? borrowingEntity.loanAggrementFormId : borrowingEntity.loanAssessmentFormId
-    const stepSchemaName = isAgreement ? borrowingEntity.stepsAgreementMobile : borrowingEntity.stepsAssessmentMobile
+    // const formId = isAgreement ? borrowingEntity.loanAggrementFormId : borrowingEntity.loanAssessmentFormId
+    // const stepSchemaName = isAgreement ? borrowingEntity.stepsAgreementMobile : borrowingEntity.stepsAssessmentMobile
     return (
       <View style={style.container}>
         <JsonSchemaForm
           currentFormData={currentLoanApplication}
-          formId='twoWheeler1'
-          stepSchemaName='twoWheeler1_mob10'
+          formId={formId}
+          stepSchemaName={stepSchemaName}
           token={jwt}
           navigation={navigation}
         />
