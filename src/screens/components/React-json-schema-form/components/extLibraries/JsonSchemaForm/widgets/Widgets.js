@@ -29,6 +29,7 @@ import TermsAndConditionsWidget from './TermsAndConditionWidget'
 import EsignInputWidget from './EsignInputWidget'
 import EnachWidget from './EnachWidget'
 import BankAccountConfirmationWidget from './BankAccountConfirmationWidget'
+import AccountDetailsWidget from './AccountDetailsWidget';
 export const Widgets = {
   TextWidget,
   EmailWidget,
@@ -62,5 +63,6 @@ export const Widgets = {
   'np-terms-and-condition-widget': TermsAndConditionsWidget,
   'np-esign-input-widget': EsignInputWidget,
   'np-enach-widget': EnachWidget,
-  'np-bank-account-details-widget': BankAccountConfirmationWidget
+  'np-bank-account-details-widget': BankAccountConfirmationWidget,
+  'np-details-widget':AccountDetailsWidget
 }
