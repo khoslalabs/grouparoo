@@ -17,7 +17,6 @@ const validateGstn = async (dispatch, gstin) => {
   const url = `${resourseFactoryConstants.constants.gstin.verifyGstin}${gstin.toUpperCase()}`
   try {
     const res = await DataService.getData(url)
-    debugger
     const response = res?.data
     if (response.status === 'SUCCESS') {
       await Promise.all([

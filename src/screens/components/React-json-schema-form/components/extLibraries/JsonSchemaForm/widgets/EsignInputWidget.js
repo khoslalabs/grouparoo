@@ -124,7 +124,6 @@ const EsignInputWidget = (props) => {
   )
 
   const useEsignProcessHandler = useRequest(async (url, file, appUrl) => {
-    debugger
     try {
       const response = await RNFetchBlob.fetch(
         'POST',
@@ -163,7 +162,6 @@ const EsignInputWidget = (props) => {
           crashlytics().log(ErrorUtil.createLog('Upload Failed while uploading to veri5Digital with message', data, 'useEsignProcessHandler', 'EsignInputWidget.js'))
         }
       } else {
-        debugger
         throw new Error('UNEXPECTED_ERROR_WHILE_UPLOADING')
       }
     } catch (error) {
