@@ -1,86 +1,109 @@
-import { Select, SelectItem, Text } from '@ui-kitten/components'
-import React, { useEffect, useState } from 'react'
-import { View } from 'react-native'
-import { useDispatch, useSelector } from 'react-redux'
-import DocumentUploadComponent from '../../common/DocumentUploadComponent'
-import DocumentPicker from 'react-native-document-picker'
-import { brands, delears, getModelsArray } from './Data'
-import isEmpty from 'lodash.isempty'
-import { useRequest } from 'ahooks'
+import {
+  Select,
+  SelectItem,
+  Text,
+  useStyleSheet,
+  StyleService,
+} from "@ui-kitten/components";
+import React, { useEffect, useState } from "react";
+import { View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import DocumentUploadComponent from "../../common/DocumentUploadComponent";
+import DocumentPicker from "react-native-document-picker";
+import { brands, delears, getModelsArray } from "./Data";
+import isEmpty from "lodash.isempty";
+import { useRequest } from "ahooks";
+import MaskedInput from "../../../textMask/text-input-mask";
+import { useFormContext } from "../../FormContext";
 
 const VehicleDetailsField = (props) => {
-  const dispatch = useDispatch()
-  const filledData = props.formData
-  console.log('filledData', filledData)
-  const state = useSelector(state => state)
-  const [selectBrandIndex, setSelectBrandIndex] = useState()
-  const [selectModelIndex, setSelectModelIndex] = useState()
-  const [selectDelearIndex, setSelectDelearIndex] = useState()
-  const selectedBrand = brands[selectBrandIndex?.row] || filledData.brand
-  const selectedDealr = delears[selectDelearIndex?.row] || filledData.dealer
-  let models = []
-  if (selectedBrand && selectedDealr) {
-    models = getModelsArray(selectedBrand, selectedDealr)
-  }
-  const selectedModel = models[selectModelIndex?.row] || filledData.vehicleDetails
-  const vehicleType = state?.formDetails?.vehicleType ? state?.formDetails?.vehicleType : 'New'
+  const { theme } = useFormContext();
+  const styles = useStyleSheet(themedStyles);
 
-  const setSelectedVehicleModel = useRequest((data, dispatch) => {
-    dispatch.formDetails.setSelectedVehicleModel(data)
-    return data
-  }, {
-    manual: true,
-    onSuccess: (data) => {
-      props.onChange({ ...data, exShowroomPrice: parseInt(data.exShowroomPrice), margin: parseInt(data.margin) })
+  const dispatch = useDispatch();
+  const filledData = props.formData;
+  console.log("filledData", filledData);
+  const state = useSelector((state) => state);
+  const [selectBrandIndex, setSelectBrandIndex] = useState();
+  const [selectModelIndex, setSelectModelIndex] = useState();
+  const [selectDelearIndex, setSelectDelearIndex] = useState();
+  const selectedBrand = brands[selectBrandIndex?.row] || filledData.brand;
+  const selectedDealr = delears[selectDelearIndex?.row] || filledData.dealer;
+  let models = [];
+  if (selectedBrand && selectedDealr) {
+    models = getModelsArray(selectedBrand, selectedDealr);
+  }
+  const selectedModel =
+    models[selectModelIndex?.row] || filledData.vehicleDetails;
+  const vehicleType = state?.formDetails?.formData?.vehicleType
+    ? state?.formDetails?.formData?.vehicleType
+    : "New";
+
+  console.log(
+    "vehicleType in vehicle details",
+    vehicleType,
+    state?.formDetails?.formData
+  );
+
+  const setSelectedVehicleModel = useRequest(
+    (data, dispatch) => {
+      dispatch.formDetails.setSelectedVehicleModel(data);
+      return data;
+    },
+    {
+      manual: true,
+      onSuccess: (data) => {
+        props.onChange({
+          ...data,
+          exShowroomPrice: parseInt(data.exShowroomPrice),
+          margin: parseInt(data.margin),
+        });
+      },
     }
-  })
+  );
   useEffect(() => {
     if (!isEmpty(selectedModel)) {
-      setSelectedVehicleModel.run(selectedModel, dispatch)
+      setSelectedVehicleModel.run(selectedModel, dispatch);
     }
-  }, [selectedModel])
+  }, [selectedModel]);
   return (
     <View>
-      {vehicleType === 'New' &&
+      {vehicleType === "New" && (
         <View>
           <Select
             selectedIndex={selectBrandIndex}
             value={selectedBrand}
-            onSelect={index => setSelectBrandIndex(index)}
-            label='Select Brand'
-            placeholder='Select One...'
+            onSelect={(index) => setSelectBrandIndex(index)}
+            label="Select Brand"
+            placeholder="Select One..."
           >
             {brands.map((element, index) => {
-              return (
-                <SelectItem
-                  key={index}
-                  title={element}
-                />
-              )
+              return <SelectItem key={index} title={element} />;
             })}
           </Select>
           <Select
             selectedIndex={selectDelearIndex}
-            onSelect={index => setSelectDelearIndex(index)}
-            label='Select Delear'
+            onSelect={(index) => setSelectDelearIndex(index)}
+            label="Select Delear"
             value={selectedDealr}
-            placeholder='Select One...'
+            placeholder="Select One..."
           >
             {delears.map((element, index) => {
-              return (
-                <SelectItem
-                  key={index}
-                  title={element}
-                />
-              )
+              return <SelectItem key={index} title={element} />;
             })}
           </Select>
-          {models && models.length > 0 &&
+          {models && models.length > 0 && (
             <Select
               selectedIndex={selectModelIndex}
-              onSelect={index => setSelectModelIndex(index)}
-              label='Select Model'
-              value={!isEmpty(selectedModel) || !isEmpty(filledData) ? `${selectedModel?.model || filledData?.model}, ${selectedModel?.variation || filledData?.variation}` : 'Select One...'}
+              onSelect={(index) => setSelectModelIndex(index)}
+              label="Select Model"
+              value={
+                !isEmpty(selectedModel) || !isEmpty(filledData)
+                  ? `${selectedModel?.model || filledData?.model}, ${
+                      selectedModel?.variation || filledData?.variation
+                    }`
+                  : "Select One..."
+              }
             >
               {models.map((element, index) => {
                 return (
@@ -88,11 +111,12 @@ const VehicleDetailsField = (props) => {
                     key={index}
                     title={`${element?.model}, ${element?.variation}`}
                   />
-                )
+                );
               })}
-            </Select>}
+            </Select>
+          )}
           <View style={{ marginTop: 5 }}>
-            <Text appearance='hint' category='label'>
+            <Text appearance="hint" category="label">
               'Quotation/Proforma Invoice'
             </Text>
             <DocumentUploadComponent
@@ -102,17 +126,102 @@ const VehicleDetailsField = (props) => {
               files={[]}
               type={[DocumentPicker.types.pdf]}
               loading={false}
-              selectText='Upload Qotation/Proforma Invoice'
-              removeFile={() => { console.log() }}
+              selectText="Upload Qotation/Proforma Invoice"
+              removeFile={() => {
+                console.log();
+              }}
               isAddMore={false}
               reset={false}
             />
           </View>
-        </View>}
-      {/* {vehicleType === 'Old' && <View>
+        </View>
+      )}
+      {vehicleType === "Old" && (
+        <View>
+          {/* <Text appearance="hint" category="label">
+            'Registration Number'
+          </Text> */}
 
-       </View>} */}
+          <MaskedInput
+            type="custom"
+            label="Registration Number"
+            options={{
+              mask: "AA99AA9999",
+            }}
+            autoFocus={true}
+            includeRawValueInChangeText
+            // multiline={"multiline"}
+            placeholder={"XX12XX1234"}
+            // autoFocus={autofocus}
+            // editable={!disabled && !readonly}
+            keyboardType="visible-password"
+            // value={gstin}
+            // secureTextEntry={secureEntry}
+            // textContentType={textContentType}
+            // onChangeText={(_, rawText) => onGstnChangeHandler(rawText)}
+            // // onBlur={onBlurTextHandler}
+            // onFocus={() => {
+            //   onFocus(id, value)
+            // }}
+            selectionColor={theme.highlightColor}
+            // placeholderTextColor={theme.placeholderTextColor}
+            // status={hasErrors && 'danger'}
+            // accessoryRight={() => getTickMark()}
+          />
+                <View style={styles.rangeSelector}>
+
+
+          {/* <Text appearance="hint" category="label">
+            'Valuation of the vehicle'
+          </Text> */}
+          <MaskedInput
+            type="money"
+            label="Valuation of the vehicle"
+            options={{
+              precision: 0,
+              separator: ".",
+              delimiter: ",",
+              suffixUnit: "",
+            }}
+            includeRawValueInChangeText
+            // multiline={"multiline"}
+            placeholder={"Amount"}
+           
+            // editable={!disabled && !readonly}
+            keyboardType={"numeric"}
+            // value={value ? value.toString() : ""}
+            // secureTextEntry={secureEntry}
+            // textContentType={textContentType}
+            // onChangeText={(newText, rawText) =>
+            //   onChange(rawText === "" ? options.emptyValue : parseInt(rawText))
+            // }
+            // onBlur={() => {
+            //   onBlur(id, value);
+            // }}
+            // onFocus={() => {
+            //   onFocus(id, value);
+            // }}
+            selectionColor={theme.highlightColor}
+            // placeholderTextColor={theme.placeholderTextColor}
+            // status={hasErrors && "danger"}
+            // accessoryLeft={() => <Text>Rs.</Text>}
+          />
+        </View>
+        </View>
+      )}
     </View>
-  )
-}
-export default VehicleDetailsField
+  );
+};
+
+const themedStyles = StyleService.create({
+  rangeSelector: {
+    marginTop: 16,
+  },
+  container: {
+    marginTop: 16,
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+});
+export default VehicleDetailsField;

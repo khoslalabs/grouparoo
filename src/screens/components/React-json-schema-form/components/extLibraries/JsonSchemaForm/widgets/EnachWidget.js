@@ -156,11 +156,12 @@ const EnachWidget = (props) => {
     }
   }, [bankName])
 
+
   const planObject = {
     planId: planId,
     planName: `${formName}_${getRandomId()}`,
     type: 'PERIODIC',
-    amount: loanOffer.finalEmiAmount, // Need to set it from its loan Offer Data, emi amount
+    amount: loanOffer.finalEmiAmount ,// Need to set it from its loan Offer Data, emi amount
     intervalType: dayjsMapper[loanOffer.finalInstallmentFrequency],
     intervals: loanOffer.finalLoanTenure
   }
