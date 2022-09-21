@@ -78,15 +78,72 @@ const EnachWidget = (props) => {
   )
   const [appUrl, setAppUrl] = useState(null)
   const [planId, setPlanId] = useState(getRandomId())
-  const bankStatementData = useSelector(
-    (state) => state.formDetails.bankStatementData
-  )
-  const accountType = useSelector(
-    (state) => state?.formDetails?.formData?.bankAccountType?.accountType
-  )
-  const { loanOffer, email, primaryPhone } = useSelector(
+  // cont bankStatementData = useSelector(
+  //   (state) => state.formDetails.bankStatementData
+  // )
+
+  const bankStatementData=bankStatementData||{
+                "statement": {
+                    "bank_name": "kotak",
+                    "statement_id": "dc61686d-aa8f-41ae-8aaf-0dc15f2d65bf",
+                    "entity_id": "18f28fee-2e27-4ca0-9c0d-0b0c4486d027",
+                    "identity": {
+                        "account_number": "3512392038",
+                        "name": "VISHAL SHAW",
+                        "address": "Vishal Shaw 3-1, College Row Raja Ram Mohan Sarani Near Collage Street Crosine Kolkata 700009 West Bengal India",
+                        "account_category": null,
+                        "credit_limit": 0,
+                        "account_id": "4acbce68-2fbc-4a1b-9143-38c919dbe243"
+                    },
+                    "date_range": {
+                        "from_date": "2021-05-01",
+                        "to_date": "2021-05-31"
+                    },
+                    "is_fraud": false,
+                    "fraud_type": null,
+                    "status": 1
+                },
+                "transaction_details": {
+                    "accounts": [
+                        {
+                            "account_number": "3512392038",
+                            "bank": "kotak",
+                            "account_id": "4acbce68-2fbc-4a1b-9143-38c919dbe243",
+                            "micr": "700485021",
+                            "account_category": null,
+                            "statements": [
+                                "dc61686d-aa8f-41ae-8aaf-0dc15f2d65bf"
+                            ],
+                            "ifsc": "KKBK0006584",
+                            "months": [
+                                "2021-05"
+                            ]
+                        }
+                    ]
+                }
+            }
+    
+    
+  // const accountType = useSelector(
+  //   (state) => state?.formDetails?.formData?.bankAccountType?.accountType
+  // )
+
+  const accountType = accountType||"Savings"
+  let { loanOffer, email, primaryPhone } = useSelector(
     (state) => state.formDetails.formData
   )
+  loanOffer=loanOffer ||{
+    "productId": "smel005",
+    "offerId": "103",
+    "finalLoanAmount": 150000,
+    "finalLoanTenure": 3,
+    "finalInstallmentFrequency": "m",
+    "finalEmiAmount": 52182,
+    "unit": "m"
+}
+  
+
+  console.log( loanOffer, email, primaryPhone,accountType,bankStatementData);
   const bankName = bankStatementData?.statement?.bank_name
   const accountHolderName = bankStatementData?.statement?.identity?.name
   const accountNo = bankStatementData?.statement?.identity?.account_number

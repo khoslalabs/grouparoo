@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useSelector, useDispatch, useStore } from "react-redux";
 import {
   Select,
@@ -30,10 +30,10 @@ import { CallIcon } from "../../components/Icons.component";
 const vehicleTakenByData = ["Individual", "Business"];
 
 const ApplicationForm = ({ navigation, route }) => {
-  const [vTakenIndex, setvTakenIndex] = useState();
-  // const [vehicleTakenBy,setvehicleTakenBy]=useState()
-  const vehicleTakenBy = vehicleTakenByData[vTakenIndex?.row];
-  console.log("vehicleTakenBy", vehicleTakenBy);
+  const [vTakenIndex, setvTakenIndex] = useState("");
+  const [vehicleTakenBy, setvehicleTakenBy] = useState("Select one");
+  const [back, setBack] = useState(true);
+  console.log("vehicleTakenBy", vehicleTakenBy, vTakenIndex);
   let loanApplicationId = route.params?.loanApplicationId;
   const dispatch = useDispatch();
   const store = useStore();
@@ -69,10 +69,14 @@ const ApplicationForm = ({ navigation, route }) => {
   const showApplicationForm =
     (isHelpShown && !isAgreement) || (isAgreement && isAgreementHelpShown);
 
+  useEffect(() => {
+    vTakenIndex && setvehicleTakenBy(vehicleTakenByData[vTakenIndex?.row]);
+  }, [vTakenIndex]);
+
   const BackIcon = (props) => <Icon {...props} name="arrow-back" />;
-  const BackAction = () => (
-    <TopNavigationAction icon={BackIcon} onPress={navigateBack} />
-  );
+  const BackAction = () => {
+    return <TopNavigationAction icon={BackIcon} onPress={navigateBack} />;
+  };
   const renderRightActions = () => (
     <TopNavigationAction
       onPress={() => navigation.navigate("ContactUs")}
@@ -83,6 +87,8 @@ const ApplicationForm = ({ navigation, route }) => {
   );
   const navigateBack = () => {
     // props.navigation.goBack()
+    // setvehicleTakenBy("");
+    setBack(true);
   };
   const exitApp = () => {
     BackHandler.exitApp();
@@ -108,28 +114,32 @@ const ApplicationForm = ({ navigation, route }) => {
         <TopNavigation
           style={styles.topNavigationStyle}
           alignment="center"
-          // accessoryLeft={BackAction}
+          accessoryLeft={BackAction}
           accessoryRight={renderRightActions}
         />
         {/* If Agreement is enabled, no need to show loan Application Help */}
         {!isHelpShown && !isAgreement && (
           <LoanApplicationHelp onPress={onPress} />
         )}
-        {showApplicationForm && !vehicleTakenBy && (
+        {showApplicationForm && back && (
           <>
             <Select
+              placeholder="Select One..."
               selectedIndex={vTakenIndex}
-              onSelect={(index) => setvTakenIndex(index)}
+              onSelect={(index) => {
+                setvTakenIndex(index);
+                setBack(false);
+              }}
               label="Vehicle to be taken by"
-              value={vehicleTakenBy}
+              value={`${vehicleTakenBy}`}
             >
               {vehicleTakenByData.map((item, index) => (
-                <SelectItem key={index} title={item} />
+                <SelectItem key={`sel_${index}`} title={item} />
               ))}
             </Select>
           </>
         )}
-        {vehicleTakenBy == "Individual" && (
+        {vehicleTakenBy == "Individual" && !back && (
           <ApplicationFormNative
             formId="twoWheeler_loan3"
             stepSchemaName="twoWheeler_loan3_mob1"
@@ -138,10 +148,10 @@ const ApplicationForm = ({ navigation, route }) => {
             navigation={navigation}
           />
         )}
-        {vehicleTakenBy == "Business" && (
+        {vehicleTakenBy == "Business" && !back && (
           <ApplicationFormNative
-            formId="twoWheeler5"
-            stepSchemaName="twoWheeler5_mob"
+            formId="twoWheeler_loan10"
+            stepSchemaName="twoWheeler_loan10_mob"
             currentLoanApplication={currentLoanApplication}
             isAgreement={isAgreement}
             navigation={navigation}

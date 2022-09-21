@@ -24,13 +24,20 @@ const LoanAgreementWidget = (props) => {
   const [loanAgreementUrl, setLoanAgreementUrl] = useState()
   const [loanAgreementId, setLoanAgreementId] = useState()
 
+  // useEffect(() => {
+  //   if (!loading && !loanAgreementId) {
+  //     const temp = state?.loanApplications?.applications[state.loanApplications.currentLoanApplicationId].loanAgreementId
+  //     setLoanAgreementId(temp)
+  //     setLoanAgreementUrl(`${resourceFactoryConstants.constants.lending.downloadFile}${temp}`)
+  //   }
+  // }, [loading])
+
   useEffect(() => {
-    if (!loading && !loanAgreementId) {
-      const temp = state?.loanApplications?.applications[state.loanApplications.currentLoanApplicationId].loanAgreementId
+      const temp = "632ac554592b6b99afcc";
       setLoanAgreementId(temp)
       setLoanAgreementUrl(`${resourceFactoryConstants.constants.lending.downloadFile}${temp}`)
     }
-  }, [loading])
+  , [])
 
   return (
     <>
