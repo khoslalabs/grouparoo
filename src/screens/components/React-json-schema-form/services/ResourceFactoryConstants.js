@@ -75,6 +75,13 @@ class ResourceFactoryConstants {
         ""
       ),
     },
+    registrationNo: {
+      verifyNo: this.getCustomUrl(
+        "https://novo-adapter-dev.novopay.in/",
+        "vahan-service/vahan/validate",
+        ""
+      ),
+    },
     udyam: {
       verifyUdyamAadhar: this.getCustomUrl(
         this.apiGateWay,
