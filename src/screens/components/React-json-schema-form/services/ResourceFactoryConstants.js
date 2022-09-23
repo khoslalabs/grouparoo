@@ -77,7 +77,7 @@ class ResourceFactoryConstants {
     },
     registrationNo: {
       verifyNo: this.getCustomUrl(
-        "https://novo-adapter-dev.novopay.in/",
+        this.adapterServiceUrl,
         "vahan-service/vahan/validate",
         ""
       ),
